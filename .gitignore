@@ -28,3 +28,13 @@
 *.app
 build/
 *.bat
+
+# local config
+.localconfig
+
+# project files
+*.txt.user
+
+# build directories
+build
+build-*
