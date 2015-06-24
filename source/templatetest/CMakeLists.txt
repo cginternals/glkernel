@@ -1,5 +1,5 @@
 
-set(target debugger)
+set(target templatetest)
 
 
 # Qt5

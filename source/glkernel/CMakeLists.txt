@@ -27,6 +27,8 @@ else()
     add_definitions("-DGLKERNEL_EXPORTS")
 endif()
 
+add_definitions("-DGLM_FORCE_RADIANS")
+
 
 # Sources
 
