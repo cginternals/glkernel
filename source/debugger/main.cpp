@@ -1,30 +1,16 @@
 
-#include <iostream>
-#include <fstream>
-#include <string>
+#include <glkernel/Kernel.h>
 
-#include <template-version.h>
-#include <fiblib/Fibonacci.h>
 
 int main(int /*argc*/, char* /*argv*/[])
 {
-    std::cout << "Version: " << TEMPLATE_VERSION << std::endl;
-    std::cout << "Fibonacci(8) = " << fiblib::Fibonacci()(8) << std::endl;
-    std::cout << std::endl;
+    auto noise2 = glkernel::Kernel<glm::vec2>(16, 16);
 
-    // Read file
-    std::cout << "Reading from 'data/example.txt': " << std::endl;
-    std::cout << std::endl;
-    std::ifstream f("data/example.txt");
-    if (f.is_open()) {
-        std::string line;
-        while (getline(f, line)) {
-            std::cout << line << '\n';
-        }
-        f.close();
-    } else {
-        std::cout << "Unable to open file." << std::endl;
-    }
+    noise2[6] = glm::vec2(1.f, 2.f);
+
+    noise2.element(9, 2) = glm::vec2(3.f, 4.f);
+
+    // ToDo: glkernel::white_noise(noise2);
 
     return 0;
 }

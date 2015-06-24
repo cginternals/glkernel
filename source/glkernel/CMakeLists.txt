@@ -35,11 +35,12 @@ set(source_path "${CMAKE_CURRENT_SOURCE_DIR}/source")
 
 set(api_includes
     ${include_path}/glkernel_api.h
-    ${include_path}/randomnoise.h
+	${include_path}/Kernel.h
+    ${include_path}/white_noise.h
 )
 
 set(sources
-    ${source_path}/randomnoise.cpp
+    ${source_path}/white_noise.cpp
 )
 
 # Group source files

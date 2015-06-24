@@ -2,7 +2,7 @@
 #include <gmock/gmock.h>
 
 
-#include <glkernel/randomnoise.h>
+#include <glkernel/white_noise.h>
 
 // class random_test: public testing::Test
 // {

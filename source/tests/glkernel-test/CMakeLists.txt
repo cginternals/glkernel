@@ -2,11 +2,15 @@
 set(target glkernel-test)
 message(STATUS "Test ${target}")
 
+# External libraries
+
+find_package(GLM REQUIRED)
+
 
 # Includes
 
 include_directories(
-    
+    ${GLM_INCLUDE_DIR}
 )
 
 include_directories(
