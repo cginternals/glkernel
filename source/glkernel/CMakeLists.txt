@@ -50,6 +50,7 @@ set(api_includes
 #   ${include_path}/perlin_noise.h
 #   ${include_path}/perlin_noise.hpp
 
+    ${include_path}/square_points.h
     ${include_path}/square_points.hpp
 
 #   ${include_path}/circle_points.h

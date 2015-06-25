@@ -15,49 +15,6 @@
 namespace glkernel
 {
 
-template<typename T, typename std::enable_if<std::is_floating_point<T>::value, int>::type = 0>
-const T * kernel_ptr(const std::vector<T> & kernel)
-{
-    return kernel.data();
-}
-
-template<typename T, typename std::enable_if<std::is_same<T, glm::vec2>::value, int>::type = 0>
-const typename T::value_type * kernel_ptr(const std::vector<T> & kernel)
-{
-    return glm::value_ptr(kernel.front());
-}
-
-template<typename T, typename std::enable_if<std::is_same<T, glm::vec3>::value, int>::type = 0>
-const typename T::value_type * kernel_ptr(const std::vector<T> & kernel)
-{
-    return glm::value_ptr(kernel.front());
-}
-
-template<typename T, typename std::enable_if<std::is_same<T, glm::vec4>::value, int>::type = 0>
-const typename T::value_type * kernel_ptr(const std::vector<T> & kernel)
-{
-    return glm::value_ptr(kernel.front());
-}
-
-template<typename T, typename std::enable_if<std::is_same<T, glm::dvec2>::value, int>::type = 0>
-const typename T::value_type * kernel_ptr(const std::vector<T> & kernel)
-{
-    return glm::value_ptr(kernel.front());
-}
-
-template<typename T, typename std::enable_if<std::is_same<T, glm::dvec3>::value, int>::type = 0>
-const typename T::value_type * kernel_ptr(const std::vector<T> & kernel)
-{
-    return glm::value_ptr(kernel.front());
-}
-
-template<typename T, typename std::enable_if<std::is_same<T, glm::dvec4>::value, int>::type = 0>
-const typename T::value_type * kernel_ptr(const std::vector<T> & kernel)
-{
-    return glm::value_ptr(kernel.front());
-}
-
-
 template<typename T>
 Kernel<T>::Kernel(const glm::uint16 width, const glm::uint16 height, const glm::uint16 depth)
 : m_width { width  }
