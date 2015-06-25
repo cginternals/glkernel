@@ -24,7 +24,7 @@ include_directories(
 set(libs
     ${GMOCK_LIBRARIES}
     ${GTEST_LIBRARIES}
-    glkernel
+#    glkernel
 )
 
 

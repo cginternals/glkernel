@@ -24,8 +24,8 @@ public:
 
     auto values() const -> decltype(kernel_ptr<T>(std::vector<T>()));
 
-    T & operator[](glm::uint i);
-    const T & operator[](glm::uint i) const;
+    T & operator[](size_t i);
+    const T & operator[](size_t i) const;
 
     T & value(glm::uint16 s = 0, glm::uint16 t = 0, glm::uint16 u = 0);
     const T & value(glm::uint16 s = 0, glm::uint16 t = 0, glm::uint16 u = 0) const;

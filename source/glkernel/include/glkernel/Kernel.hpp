@@ -98,14 +98,14 @@ auto Kernel<T>::values() const -> decltype(kernel_ptr<T>(std::vector<T>()))
 }
 
 template<typename T>
-T & Kernel<T>::operator[](const glm::uint i)
+T & Kernel<T>::operator[](const size_t i)
 {
     assert(i < m_kernel.size());
     return m_kernel[i];
 }
 
 template<typename T>
-const T & Kernel<T>::operator[](const glm::uint i) const
+const T & Kernel<T>::operator[](const size_t i) const
 {
     assert(i < m_kernel.size());
     return m_kernel[i];
