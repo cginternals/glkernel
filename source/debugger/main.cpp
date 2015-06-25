@@ -1,7 +1,7 @@
 
 #include <glkernel/uniform_noise.h>
 #include <glkernel/normal_noise.h>
-#include <glkernel/square_points.hpp>
+#include <glkernel/square_points.h>
 
 #include <qimage.h>
 #include <qpainter.h>
