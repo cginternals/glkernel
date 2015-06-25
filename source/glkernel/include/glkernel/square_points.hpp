@@ -9,7 +9,7 @@ namespace glkernel
 {
 
 template <typename T, glm::precision P>
-void square_points_poisson(Kernel<glm::tvec2<T, P>> & kernel, const T min_dist, const unsigned int num_probes)
+void square_points_poisson(Kernel<glm::detail::tvec2<T, P>> & kernel, const T min_dist, const unsigned int num_probes)
 {
     std::random_device RD;
     std::mt19937_64 generator(RD());
@@ -28,7 +28,7 @@ void square_points_poisson(Kernel<glm::tvec2<T, P>> & kernel, const T min_dist, 
             m_mask.resize(m_side * m_side, m_none);
         }
 
-        void mask(const glm::tvec2<T, P> & point, const size_t k)
+        void mask(const glm::detail::tvec2<T, P> & point, const size_t k)
         {
             const auto o = static_cast<int>(point.y * m_side) * m_side + static_cast<int>(point.x * m_side);
 
@@ -37,7 +37,7 @@ void square_points_poisson(Kernel<glm::tvec2<T, P>> & kernel, const T min_dist, 
             m_mask[o] = k;
         }
 
-        bool masked(const glm::tvec2<T, P> & probe, const Kernel<glm::tvec2<T, P>> & kernel) const
+        bool masked(const glm::detail::tvec2<T, P> & probe, const Kernel<glm::detail::tvec2<T, P>> & kernel) const
         {
             const auto x = static_cast<int>(probe.x * m_side);
             const auto y = static_cast<int>(probe.y * m_side);
@@ -66,7 +66,7 @@ void square_points_poisson(Kernel<glm::tvec2<T, P>> & kernel, const T min_dist, 
     auto occupancy = OccupancyMask{ min_dist };
 
     size_t k = 0; // number of valid/final points within the kernel
-    kernel[k] = glm::tvec2<T, P>(distribute(generator), distribute(generator));
+    kernel[k] = glm::detail::tvec2<T, P>(distribute(generator), distribute(generator));
 
     auto active = std::vector<size_t>();
     active.push_back(k);
@@ -81,7 +81,7 @@ void square_points_poisson(Kernel<glm::tvec2<T, P>> & kernel, const T min_dist, 
         for (unsigned int i = 0; i < num_probes; ++i)
         {
             const auto r = min_dist * (1.0 + distribute(generator)); // radius
-            const auto a = glm::two_pi<T>() * distribute(generator);  // angle
+            const auto a = T(2.0) * glm::pi<T>() * distribute(generator);  // angle
 
             const auto probe = glm::vec2{ point.x + r * cos(a), point.y + r * sin(a) };
 
@@ -102,7 +102,7 @@ void square_points_poisson(Kernel<glm::tvec2<T, P>> & kernel, const T min_dist, 
                 break;
         }
     }
-//        kernel[i] = glm::tvec2<T, P>(distribute(generator), distribute(generator));
+//        kernel[i] = glm::detail::tvec2<T, P>(distribute(generator), distribute(generator));
 }
 
 } // namespace glkernel

@@ -16,10 +16,10 @@ namespace glkernel
 {
 
 template<typename T>
-Kernel<T>::Kernel(const glm::uint16 width, const glm::uint16 height, const glm::uint16 depth)
-: m_width { width  }
-, m_height{ height }
-, m_depth { depth  }
+Kernel<T>::Kernel(const glm::uint16 w, const glm::uint16 h, const glm::uint16 d)
+: m_width { w  }
+, m_height{ h }
+, m_depth { d  }
 {
     m_kernel.resize(m_width * m_height * m_depth);
 }
@@ -69,19 +69,19 @@ const T & Kernel<T>::operator[](const size_t i) const
 }
 
 template<typename T>
-T & Kernel<T>::value(glm::uint16 s = 0, glm::uint16 t = 0, glm::uint16 u = 0)
+T & Kernel<T>::value(glm::uint16 s, glm::uint16 t, glm::uint16 u)
 {
     return m_kernel[index(s, t, u)];
 }
 
 template<typename T>
-const T & Kernel<T>::value(const glm::uint16 s = 0, const glm::uint16 t = 0, const glm::uint16 u = 0) const
+const T & Kernel<T>::value(const glm::uint16 s, const glm::uint16 t, const glm::uint16 u) const
 {
     return m_kernel[index(s, t, u)];
 }
 
 template<typename T>
-size_t Kernel<T>::index(const glm::uint16 s = 0, const glm::uint16 t = 0, const glm::uint16 u = 0) const
+size_t Kernel<T>::index(const glm::uint16 s, const glm::uint16 t, const glm::uint16 u) const
 {
     assert(s < m_width);
     assert(t < m_height);
