@@ -14,68 +14,13 @@
 namespace glkernel
 {
 
-namespace
-{
-    // optimization grid for identifying adjacent points
-
-    template <typename T, glm::precision P>
-    class PoissonDiskOccupancyMap
-    {
-    public:
-        PoissonDiskOccupancyMap(const T min_dist)
-            : m_none{ static_cast<size_t>(-1) }
-            , m_side{ static_cast<size_t>(std::ceil(sqrt(2.0) / min_dist)) }
-            , m_dist(min_dist)
-        {
-            m_mask.resize(m_side * m_side, m_none);
-        }
-
-        void mask(const glm::tvec2<T, P> & point, const size_t k)
-        {
-            const auto o = static_cast<int>(point.y * m_side) * m_side + static_cast<int>(point.x * m_side);
-
-            assert(m_mask[o] == m_none);
-
-            m_mask[o] = k;
-        }
-
-        bool masked(const glm::tvec2<T, P> & probe, const Kernel<glm::tvec2<T, P>> & kernel) const
-        {
-            const auto x = static_cast<int>(probe.x * m_side);
-            const auto y = static_cast<int>(probe.y * m_side);
-            const auto s = static_cast<int>(m_side);
-
-            const auto x_min = std::min(s, x + 3);
-            const auto y_min = std::min(s, y + 3);
-
-            for (int j = glm::max(0, y - 2); j < y_min; ++j)
-                for (int i = glm::max(0, x - 2); i < x_min; ++i)
-                {
-                    const auto o = m_mask[j * m_side + i];
-                    if (o != m_none && glm::distance(kernel[o], probe) < m_dist)
-                        return true;
-                }
-
-            return false;
-        }
-
-    protected:
-        size_t m_none;
-
-        size_t m_side;
-        T m_dist;
-
-        std::vector<size_t> m_mask;
-    };
-}
-
-
 template <typename T, glm::precision P>
 size_t square_points_poisson(Kernel<glm::tvec2<T, P>> & kernel, const unsigned int num_probes)
 {
     assert(kernel.depth() == 1);
 
-    const T min_dist = 1 / sqrt(static_cast<T>(kernel.size() * sqrt(2) * 1.12));
+    // the 1.12 is experimental for auto dist detection and adjusts for deficits 
+    const T min_dist = 1 / sqrt(static_cast<T>(kernel.size() * sqrt(2) * 1.08));    
     return square_points_poisson(kernel, min_dist, num_probes);
 }
 
@@ -85,8 +30,66 @@ size_t square_points_poisson_ext(Kernel<glm::tvec2<T, P>> & kernel, const unsign
 {
     assert(kernel.depth() == 1);
 
-    const T min_dist = 1 / sqrt(static_cast<T>(kernel.size() * sqrt(2) * 0.86));
+    // the 0.86 is experimental for auto dist detection and adjusts for deficits
+    const T min_dist = 1 / sqrt(static_cast<T>(kernel.size() * sqrt(2) * 0.84));
     return square_points_poisson_ext(kernel, min_dist, num_probes);
+}
+
+namespace
+{
+
+// optimization grid for identifying adjacent points
+
+template <typename T, glm::precision P>
+class PoissonDiskOccupancyMap
+{
+public:
+    PoissonDiskOccupancyMap(const T min_dist)
+        : m_none{ static_cast<size_t>(-1) }
+        , m_side{ static_cast<size_t>(std::ceil(sqrt(2.0) / min_dist)) }
+        , m_dist(min_dist)
+    {
+        m_mask.resize(m_side * m_side, m_none);
+    }
+
+    void mask(const glm::tvec2<T, P> & point, const size_t k)
+    {
+        const auto o = static_cast<int>(point.y * m_side) * m_side + static_cast<int>(point.x * m_side);
+
+        assert(m_mask[o] == m_none);
+
+        m_mask[o] = k;
+    }
+
+    bool masked(const glm::tvec2<T, P> & probe, const Kernel<glm::tvec2<T, P>> & kernel) const
+    {
+        const auto x = static_cast<int>(probe.x * m_side);
+        const auto y = static_cast<int>(probe.y * m_side);
+        const auto s = static_cast<int>(m_side);
+
+        const auto x_min = std::min(s, x + 3);
+        const auto y_min = std::min(s, y + 3);
+
+        for (int j = glm::max(0, y - 2); j < y_min; ++j)
+            for (int i = glm::max(0, x - 2); i < x_min; ++i)
+            {
+                const auto o = m_mask[j * m_side + i];
+                if (o != m_none && glm::distance(kernel[o], probe) < m_dist)
+                    return true;
+            }
+
+        return false;
+    }
+
+protected:
+    size_t m_none;
+
+    size_t m_side;
+    T m_dist;
+
+    std::vector<size_t> m_mask;
+};
+
 }
 
 template <typename T, glm::precision P>
@@ -102,7 +105,7 @@ size_t square_points_poisson(Kernel<glm::tvec2<T, P>> & kernel, const T min_dist
     auto occupancy = PoissonDiskOccupancyMap<T, P>{ min_dist };
 
     size_t k = 0; // number of valid/final points within the kernel
-    kernel[k] = glm::tvec2<T, P>(0.5, 0.5);
+    kernel[k] = glm::tvec2<T, P>(distribute(generator) * 0.2 + 0.4, distribute(generator) * 0.2 + 0.4);
 
     auto actives = std::vector<size_t>();
     actives.push_back(k);
@@ -155,7 +158,7 @@ size_t square_points_poisson_ext(Kernel<glm::tvec2<T, P>> & kernel, const T min_
     auto occupancy = PoissonDiskOccupancyMap<T, P>{ min_dist };
 
     size_t k = 0; // number of valid/final points within the kernel
-    kernel[k] = glm::tvec2<T, P>(0.5, 0.5);
+    kernel[k] = glm::tvec2<T, P>(distribute(generator) * 0.2 + 0.4, distribute(generator) * 0.2 + 0.4);
 
     auto actives = std::list<size_t>();
     actives.push_back(k);

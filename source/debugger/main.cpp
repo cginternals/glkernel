@@ -42,7 +42,7 @@ int main(int /*argc*/, char * /*argv*/[])
 
     image.save("normal_noise.png");
 
-    auto points = glkernel::Kernel<glm::vec2>(64, 64);
+    auto points = glkernel::Kernel<glm::vec2>(24, 24);
     std::cout << "square_points_poisson: #" << glkernel::square_points_poisson(points) << std::endl;
 
     QPainter painter;
@@ -54,7 +54,7 @@ int main(int /*argc*/, char * /*argv*/[])
     painter.setBrush(Qt::black);
 
     for (unsigned int i = 0; i < points.size(); ++i)
-        painter.drawEllipse(points[i].x * image.width() - 2, points[i].y * image.height() - 2, 5, 5);
+        painter.drawEllipse(points[i].x * image.width() - 2, points[i].y * image.height() - 2, 7, 7);
 
     painter.end();
 
@@ -71,7 +71,7 @@ int main(int /*argc*/, char * /*argv*/[])
     painter.setBrush(Qt::black);
 
     for (unsigned int i = 0; i < points.size(); ++i)
-        painter.drawEllipse(points[i].x * image.width() - 2, points[i].y * image.height() - 2, 5, 5);
+        painter.drawEllipse(points[i].x * image.width() - 2, points[i].y * image.height() - 2, 7, 7);
 
     painter.end();
 

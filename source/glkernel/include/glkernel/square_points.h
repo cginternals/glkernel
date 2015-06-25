@@ -12,8 +12,10 @@ namespace glkernel
 template <typename T, glm::precision P>
 size_t square_points_poisson(Kernel<glm::tvec2<T, P>> & kernel, const unsigned int num_probes = 30);
 
+// in contrast to the default impl. the ext variant uses the best of num_probes, randomizes the actives, ...
+
 template <typename T, glm::precision P>
-size_t square_points_poisson_ext(Kernel<glm::tvec2<T, P>> & kernel, const unsigned int num_probes = 100);
+size_t square_points_poisson_ext(Kernel<glm::tvec2<T, P>> & kernel, const unsigned int num_probes = 30);
 
 // returns number of actual generated points (note: this number is between 0 and kernel.size)
 
@@ -21,7 +23,7 @@ template <typename T, glm::precision P>
 size_t square_points_poisson(Kernel<glm::tvec2<T, P>> & kernel, const T min_dist, const unsigned int num_probes = 30);
 
 template <typename T, glm::precision P>
-size_t square_points_poisson_ext(Kernel<glm::tvec2<T, P>> & kernel, const T min_dist, const unsigned int num_probes = 100);
+size_t square_points_poisson_ext(Kernel<glm::tvec2<T, P>> & kernel, const T min_dist, const unsigned int num_probes = 30);
 
 
 } // namespace glkernel
