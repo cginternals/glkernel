@@ -39,6 +39,8 @@ set(api_includes
     ${include_path}/glkernel_api.h
 	${include_path}/Kernel.h
     ${include_path}/Kernel.hpp
+    
+    ${include_path}/glm_compatability.h
 
     ${include_path}/uniform_noise.h
     ${include_path}/uniform_noise.hpp

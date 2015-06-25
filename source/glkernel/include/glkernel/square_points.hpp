@@ -5,6 +5,8 @@
 #include <cassert>
 #include <random>
 
+#include <glkernel/glm_compatability.h>
+
 
 namespace glkernel
 {
