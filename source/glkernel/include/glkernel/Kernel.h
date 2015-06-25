@@ -4,7 +4,7 @@
 
 #include <vector>
 
-#include <glm/common.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 
 namespace glkernel
