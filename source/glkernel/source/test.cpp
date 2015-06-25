@@ -1,4 +1,3 @@
-#pragma once
 
 #include <glkernel/Kernel.h>
 
