@@ -4,6 +4,8 @@
 
 #include <random>
 
+#include <glkernel/glm_compatability.h>
+
 namespace glkernel
 {
 
@@ -20,7 +22,7 @@ void uniform_noise(Kernel<T> & kernel, const T range_min, const T range_max)
 }
 
 template <typename T, glm::precision P>
-void uniform_noise(Kernel<glm::detail::tvec2<T, P>> & kernel, const T range_min, const T range_max)
+void uniform_noise(Kernel<tvec2<T, P>> & kernel, const T range_min, const T range_max)
 {
     std::random_device RD;
     std::mt19937_64 generator(RD());
@@ -28,11 +30,11 @@ void uniform_noise(Kernel<glm::detail::tvec2<T, P>> & kernel, const T range_min,
     std::uniform_real_distribution<T> distribute(range_min, range_max);
 
     for (int i = 0; i < kernel.size(); ++i)
-        kernel[i] = glm::detail::tvec2<T, P>(distribute(generator), distribute(generator));
+        kernel[i] = tvec2<T, P>(distribute(generator), distribute(generator));
 }
 
 template <typename T, glm::precision P>
-void uniform_noise(Kernel<glm::detail::tvec3<T, P>> & kernel, const T range_min, const T range_max)
+void uniform_noise(Kernel<tvec3<T, P>> & kernel, const T range_min, const T range_max)
 {
     std::random_device RD;
     std::mt19937_64 generator(RD());
@@ -40,11 +42,11 @@ void uniform_noise(Kernel<glm::detail::tvec3<T, P>> & kernel, const T range_min,
     std::uniform_real_distribution<T> distribute(range_min, range_max);
 
     for (int i = 0; i < kernel.size(); ++i)
-        kernel[i] = glm::detail::tvec3<T, P>(distribute(generator), distribute(generator), distribute(generator));
+        kernel[i] = tvec3<T, P>(distribute(generator), distribute(generator), distribute(generator));
 }
 
 template <typename T, glm::precision P>
-void uniform_noise(Kernel<glm::detail::tvec4<T, P>> & kernel, const T range_min, const T range_max)
+void uniform_noise(Kernel<tvec4<T, P>> & kernel, const T range_min, const T range_max)
 {
     std::random_device RD;
     std::mt19937_64 generator(RD());
@@ -52,11 +54,11 @@ void uniform_noise(Kernel<glm::detail::tvec4<T, P>> & kernel, const T range_min,
     std::uniform_real_distribution<T> distribute(range_min, range_max);
 
     for (int i = 0; i < kernel.size(); ++i)
-        kernel[i] = glm::detail::tvec4<T, P>(distribute(generator), distribute(generator), distribute(generator), distribute(generator));
+        kernel[i] = tvec4<T, P>(distribute(generator), distribute(generator), distribute(generator), distribute(generator));
 }
 
 template <typename T, glm::precision P>
-void uniform_noise(Kernel<glm::detail::tvec2<T, P>> & kernel, const glm::detail::tvec2<T, P> & range_min, const glm::detail::tvec2<T, P> & range_max)
+void uniform_noise(Kernel<tvec2<T, P>> & kernel, const tvec2<T, P> & range_min, const tvec2<T, P> & range_max)
 {
     std::random_device RD;
     std::mt19937_64 generator(RD());
@@ -65,11 +67,11 @@ void uniform_noise(Kernel<glm::detail::tvec2<T, P>> & kernel, const glm::detail:
     std::uniform_real_distribution<T> distribute1(range_min[1], range_max[1]);
 
     for (int i = 0; i < kernel.size(); ++i)
-        kernel[i] = glm::detail::tvec2<T, P>(distribute0(generator), distribute1(generator));
+        kernel[i] = tvec2<T, P>(distribute0(generator), distribute1(generator));
 }
 
 template <typename T, glm::precision P>
-void uniform_noise(Kernel<glm::detail::tvec3<T, P>> & kernel, const glm::detail::tvec3<T, P> & range_min, const glm::detail::tvec3<T, P> & range_max)
+void uniform_noise(Kernel<tvec3<T, P>> & kernel, const tvec3<T, P> & range_min, const tvec3<T, P> & range_max)
 {
     std::random_device RD;
     std::mt19937_64 generator(RD());
@@ -79,11 +81,11 @@ void uniform_noise(Kernel<glm::detail::tvec3<T, P>> & kernel, const glm::detail:
     std::uniform_real_distribution<T> distribute2(range_min[2], range_max[2]);
 
     for (int i = 0; i < kernel.size(); ++i)
-        kernel[i] = glm::detail::tvec3<T, P>(distribute0(generator), distribute1(generator), distribute2(generator));
+        kernel[i] = tvec3<T, P>(distribute0(generator), distribute1(generator), distribute2(generator));
 }
 
 template <typename T, glm::precision P>
-void uniform_noise(Kernel<glm::detail::tvec4<T, P>> & kernel, const glm::detail::tvec4<T, P> & range_min, const glm::detail::tvec4<T, P> & range_max)
+void uniform_noise(Kernel<tvec4<T, P>> & kernel, const tvec4<T, P> & range_min, const tvec4<T, P> & range_max)
 {
     std::random_device RD;
     std::mt19937_64 generator(RD());
@@ -94,7 +96,7 @@ void uniform_noise(Kernel<glm::detail::tvec4<T, P>> & kernel, const glm::detail:
     std::uniform_real_distribution<T> distribute3(range_min[3], range_max[3]);
 
     for (int i = 0; i < kernel.size(); ++i)
-        kernel[i] = glm::detail::tvec4<T, P>(distribute0(generator), distribute1(generator), distribute2(generator), distribute3(generator));
+        kernel[i] = tvec4<T, P>(distribute0(generator), distribute1(generator), distribute2(generator), distribute3(generator));
 }
 
 } // namespace glkernel

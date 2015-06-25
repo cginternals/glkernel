@@ -4,12 +4,13 @@
 
 #include <random>
 
+#include <glkernel/glm_compatability.h>
 
 namespace glkernel
 {
 
 template <typename T, glm::precision P>
-void square_points_poisson(Kernel<glm::detail::tvec2<T, P>> & kernel, const T min_dist, const unsigned int num_probes)
+void square_points_poisson(Kernel<tvec2<T, P>> & kernel, const T min_dist, const unsigned int num_probes)
 {
     std::random_device RD;
     std::mt19937_64 generator(RD());
@@ -22,13 +23,13 @@ void square_points_poisson(Kernel<glm::detail::tvec2<T, P>> & kernel, const T mi
     public:
         OccupancyMask(const T min_dist)
         : m_none{ static_cast<size_t>(-1) }
-        , m_side{ static_cast<size_t>(ceil(sqrt(2.0) / min_dist)) }
+        , m_side{ static_cast<size_t>(ceil(glm::sqrt(2.0) / min_dist)) }
         , m_dist(min_dist)
         {
             m_mask.resize(m_side * m_side, m_none);
         }
 
-        void mask(const glm::detail::tvec2<T, P> & point, const size_t k)
+        void mask(const tvec2<T, P> & point, const size_t k)
         {
             const auto o = static_cast<int>(point.y * m_side) * m_side + static_cast<int>(point.x * m_side);
 
@@ -37,7 +38,7 @@ void square_points_poisson(Kernel<glm::detail::tvec2<T, P>> & kernel, const T mi
             m_mask[o] = k;
         }
 
-        bool masked(const glm::detail::tvec2<T, P> & probe, const Kernel<glm::detail::tvec2<T, P>> & kernel) const
+        bool masked(const tvec2<T, P> & probe, const Kernel<tvec2<T, P>> & kernel) const
         {
             const auto x = static_cast<int>(probe.x * m_side);
             const auto y = static_cast<int>(probe.y * m_side);
@@ -66,7 +67,7 @@ void square_points_poisson(Kernel<glm::detail::tvec2<T, P>> & kernel, const T mi
     auto occupancy = OccupancyMask{ min_dist };
 
     size_t k = 0; // number of valid/final points within the kernel
-    kernel[k] = glm::detail::tvec2<T, P>(distribute(generator), distribute(generator));
+    kernel[k] = tvec2<T, P>(distribute(generator), distribute(generator));
 
     auto active = std::vector<size_t>();
     active.push_back(k);
@@ -102,7 +103,7 @@ void square_points_poisson(Kernel<glm::detail::tvec2<T, P>> & kernel, const T mi
                 break;
         }
     }
-//        kernel[i] = glm::detail::tvec2<T, P>(distribute(generator), distribute(generator));
+//        kernel[i] = tvec2<T, P>(distribute(generator), distribute(generator));
 }
 
 } // namespace glkernel
