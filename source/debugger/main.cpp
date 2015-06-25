@@ -1,4 +1,6 @@
 
+#include <iostream>
+
 #include <glkernel/uniform_noise.h>
 #include <glkernel/normal_noise.h>
 #include <glkernel/square_points.h>
@@ -41,8 +43,8 @@ int main(int /*argc*/, char * /*argv*/[])
     image.save("normal_noise.png");
 
 
-    auto points = glkernel::Kernel<glm::vec2>(256, 256);
-    glkernel::square_points_poisson(points, 0.005f);
+    auto points = glkernel::Kernel<glm::vec2>(16, 16);
+    std::cout << "square_points_poisson: #" << glkernel::square_points_poisson(points) << std::endl;
 
     QPainter painter;
 
