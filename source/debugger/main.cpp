@@ -11,7 +11,7 @@
 
 int main(int /*argc*/, char * /*argv*/[])
 {
-    auto noise = glkernel::Kernel<float>(256, 256);
+    auto noise = glkernel::Kernel<float>(512, 512);
 
     auto image = QImage(noise.width(), noise.height(), QImage::Format_ARGB32);
     auto bits = image.bits();
@@ -30,7 +30,7 @@ int main(int /*argc*/, char * /*argv*/[])
     image.save("uniform_noise.png");
 
 
-    glkernel::normal_noise(noise, 0.0f, 0.1f);
+    glkernel::normal_noise(noise, 1.0f, 0.005f);
 
     for (unsigned int i = 0; i < noise.size(); ++i)
     {
@@ -42,8 +42,7 @@ int main(int /*argc*/, char * /*argv*/[])
 
     image.save("normal_noise.png");
 
-
-    auto points = glkernel::Kernel<glm::vec2>(16, 16);
+    auto points = glkernel::Kernel<glm::vec2>(64, 64);
     std::cout << "square_points_poisson: #" << glkernel::square_points_poisson(points) << std::endl;
 
     QPainter painter;
@@ -51,16 +50,32 @@ int main(int /*argc*/, char * /*argv*/[])
     painter.begin(&image);
     painter.fillRect(image.rect(), Qt::white);
 
-    painter.setPen(Qt::NoPen);
+    painter.setPen(Qt::black);
     painter.setBrush(Qt::black);
 
     for (unsigned int i = 0; i < points.size(); ++i)
-        painter.drawEllipse(points[i].x * image.width(), points[i].y * image.height(), 2, 2);
+        painter.drawEllipse(points[i].x * image.width() - 2, points[i].y * image.height() - 2, 5, 5);
 
     painter.end();
 
     image.save("square_points_poisson.png");
 
+
+    points.reset();
+    std::cout << "square_points_poisson: #" << glkernel::square_points_poisson_ext(points, 100) << std::endl;
+
+    painter.begin(&image);
+    painter.fillRect(image.rect(), Qt::white);
+
+    painter.setPen(Qt::black);
+    painter.setBrush(Qt::black);
+
+    for (unsigned int i = 0; i < points.size(); ++i)
+        painter.drawEllipse(points[i].x * image.width() - 2, points[i].y * image.height() - 2, 5, 5);
+
+    painter.end();
+
+    image.save("square_points_poisson_ext.png");
 
 
     return 0;

@@ -49,6 +49,13 @@ glm::uint16 Kernel<T>::depth() const
 }
 
 template<typename T>
+void Kernel<T>::reset()
+{
+    for (auto & v : m_kernel)
+        v = T();
+}
+
+template<typename T>
 auto Kernel<T>::values() const -> decltype(kernel_ptr<T>(std::vector<T>()))
 {
     return kernel_ptr(m_kernel);

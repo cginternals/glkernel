@@ -67,6 +67,8 @@ public:
 
     auto values() const -> decltype(kernel_ptr<T>(std::vector<T>()));
 
+    void reset();
+
     T & operator[](size_t i);
     const T & operator[](size_t i) const;
 
