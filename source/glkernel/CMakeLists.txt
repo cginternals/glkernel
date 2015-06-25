@@ -39,11 +39,28 @@ set(api_includes
     ${include_path}/glkernel_api.h
 	${include_path}/Kernel.h
     ${include_path}/Kernel.hpp
-    ${include_path}/white_noise.h
-    ${include_path}/white_noise.hpp
+
+    ${include_path}/uniform_noise.h
+    ${include_path}/uniform_noise.hpp
+    ${include_path}/normal_noise.h
+    ${include_path}/normal_noise.hpp
+
+#   ${include_path}/simplex_noise.h
+#   ${include_path}/simplex_noise.hpp
+#   ${include_path}/perlin_noise.h
+#   ${include_path}/perlin_noise.hpp
+
+    ${include_path}/square_points.hpp
+
+#   ${include_path}/circle_points.h
+#   ${include_path}/circle_points.hpp
+#   ${include_path}/sphere_points.h
+#   ${include_path}/sphere_points.hpp
+
 )
 
 set(sources
+    ${source_path}/test.cpp    
 )
 
 # Group source files

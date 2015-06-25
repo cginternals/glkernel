@@ -53,7 +53,7 @@ include_directories(
 # Libraries
 
 set(libs
-    glkernel
+#   glkernel
     Qt5::OpenGL
     Qt5::Core
     Qt5::Gui

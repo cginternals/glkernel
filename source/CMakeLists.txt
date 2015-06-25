@@ -25,5 +25,5 @@ endif()
 
 # Tests
 set(IDE_FOLDER "Tests")
-add_subdirectory(templatetest)
+#add_subdirectory(templatetest)
 add_subdirectory(tests)
