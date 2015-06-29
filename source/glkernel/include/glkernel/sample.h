@@ -1,7 +1,5 @@
 #pragma once
 
-#include <type_traits>
-
 #include <glm/gtc/type_precision.hpp>
 
 #include <glkernel/kernel.h>

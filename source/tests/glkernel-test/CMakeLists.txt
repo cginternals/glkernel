@@ -42,6 +42,7 @@ set(sources
     tkernel_test.cpp
     noise_test.cpp
     sample_test.cpp
+    sequence_test.cpp
 )
 
 

@@ -49,6 +49,8 @@ set(api_includes
     ${include_path}/mask.hpp
     ${include_path}/sample.h
     ${include_path}/sample.hpp
+    ${include_path}/shuffle.h
+    ${include_path}/shuffle.hpp
     ${include_path}/sequence.h
     ${include_path}/sequence.hpp
 )
