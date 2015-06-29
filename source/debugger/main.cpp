@@ -1,49 +1,62 @@
 
 #include <iostream>
 
-#include <glkernel/uniform_noise.h>
-#include <glkernel/normal_noise.h>
-#include <glkernel/square_points.h>
+#include <glkernel/kernel.h>
+
+#include <glkernel/noise.h>
+#include <glkernel/sample.h>
 
 #include <qimage.h>
 #include <qpainter.h>
 
+using namespace glkernel;
 
 int main(int /*argc*/, char * /*argv*/[])
 {
-    auto noise = glkernel::Kernel<float>(512, 512);
+    auto kernel = kernel3{ 64, 64 };
 
-    auto image = QImage(noise.width(), noise.height(), QImage::Format_ARGB32);
+    auto image = QImage(kernel.width(), kernel.height(), QImage::Format_ARGB32);
     auto bits = image.bits();
 
+    // test uniform noise
 
-    glkernel::uniform_noise(noise, 0.f, 1.f);
+    noise::uniform(kernel, glm::vec3{ 0.f, 0.f, 0.f } , glm::vec3{ 1.f, 1.f, 1.f });
  
-    for (unsigned int i = 0; i < noise.size(); ++i)
+    for (unsigned int i = 0; i < kernel.size(); ++i)
     {
-        bits[i * 4 + 0] = noise[i] * 255;
-        bits[i * 4 + 1] = noise[i] * 255;
-        bits[i * 4 + 2] = noise[i] * 255;
+        bits[i * 4 + 2] = glm::clamp(0.f, kernel[i][0] * 255.f, 255.f);
+        bits[i * 4 + 1] = glm::clamp(0.f, kernel[i][1] * 255.f, 255.f);
+        bits[i * 4 + 0] = glm::clamp(0.f, kernel[i][2] * 255.f, 255.f);
         bits[i * 4 + 3] = 255;
     }
 
-    image.save("uniform_noise.png");
+    image.save("noise--uniform.png");
 
 
-    glkernel::normal_noise(noise, 1.0f, 0.005f);
+    // test normal noise
 
-    for (unsigned int i = 0; i < noise.size(); ++i)
+    kernel.reset();
+
+    noise::normal(kernel, glm::vec3{ 0.5f, 0.5f, 0.5f }, glm::vec3{ 0.1f, 0.4f, 0.8f });
+
+    for (unsigned int i = 0; i < kernel.size(); ++i)
     {
-        bits[i * 4 + 0] = qBound<uchar>(0, noise[i] * 255, 255);
-        bits[i * 4 + 1] = qBound<uchar>(0, noise[i] * 255, 255);
-        bits[i * 4 + 2] = qBound<uchar>(0, noise[i] * 255, 255);
+        bits[i * 4 + 2] = glm::clamp(0.f, kernel[i][0] * 255.f, 255.f);
+        bits[i * 4 + 1] = glm::clamp(0.f, kernel[i][1] * 255.f, 255.f);
+        bits[i * 4 + 0] = glm::clamp(0.f, kernel[i][2] * 255.f, 255.f);
         bits[i * 4 + 3] = 255;
     }
 
-    image.save("normal_noise.png");
+    image.save("noise--normal.png");
 
-    auto points = glkernel::Kernel<glm::vec2>(24, 24);
-    std::cout << "square_points_poisson: #" << glkernel::square_points_poisson(points) << std::endl;
+    // test poisson square samples
+
+    
+
+    auto samples = kernel2{ 4, 4 };
+
+    auto num_samples = sample::poisson_square(samples);
+    std::cout << "sample::poisson_square    : #" << num_samples << " of " << samples.size() << std::endl;
 
     QPainter painter;
 
@@ -53,30 +66,24 @@ int main(int /*argc*/, char * /*argv*/[])
     painter.setPen(Qt::black);
     painter.setBrush(Qt::black);
 
-    for (unsigned int i = 0; i < points.size(); ++i)
-        painter.drawEllipse(points[i].x * image.width() - 2, points[i].y * image.height() - 2, 7, 7);
+    for (unsigned int i = 0; i < num_samples; ++i)
+    {
+        painter.drawEllipse(QPointF(samples[i].x * image.width() + 0.5 - 1.0, samples[i].y * image.height() + 0.5 - 1.0), 3, 3);
+ 
+        // since poisson square is tilable, render tilable (and skip the check, its just for debugging)
+        painter.drawEllipse(QPointF(samples[i].x * image.width() + 0.5 - 1.0, samples[i].y * image.height() + 0.5 - 1.0 + image.height()), 3, 3);
+        painter.drawEllipse(QPointF(samples[i].x * image.width() + 0.5 - 1.0, samples[i].y * image.height() + 0.5 - 1.0 - image.height()), 3, 3);
+        painter.drawEllipse(QPointF(samples[i].x * image.width() + 0.5 - 1.0 + image.width(), samples[i].y * image.height() + 0.5 - 1.0), 3, 3);
+        painter.drawEllipse(QPointF(samples[i].x * image.width() + 0.5 - 1.0 - image.width(), samples[i].y * image.height() + 0.5 - 1.0), 3, 3);
+        painter.drawEllipse(QPointF(samples[i].x * image.width() + 0.5 - 1.0 + image.width(), samples[i].y * image.height() + 0.5 - 1.0 + image.height()), 3, 3);
+        painter.drawEllipse(QPointF(samples[i].x * image.width() + 0.5 - 1.0 + image.width(), samples[i].y * image.height() + 0.5 - 1.0 - image.height()), 3, 3);
+        painter.drawEllipse(QPointF(samples[i].x * image.width() + 0.5 - 1.0 - image.width(), samples[i].y * image.height() + 0.5 - 1.0 + image.height()), 3, 3);
+        painter.drawEllipse(QPointF(samples[i].x * image.width() + 0.5 - 1.0 - image.width(), samples[i].y * image.height() + 0.5 - 1.0 - image.height()), 3, 3);
+    }
 
     painter.end();
 
-    image.save("square_points_poisson.png");
-
-
-    points.reset();
-    std::cout << "square_points_poisson: #" << glkernel::square_points_poisson_ext(points, 100) << std::endl;
-
-    painter.begin(&image);
-    painter.fillRect(image.rect(), Qt::white);
-
-    painter.setPen(Qt::black);
-    painter.setBrush(Qt::black);
-
-    for (unsigned int i = 0; i < points.size(); ++i)
-        painter.drawEllipse(points[i].x * image.width() - 2, points[i].y * image.height() - 2, 7, 7);
-
-    painter.end();
-
-    image.save("square_points_poisson_ext.png");
-
+    image.save("sample--poisson_square.png");
 
     return 0;
 }

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <glkernel/glkernel_api.h>
-
 #include <vector>
 
 #include <glm/gtc/type_ptr.hpp>
@@ -54,10 +52,9 @@ const typename T::value_type * kernel_ptr(const std::vector<T> & kernel)
 
 
 template<typename T>
-class Kernel
+struct tkernel
 {
-public:
-    Kernel(glm::uint16 width = 1, glm::uint16 height = 1, glm::uint16 depth = 1);
+    tkernel(glm::uint16 width = 1, glm::uint16 height = 1, glm::uint16 depth = 1);
 
     size_t size() const;
 
@@ -65,17 +62,19 @@ public:
     glm::uint16 height() const;
     glm::uint16 depth() const;
 
-    auto values() const -> decltype(kernel_ptr<T>(std::vector<T>()));
+    auto data() const -> decltype(kernel_ptr<T>(std::vector<T>()));
 
     void reset();
 
     T & operator[](size_t i);
     const T & operator[](size_t i) const;
 
-    T & value(glm::uint16 s = 0, glm::uint16 t = 0, glm::uint16 u = 0);
-    const T & value(glm::uint16 s = 0, glm::uint16 t = 0, glm::uint16 u = 0) const;
+    T & value(glm::uint16 s = 0, glm::uint16 t = 0, glm::uint16 r = 0);
+    const T & value(glm::uint16 s = 0, glm::uint16 t = 0, glm::uint16 r = 0) const;
 
-    size_t index(glm::uint16 s = 0, glm::uint16 t = 0, glm::uint16 u = 0) const;
+    size_t index(glm::uint16 s = 0, glm::uint16 t = 0, glm::uint16 r = 0) const;
+
+    tkernel trimed(glm::uint16 width, glm::uint16 height, glm::uint16 depth) const;
 
 protected:
     glm::uint16 m_width;
@@ -85,6 +84,16 @@ protected:
     std::vector<T> m_kernel;
 };
 
+using kernel1  = tkernel<float>;
+using kernel2  = tkernel<glm::vec2>; 
+using kernel3  = tkernel<glm::vec3>;
+using kernel4  = tkernel<glm::vec4>;
+
+using dkernel1 = tkernel<double>;
+using dkernel2 = tkernel<glm::dvec2>;
+using dkernel3 = tkernel<glm::dvec3>;
+using dkernel4 = tkernel<glm::dvec4>;
+
 } // namespace glkernel
 
-#include <glkernel/Kernel.hpp>
+#include <glkernel/kernel.hpp>

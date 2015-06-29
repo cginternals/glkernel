@@ -39,7 +39,9 @@ endif()
 
 set(sources
     main.cpp
-    glkernel_test.cpp
+    tkernel_test.cpp
+    noise_test.cpp
+    sample_test.cpp
 )
 
 

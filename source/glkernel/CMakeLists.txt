@@ -36,34 +36,21 @@ set(include_path "${CMAKE_CURRENT_SOURCE_DIR}/include/${target}")
 set(source_path "${CMAKE_CURRENT_SOURCE_DIR}/source")
 
 set(api_includes
-    ${include_path}/glkernel_api.h
-	${include_path}/Kernel.h
-    ${include_path}/Kernel.hpp
-    
     ${include_path}/glm_compatability.h
 
-    ${include_path}/uniform_noise.h
-    ${include_path}/uniform_noise.hpp
-    ${include_path}/normal_noise.h
-    ${include_path}/normal_noise.hpp
+    ${include_path}/kernel.h
+    ${include_path}/kernel.hpp
 
-#   ${include_path}/simplex_noise.h
-#   ${include_path}/simplex_noise.hpp
-#   ${include_path}/perlin_noise.h
-#   ${include_path}/perlin_noise.hpp
-
-    ${include_path}/square_points.h
-    ${include_path}/square_points.hpp
-
-#   ${include_path}/circle_points.h
-#   ${include_path}/circle_points.hpp
-#   ${include_path}/sphere_points.h
-#   ${include_path}/sphere_points.hpp
-
-)
-
-set(sources
-    ${source_path}/test.cpp    
+    ${include_path}/constraint.h
+    ${include_path}/constraint.hpp
+    ${include_path}/noise.h
+    ${include_path}/noise.hpp
+    ${include_path}/mask.h
+    ${include_path}/mask.hpp
+    ${include_path}/sample.h
+    ${include_path}/sample.hpp
+    ${include_path}/sequence.h
+    ${include_path}/sequence.hpp
 )
 
 # Group source files
