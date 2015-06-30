@@ -12,7 +12,7 @@ namespace noise
 {
 
 
-template <typename T>
+template<typename T>
 uniform_operator<T>::uniform_operator(const size_t, const glm::length_t
     , const T range_min, const T range_max)
 : m_generator{ std::random_device{ }() }

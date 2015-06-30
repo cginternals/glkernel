@@ -8,16 +8,14 @@
 namespace glkernel
 {
 
-class shuffle
+namespace shuffle
 {
-    shuffle() = delete;
 
-public:
+template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type * = nullptr>
+void bucket_permutate(tkernel<T> & kernel, glm::uint16 subkernel_width = 1, glm::uint16 subkernel_height = 1, glm::uint16 subkernel_depth = 1);
 
-    template<typename T, typename std::enable_if<std::is_floating_point<T>::value, int>::type = 0>
-    static void bucket_permutate(tkernel<T> & kernel, glm::uint16 width, glm::uint16 height, glm::uint16 depth);
-};
+} // namespace shuffle
 
 } // namespace glkernel
 
-#include <glkernel/sequence.hpp>
+#include <glkernel/shuffle.hpp>
