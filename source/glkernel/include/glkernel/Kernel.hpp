@@ -46,9 +46,9 @@ tkernel<T>::tkernel(
     const glm::uint16 w
 ,   const glm::uint16 h
 ,   const glm::uint16 d)
-: m_width { w  }
+: m_width { w }
 , m_height{ h }
-, m_depth { d  }
+, m_depth { d }
 {
     m_kernel.resize(m_width * m_height * m_depth);
 }
@@ -176,6 +176,7 @@ void tkernel<T>::for_each(Args&&... args)
     auto d = data();
     const auto s = size();
 
+    #pragma omp parallel for
     for (glm::length_t coefficient = 0; coefficient < l; ++coefficient)
     {
         auto o = Operator(s, coefficient, std::forward<Args>(args)...);

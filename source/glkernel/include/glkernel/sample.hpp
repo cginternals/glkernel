@@ -8,6 +8,7 @@
 #include <array>
 #include <list>
 #include <iterator>
+#include <tuple>
 
 #include <glkernel/glm_compatability.h>
 
@@ -139,12 +140,11 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, const T min_dist, cons
 
         const auto active = kernel[*pick_it];
 
-        // pick nearest probe from sample set
-        glm::vec2 nearest_probe;
-        auto nearest_dist = 4 * min_dist * min_dist;
-        auto nearest_found = false;
 
-        for (unsigned int i = 0; i < num_probes; ++i)
+        std::vector<std::tuple<glm::tvec2<T, P>, T>> probes{ num_probes };
+
+        #pragma omp parallel for
+        for (int i = 0; i < static_cast<int>(num_probes); ++i)
         {
             const auto r = radius_dist(generator);
             const auto a = angle_dist(generator);
@@ -162,24 +162,34 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, const T min_dist, cons
             else if (probe.y >= 1.0)
                 probe.y -= 1.0;
 
+            // Note: do NOT make this optimization
             //if (!tilable && (probe.x < 0.0 || probe.x > 1.0 || probe.y < 0.0 || probe.y > 1.0))
             //    continue;
 
             // points within min_dist?
-            if (occupancy.masked(probe, kernel))
-                continue;
-
-            // is this nearest point yet? - optimized by using square distance -> skipping sqrt
+            const auto masked = occupancy.masked(probe, kernel);
             const auto delta = abs(active - probe);
-            const auto new_dist = glm::dot(delta, delta);
-            if (nearest_dist < new_dist)
+
+            probes[i] = std::make_tuple<glm::tvec2<T, P>, T>(std::move(probe), (masked ? static_cast<T>(-1.0) : glm::dot(delta, delta)));
+        }
+        
+        // pick nearest probe from sample set
+        glm::vec2 nearest_probe;
+        auto nearest_dist = 4 * min_dist * min_dist;
+        auto nearest_found = false;
+
+        for (int i = 0; i < static_cast<int>(num_probes); ++i)
+        {
+            // is this nearest point yet? - optimized by using square distance -> skipping sqrt
+            const auto new_dist = std::get<1>(probes[i]);
+            if (new_dist < 0.0 || nearest_dist < new_dist)
                 continue;
 
             if (!nearest_found)
                 nearest_found = true;
 
             nearest_dist = new_dist;
-            nearest_probe = probe;
+            nearest_probe = std::get<0>(probes[i]);
         }
 
         if (!nearest_found && (actives.size() > 0 || k > 1))

@@ -36,6 +36,17 @@ set(AUTOMOC_MOC_OPTIONS PROPERTIES FOLDER CMakeAutomocTargets)
 set_property(GLOBAL PROPERTY AUTOMOC_FOLDER CMakeAutomocTargets)
 
 
+if(OPTION_USE_LOOP_PARALLELIZATION)
+
+    find_package(OpenMP QUIET)
+
+    if (NOT OPENMP_FOUND)
+        message("Loop parallelization in ${target} skipped: OpenMP not found")
+    endif()
+
+endif()
+
+
 # Includes
 
 include_directories(
@@ -68,6 +79,11 @@ if (OPTION_BUILD_STATIC)
 endif()
 
 add_definitions("-DGLM_FORCE_RADIANS")
+
+if(OPENMP_FOUND)
+    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   ${OpenMP_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+endif()
 
 
 # Sources

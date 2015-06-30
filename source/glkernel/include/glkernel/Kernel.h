@@ -19,7 +19,6 @@ template<typename T>
 struct tkernel
 {
 private:
-
     static std::vector<T> s_type_workaround;
 
 public:
