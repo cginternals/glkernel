@@ -102,7 +102,7 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, const unsigned int num
     assert(kernel.depth() == 1);
 
     // the 0.86 is experimental for auto dist detection and adjusts for deficits
-    const T min_dist = 1 / sqrt(static_cast<T>(kernel.size() * sqrt(2) * 0.96));
+    const T min_dist = 1 / sqrt(static_cast<T>(kernel.size() * sqrt(2) * 0.99));
     return poisson_square(kernel, min_dist, num_probes);
 }
 

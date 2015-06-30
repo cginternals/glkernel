@@ -15,7 +15,7 @@ using namespace glkernel;
 
 int main(int /*argc*/, char * /*argv*/ [])
 {
-    auto kernel = kernel3{ 256, 256 };
+    auto kernel = kernel3{ 1024, 1024 };
 
     auto image = QImage(kernel.width(), kernel.height(), QImage::Format_ARGB32);
     auto bits = image.bits();
@@ -54,7 +54,7 @@ int main(int /*argc*/, char * /*argv*/ [])
     // test poisson square samples
    
 
-    auto samples = kernel2{ 32, 32 };
+    auto samples = kernel2{ 128, 128 };
 
     auto num_samples = sample::poisson_square(samples);
     std::cout << "sample::poisson_square    : #" << num_samples << " of " << samples.size() << std::endl;
@@ -62,9 +62,11 @@ int main(int /*argc*/, char * /*argv*/ [])
     QPainter painter;
 
     painter.begin(&image);
+
+    painter.setRenderHints(QPainter::RenderHint::TextAntialiasing | QPainter::Antialiasing);
     painter.fillRect(image.rect(), Qt::white);
 
-    painter.setPen(Qt::black);
+    painter.setPen(Qt::NoPen);
     painter.setBrush(Qt::black);
 
     for (unsigned int i = 0; i < num_samples; ++i)
