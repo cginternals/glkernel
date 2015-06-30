@@ -2,6 +2,8 @@
 
 #include <type_traits>
 
+#include <random>
+
 #include <glm/gtc/type_precision.hpp>
 
 #include <glkernel/kernel.h>
@@ -10,85 +12,67 @@
 namespace glkernel
 {
 
-class noise
+namespace noise
 {
-    noise() = delete;
 
+
+template <typename T>
+class uniform_operator
+{
 public:
+    uniform_operator(size_t size, glm::length_t
+        , T range_min, T range_max);
 
-    // NORMAL: generates gaussian distributed random values for given mean and standard deviation
+    template <typename F, glm::precision P, template<typename, glm::precision> class V>
+    uniform_operator(size_t size, glm::length_t coefficient
+        , const V<F, P> & range_min, const V<F, P> range_max);
 
-    template<typename T, typename std::enable_if<std::is_floating_point<T>::value, int>::type = 0>
-    static void normal(tkernel<T> & kernel, T mean, T stddev);
+    T operator()(const size_t index);
 
-    template <typename T, glm::precision P, template<typename, glm::precision> class V>
-    static void normal(tkernel<V<T, P>> & kernel, T mean, T stddev);
+protected:
+    std::mt19937_64 m_generator;
+    std::uniform_real_distribution<T> m_distribute;
+};
 
-    template <typename T, glm::precision P, template<typename, glm::precision> class V>
-    static void normal(tkernel<V<T, P>> & kernel, const V<T, P> & mean, const V<T, P> & stddev);
+template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type * = nullptr>
+void uniform(tkernel<T> & kernel, T range_min, T range_max);
 
-    //template <typename T, glm::precision P>
-    //static void normal(tkernel<glm::tvec2<T, P>> & kernel, T mean, T stddev);
-    //template <typename T, glm::precision P>
-    //static void normal(tkernel<glm::tvec3<T, P>> & kernel, T mean, T stddev);
-    //template <typename T, glm::precision P>
-    //static void normal(tkernel<glm::tvec4<T, P>> & kernel, T mean, T stddev);
+template <typename T, glm::precision P, template<typename, glm::precision> class V>
+void uniform(tkernel<V<T, P>> & kernel, T range_min, T range_max);
 
-    // ToDo: somehow unify the following forward declarations with:
-    //template <typename T, glm::precision P, template<typename, glm::precision> class V>
-    //static void normal(tkernel<V<T, P>> & kernel, const V<T, P> & mean, const V<T, P> & stddev);
+template <typename T, glm::precision P, template<typename, glm::precision> class V>
+void uniform(tkernel<V<T, P>> & kernel, const V<T, P> & range_min, const V<T, P> & range_max);
 
-    /*template <typename T, glm::precision P>
-    static void normal(tkernel<glm::tvec2<T, P>> & kernel, const glm::tvec2<T, P> & mean, const glm::tvec2<T, P> & stddev);
-    template <typename T, glm::precision P>
-    static void normal(tkernel<glm::tvec3<T, P>> & kernel, const glm::tvec3<T, P> & mean, const glm::tvec3<T, P> & stddev);
-    template <typename T, glm::precision P>
-    static void normal(tkernel<glm::tvec4<T, P>> & kernel, const glm::tvec4<T, P> & mean, const glm::tvec4<T, P> & stddev);
-*/
 
-    // UNIFORM: generates uniform distributed random values within a given range
+template <typename T>
+class normal_operator
+{
+public:
+    normal_operator(size_t size, glm::length_t
+        , T mean, T stddev);
 
-    template<typename T, typename std::enable_if<std::is_floating_point<T>::value, int>::type = 0>
-    static void uniform(tkernel<T> & kernel, T range_min, T range_max);
+    template <typename F, glm::precision P, template<typename, glm::precision> class V>
+    normal_operator(size_t size, glm::length_t coefficient
+        , const V<F, P> & mean, const V<F, P> stddev);
 
-    // ToDo: somehow unify the following forward declarations with:
-    //template <typename T, glm::precision P, template<typename, glm::precision> class V>
-    //static void uniform(tkernel<V<T, P>> & kernel, const T range_min, const T range_max);
+    T operator()(const size_t index);
 
-    template <typename T, glm::precision P>
-    static void uniform(tkernel<glm::tvec2<T, P>> & kernel, T range_min, T range_max);
-    template <typename T, glm::precision P>
-    static void uniform(tkernel<glm::tvec3<T, P>> & kernel, T range_min, T range_max);
-    template <typename T, glm::precision P>
-    static void uniform(tkernel<glm::tvec4<T, P>> & kernel, T range_min, T range_max);
+protected:
+    std::mt19937_64 m_generator;
+    std::uniform_real_distribution<T> m_distribute;
+};
 
-    // ToDo: somehow unify the following forward declarations with:
-    //template <typename T, glm::precision P, template<typename, glm::precision> class V>
-    //static void uniform(tkernel<V<T, P>> & kernel, const V<T, P> & range_min, const V<T, P> & range_max);
+template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type * = nullptr>
+void normal(tkernel<T> & kernel, T mean, T stddev);
 
-    template <typename T, glm::precision P>
-    static void uniform(tkernel<glm::tvec2<T, P>> & kernel, const glm::tvec2<T, P> & range_min, const glm::tvec2<T, P> & range_max);
-    template <typename T, glm::precision P>
-    static void uniform(tkernel<glm::tvec3<T, P>> & kernel, const glm::tvec3<T, P> & range_min, const glm::tvec3<T, P> & range_max);
-    template <typename T, glm::precision P>
-    static void uniform(tkernel<glm::tvec4<T, P>> & kernel, const glm::tvec4<T, P> & range_min, const glm::tvec4<T, P> & range_max);
+template <typename T, glm::precision P, template<typename, glm::precision> class V>
+void normal(tkernel<V<T, P>> & kernel, T mean, T stddev);
 
-private:
+template <typename T, glm::precision P, template<typename, glm::precision> class V>
+void normal(tkernel<V<T, P>> & kernel, const V<T, P> & mean, const V<T, P> & stddev);
 
-    template <typename T>
-    static void normal_base(T * kernel, size_t size, T mean, T stddev, size_t step, size_t offset);
-    template <typename T, int C>
-    static void normal_base(T * kernel, size_t size, T mean, T stddev);
-    template <typename T, int C>
-    static void normal_base(T * kernel, size_t size, const T * mean, const T * stddev);
 
-    template <typename T>
-    static void uniform_base(T * kernel, size_t size, T range_min, T range_max, size_t step, size_t offset);
-    template <typename T, int C>
-    static void uniform_base(T * kernel, size_t size, T range_min, T range_max);
-    template <typename T, int C>
-    static void uniform_base(T * kernel, size_t size, const T * range_min, const T * range_max);
- };
+} // namespace noise
 
 } // namespace glkernel
 

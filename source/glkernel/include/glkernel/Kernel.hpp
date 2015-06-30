@@ -9,11 +9,37 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
+#include <glm/gtc/type_precision.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 
 namespace glkernel
 {
+
+template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type *>
+T * kernel_ptr(std::vector<T> & kernel)
+{
+    return kernel.data();
+}
+
+template <typename T, typename std::enable_if<!std::is_floating_point<T>::value>::type *>
+typename T::value_type * kernel_ptr(std::vector<T> & kernel)
+{
+    return glm::value_ptr(kernel.front());
+}
+
+template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type * = nullptr>
+glm::length_t kernel_length(const T &)
+{
+    return 1;
+}
+
+template <typename T, glm::precision P, template<typename, glm::precision> class V>
+glm::length_t kernel_length(const V<T, P> & type)
+{
+    return type.length();
+}
+
 
 template<typename T>
 tkernel<T>::tkernel(
@@ -32,6 +58,12 @@ size_t tkernel<T>::size() const
 {
     return m_kernel.size();
 }
+
+template<typename T>
+glm::length_t tkernel<T>::length()
+{
+    return kernel_length(T{ });
+};
 
 template<typename T>
 glm::uint16 tkernel<T>::width() const
@@ -79,7 +111,13 @@ tkernel<T> tkernel<T>::trimed(
 }
 
 template<typename T>
-auto tkernel<T>::data() const -> decltype(kernel_ptr<T>(std::vector<T>()))
+auto tkernel<T>::data() -> decltype(kernel_ptr<T>(tkernel<T>::s_type_workaround))
+{
+    return kernel_ptr(m_kernel);
+}
+
+template<typename T>
+auto tkernel<T>::data() const -> const decltype(kernel_ptr<T>(tkernel<T>::s_type_workaround))
 {
     return kernel_ptr(m_kernel);
 }
@@ -127,6 +165,24 @@ size_t tkernel<T>::index(
     assert(r < m_depth);
 
     return r * m_width * m_height + t * m_width + s;
+}
+
+template<typename T>
+template<typename Operator, typename... Args>
+void tkernel<T>::for_each(Args&&... args)
+{
+    static const auto l = length();
+
+    auto d = data();
+    const auto s = size();
+
+    for (glm::length_t coefficient = 0; coefficient < l; ++coefficient)
+    {
+        auto o = Operator(s, coefficient, std::forward<Args>(args)...);
+
+        for (size_t i = 0; i < s; ++i)
+            d[i * l + coefficient] = o(i);
+    }
 }
 
 } // namespace glkernel

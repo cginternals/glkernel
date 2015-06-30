@@ -179,3 +179,30 @@ TEST_F(tkernel_test, tkernel4_defaults)
 
     EXPECT_EQ(glm::dvec4(0.0, 0.0, 0.0, 0.0), dkernel.value(0, 0, 0));
 }
+
+TEST_F(tkernel_test, tkernel_lengths)
+{
+    const auto fkernel1 = glkernel::kernel1{};
+    EXPECT_EQ(1, fkernel1.length());
+
+    const auto fkernel2 = glkernel::kernel2{};
+    EXPECT_EQ(2, fkernel2.length());
+
+    const auto fkernel3 = glkernel::kernel3{};
+    EXPECT_EQ(3, fkernel3.length());
+
+    const auto fkernel4 = glkernel::kernel4{};
+    EXPECT_EQ(4, fkernel4.length());
+
+    const auto dkernel1 = glkernel::dkernel1{};
+    EXPECT_EQ(1, dkernel1.length());
+
+    const auto dkernel2 = glkernel::dkernel2{};
+    EXPECT_EQ(2, dkernel2.length());
+
+    const auto dkernel3 = glkernel::dkernel3{};
+    EXPECT_EQ(3, dkernel3.length());
+
+    const auto dkernel4 = glkernel::dkernel4{};
+    EXPECT_EQ(4, dkernel4.length());
+}

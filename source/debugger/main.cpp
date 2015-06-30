@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <chrono>
 
 #include <glkernel/kernel.h>
 
@@ -11,9 +12,10 @@
 
 using namespace glkernel;
 
-int main(int /*argc*/, char * /*argv*/[])
+
+int main(int /*argc*/, char * /*argv*/ [])
 {
-    auto kernel = kernel3{ 64, 64 };
+    auto kernel = kernel3{ 256, 256 };
 
     auto image = QImage(kernel.width(), kernel.height(), QImage::Format_ARGB32);
     auto bits = image.bits();
@@ -37,7 +39,7 @@ int main(int /*argc*/, char * /*argv*/[])
 
     kernel.reset();
 
-    noise::normal(kernel, glm::vec3{ 0.5f, 0.5f, 0.5f }, glm::vec3{ 0.1f, 0.4f, 0.8f });
+    noise::normal(kernel, glm::vec3{ 0.5f, 0.5f, 0.5f }, glm::vec3{ 0.1f, 0.2f, 0.4f });
 
     for (unsigned int i = 0; i < kernel.size(); ++i)
     {
@@ -50,10 +52,9 @@ int main(int /*argc*/, char * /*argv*/[])
     image.save("noise--normal.png");
 
     // test poisson square samples
+   
 
-    
-
-    auto samples = kernel2{ 4, 4 };
+    auto samples = kernel2{ 32, 32 };
 
     auto num_samples = sample::poisson_square(samples);
     std::cout << "sample::poisson_square    : #" << num_samples << " of " << samples.size() << std::endl;

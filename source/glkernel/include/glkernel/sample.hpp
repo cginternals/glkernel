@@ -15,8 +15,89 @@
 namespace glkernel
 {
 
+namespace sample
+{
+
+
+// optimization grid for identifying adjacent points
+
 template <typename T, glm::precision P>
-size_t sample::poisson_square(tkernel<glm::tvec2<T, P>> & kernel, const unsigned int num_probes)
+struct poisson_square_map
+{
+    poisson_square_map(const T min_dist)
+    : m_none{ static_cast<size_t>(-1) }
+    , m_side{ static_cast<size_t>(std::ceil(sqrt(2.0) / min_dist)) }
+    , m_dist2(min_dist * min_dist)
+    {
+        m_mask.resize(m_side * m_side, m_none);
+    }
+
+    void mask(const glm::tvec2<T, P> & point, const size_t k)
+    {
+        const auto s = static_cast<int>(m_side);
+        const auto o = static_cast<int>(point.y * s) * s + static_cast<int>(point.x * s);
+
+        assert(m_mask[o] == m_none);
+
+        m_mask[o] = k;
+    }
+
+    bool masked(const glm::tvec2<T, P> & probe, const tkernel<glm::tvec2<T, P>> & kernel) const
+    {
+        const auto s = static_cast<int>(m_side);
+
+        const auto x = static_cast<int>(probe.x * s);
+        const auto y = static_cast<int>(probe.y * s);
+
+        const auto corners = std::array<int, 4>{ { y - 2, x - 2, y + 2, x + 2 } };
+
+        for (int j = y - 2; j < y + 3; ++j)
+            for (int i = x - 2; i < x + 3; ++i)
+            {
+                // optimization: skip the 4 corner cases, since the fall not within distance anyway ...
+                if ((j == corners[0] || j == corners[2]) && (i == corners[1] || i == corners[3])) 
+                    continue;
+
+                const auto i_tiled = i < 0 ? i + s : i % s;
+                const auto j_tiled = j < 0 ? j + s : j % s;
+
+                const auto o = m_mask[j_tiled * s + i_tiled];
+                if (o == m_none)
+                    continue;
+
+                auto masking_probe = kernel[o];
+
+                if (i < 0)
+                    masking_probe.x -= 1.0;
+                else if (i >= s)
+                    masking_probe.x += 1.0;
+
+                if (j < 0)
+                    masking_probe.y -= 1.0;
+                else if (j >= s)
+                    masking_probe.y += 1.0;
+
+                // also optimized by using square distance->skipping sqrt
+                const auto delta = masking_probe - probe;
+                if (glm::dot(delta, delta) < m_dist2)
+                    return true;
+            }
+
+        return false;
+    }
+
+protected:
+    size_t m_none;
+
+    size_t m_side;
+    T m_dist2;
+
+    std::vector<size_t> m_mask;
+};
+
+
+template <typename T, glm::precision P>
+size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, const unsigned int num_probes)
 {
     assert(kernel.depth() == 1);
 
@@ -27,7 +108,7 @@ size_t sample::poisson_square(tkernel<glm::tvec2<T, P>> & kernel, const unsigned
 
 
 template <typename T, glm::precision P>
-size_t sample::poisson_square(tkernel<glm::tvec2<T, P>> & kernel, const T min_dist, const unsigned int num_probes)
+size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, const T min_dist, const unsigned int num_probes)
 {
     assert(kernel.depth() == 1);
 
@@ -39,7 +120,7 @@ size_t sample::poisson_square(tkernel<glm::tvec2<T, P>> & kernel, const T min_di
 
     std::uniform_int_distribution<> int_distribute(0, std::numeric_limits<int>::max());
 
-    auto occupancy = PoissonSquareMap<T, P>{ min_dist };
+    auto occupancy = poisson_square_map<T, P>{ min_dist };
 
     size_t k = 0; // number of valid/final points within the kernel
     kernel[k] = glm::tvec2<T, P>(0.5, 0.5);
@@ -113,84 +194,11 @@ size_t sample::poisson_square(tkernel<glm::tvec2<T, P>> & kernel, const T min_di
 
         occupancy.mask(nearest_probe, k);
     }
+
     return k + 1;
 }
 
 
-// optimization grid for identifying adjacent points
-
-template <typename T, glm::precision P>
-struct sample::PoissonSquareMap
-{
-    PoissonSquareMap(const T min_dist)
-        : m_none{ static_cast<size_t>(-1) }
-        , m_side{ static_cast<size_t>(std::ceil(sqrt(2.0) / min_dist)) }
-        , m_dist2(min_dist * min_dist)
-    {
-        m_mask.resize(m_side * m_side, m_none);
-    }
-
-    void mask(const glm::tvec2<T, P> & point, const size_t k)
-    {
-        const auto s = static_cast<int>(m_side);
-        const auto o = static_cast<int>(point.y * s) * s + static_cast<int>(point.x * s);
-
-        assert(m_mask[o] == m_none);
-
-        m_mask[o] = k;
-    }
-
-    bool masked(const glm::tvec2<T, P> & probe, const tkernel<glm::tvec2<T, P>> & kernel) const
-    {
-        const auto s = static_cast<int>(m_side);
-
-        const auto x = static_cast<int>(probe.x * s);
-        const auto y = static_cast<int>(probe.y * s);
-
-        const auto corners = std::array<int, 4>{ { y - 2, x - 2, y + 2, x + 2 } };
-
-        for (int j = y - 2; j < y + 3; ++j)
-            for (int i = x - 2; i < x + 3; ++i)
-            {
-                // optimization: skip the 4 corner cases, since the fall not within distance anyway ...
-                if ((j == corners[0] || j == corners[2]) && (i == corners[1] || i == corners[3])) 
-                    continue;
-
-                const auto i_tiled = i < 0 ? i + s : i % s;
-                const auto j_tiled = j < 0 ? j + s : j % s;
-
-                const auto o = m_mask[j_tiled * s + i_tiled];
-                if (o == m_none)
-                    continue;
-
-                auto masking_probe = kernel[o];
-
-                if (i < 0)
-                    masking_probe.x -= 1.0;
-                else if (i >= s)
-                    masking_probe.x += 1.0;
-
-                if (j < 0)
-                    masking_probe.y -= 1.0;
-                else if (j >= s)
-                    masking_probe.y += 1.0;
-
-                // also optimized by using square distance->skipping sqrt
-                const auto delta = masking_probe - probe;
-                if (glm::dot(delta, delta) < m_dist2)
-                    return true;
-            }
-
-        return false;
-    }
-
-protected:
-    size_t m_none;
-
-    size_t m_side;
-    T m_dist2;
-
-    std::vector<size_t> m_mask;
-};
+} // namespace sample
 
 } // namespace glkernel
