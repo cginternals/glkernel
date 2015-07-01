@@ -43,6 +43,7 @@ set(sources
     noise_test.cpp
     sample_test.cpp
     sequence_test.cpp
+    shuffle_test.cpp
 )
 
 

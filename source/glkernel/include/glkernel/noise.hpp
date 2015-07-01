@@ -12,6 +12,25 @@ namespace noise
 {
 
 
+template <typename T>
+class uniform_operator
+{
+public:
+    uniform_operator(size_t size, glm::length_t
+        , T range_min, T range_max);
+
+    template <typename F, glm::precision P, template<typename, glm::precision> class V>
+    uniform_operator(size_t size, glm::length_t coefficient
+        , const V<F, P> & range_min, const V<F, P> range_max);
+
+    T operator()(const size_t index);
+
+protected:
+    std::mt19937_64 m_generator;
+    std::uniform_real_distribution<T> m_distribute;
+};
+
+
 template<typename T>
 uniform_operator<T>::uniform_operator(const size_t, const glm::length_t
     , const T range_min, const T range_max)
@@ -51,6 +70,25 @@ void uniform(tkernel<V<T, P>> & kernel, const V<T, P> & range_min, const V<T, P>
 {
     kernel.for_each<uniform_operator<T>>(range_min, range_max);
 }
+
+
+template <typename T>
+class normal_operator
+{
+public:
+    normal_operator(size_t size, glm::length_t
+        , T mean, T stddev);
+
+    template <typename F, glm::precision P, template<typename, glm::precision> class V>
+    normal_operator(size_t size, glm::length_t coefficient
+        , const V<F, P> & mean, const V<F, P> stddev);
+
+    T operator()(const size_t index);
+
+protected:
+    std::mt19937_64 m_generator;
+    std::uniform_real_distribution<T> m_distribute;
+};
 
 
 template <typename T>

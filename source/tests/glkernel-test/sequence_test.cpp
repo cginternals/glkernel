@@ -11,9 +11,9 @@
 
 
 class sequence_test: public testing::Test
- {
- public:
- };
+{
+public:
+};
 
 TEST_F(sequence_test, uniform_compile)
 {
