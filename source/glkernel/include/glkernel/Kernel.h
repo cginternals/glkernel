@@ -70,4 +70,4 @@ using dkernel4 = tkernel<glm::dvec4>;
 
 } // namespace glkernel
 
-#include <glkernel/kernel.hpp>
+#include <glkernel/Kernel.hpp>

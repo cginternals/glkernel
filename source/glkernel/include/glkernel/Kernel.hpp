@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glkernel/kernel.h>
+#include <glkernel/Kernel.h>
 
 #include <cassert>
 #include <type_traits>
@@ -111,13 +111,13 @@ tkernel<T> tkernel<T>::trimed(
 }
 
 template<typename T>
-auto tkernel<T>::data() -> decltype(kernel_ptr<T>(tkernel<T>::s_type_workaround))
+auto tkernel<T>::data() -> decltype(kernel_ptr<T>(s_type_workaround))
 {
     return kernel_ptr(m_kernel);
 }
 
 template<typename T>
-auto tkernel<T>::data() const -> const decltype(kernel_ptr<T>(tkernel<T>::s_type_workaround))
+auto tkernel<T>::data() const -> const decltype(kernel_ptr<T>(s_type_workaround))
 {
     return kernel_ptr(m_kernel);
 }
