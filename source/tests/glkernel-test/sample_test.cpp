@@ -25,3 +25,13 @@ TEST_F(sample_test, poisson_square_compile)
 
     glkernel::sample::poisson_square(dkernel2);
 }
+
+TEST_F(sample_test, stratified_compile) {
+	auto fkernel2 = glkernel::kernel2{ 1 };
+
+	glkernel::sample::stratified(fkernel2);
+
+	auto dkernel2 = glkernel::dkernel2{ 1 };
+
+	glkernel::sample::stratified(dkernel2);
+}

@@ -210,6 +210,8 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, const T min_dist, cons
 template <typename T, glm::precision P>
 size_t stratified(tkernel<glm::tvec2<T, P>> & kernel)
 {
+	assert(kernel.depth() == 1);
+
 	auto stratum_width = 1.0 / kernel.width();
 	auto stratum_height = 1.0 / kernel.height();
 
