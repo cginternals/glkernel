@@ -207,6 +207,31 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, const T min_dist, cons
     return k + 1;
 }
 
+template <typename T, glm::precision P>
+size_t stratified(tkernel<glm::tvec2<T, P>> & kernel)
+{
+	auto stratum_width = 1.0 / kernel.width();
+	auto stratum_height = 1.0 / kernel.height();
+
+	std::random_device RD;
+	std::mt19937_64 generator(RD());
+	std::uniform_real_distribution<> x_dist(0.0, stratum_width);
+	std::uniform_real_distribution<> y_dist(0.0, stratum_height);
+
+	size_t k = 0;
+	for (auto x = 0; x < kernel.width(); ++x)
+	{
+		for (auto y = 0; y < kernel.height(); ++y)
+		{
+			auto x_coord = x * stratum_width + x_dist(generator);
+			auto y_coord = y * stratum_height + y_dist(generator);
+			auto sample = glm::tvec2<T, P>(x_coord, y_coord);
+			kernel[k++] = sample;
+		}
+	}
+	return k;
+}
+
 
 } // namespace sample
 
