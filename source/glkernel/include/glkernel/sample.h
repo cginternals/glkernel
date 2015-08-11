@@ -22,6 +22,9 @@ template <typename T, glm::precision P>
 size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, T min_dist, unsigned int num_probes = 32);
 
 
+template <typename T, glm::precision P>
+size_t n_rooks(tkernel<glm::tvec2<T, P>> & kernel);
+
 } // namespace sample
 
 } // namespace glkernel

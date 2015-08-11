@@ -25,3 +25,14 @@ TEST_F(sample_test, poisson_square_compile)
 
     glkernel::sample::poisson_square(dkernel2);
 }
+
+TEST_F(sample_test, n_rooks_compile)
+{
+	auto fkernel2 = glkernel::kernel2{ 1 };
+
+	glkernel::sample::n_rooks(fkernel2);
+
+	auto dkernel2 = glkernel::dkernel2{ 1 };
+
+	glkernel::sample::n_rooks(dkernel2);
+}

@@ -9,6 +9,7 @@
 #include <list>
 #include <iterator>
 #include <tuple>
+#include <algorithm>
 
 #include <glkernel/glm_compatability.h>
 
@@ -207,6 +208,33 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, const T min_dist, cons
     return k + 1;
 }
 
+template <typename T, glm::precision P>
+size_t n_rooks(tkernel<glm::tvec2<T, P>> & kernel)
+{
+	assert(kernel.depth() == 1);
+	assert(kernel.width() == kernel.height());
+
+	auto stratum_size = 1.0 / kernel.width();
+	std::random_device RD;
+	std::mt19937_64 generator(RD());
+	std::uniform_real_distribution<> jitter_dist(0.0, stratum_size);
+
+	std::vector<unsigned int> pool;
+	for (unsigned int k = 0; k < kernel.width(); ++k)
+	{
+		pool.push_back(k);
+	}
+	std::random_shuffle(pool.begin(), pool.end());
+
+	for (auto k = 0; k < kernel.width(); ++k)
+	{
+		auto x_coord = k * stratum_size + jitter_dist(generator);
+		auto y_coord = pool.at(k) * stratum_size + jitter_dist(generator);
+		auto sample = glm::tvec2<T, P>(x_coord, y_coord);
+		kernel[k] = sample;
+	}
+	return kernel.width();
+}
 
 } // namespace sample
 
