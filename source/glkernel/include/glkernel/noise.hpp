@@ -174,7 +174,7 @@ unsigned char hash3(
     return perm[(perm[(perm[x & frequencyMask] + y) & frequencyMask] + z) & frequencyMask];
 }
 
-template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = 0>
+template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
 glm::tvec3<T, glm::highp> grad3(
     const unsigned int x
     , const unsigned int y
@@ -185,13 +185,13 @@ glm::tvec3<T, glm::highp> grad3(
     return grad[p & 0xf];
 }
 
-template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = 0>
+template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
 T fade(T t)
 {
     return t * t * t * (t * (t * 6 - 15) + 10);
 }
 
-template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = 0>
+template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
 T noise3(
     const T s
     , const T t
@@ -245,17 +245,15 @@ void perlin(tkernel<T> & kernel
     if (size < 1)
         return;
 
-    std::vector<T> temp(size);
+    std::vector<T> fo(octaves);
 
-	std::vector<T> fo(octaves);
+    for (int o = 0; o < octaves; ++o)
+    {
+        fo[o] = static_cast<T>(1.0 / (1 << o));
+    }
 
-	for (int o = 0; o < octaves; ++o)
-	{
-		fo[o] = static_cast<T>(1.0 / (1 << o));
-	}
-
-	T minp = scale;
-	T maxp = 0.0;
+    T minp = scale;
+    T maxp = 0.0;
 
     int i = 0;
     for (int z = 0; z < kernel.depth(); ++z)
@@ -268,39 +266,39 @@ void perlin(tkernel<T> & kernel
             {
                 auto xf = static_cast<T>(x) / kernel.width();
 
-				// collect noise values over multiple octaves
-				T p = 0.5f;
-				for (int o = 0; o < octaves; ++o)
-				{
-					T po = noise3(xf, yf, zf, o + startFrequency);
-					T pf = fo[o] * po;
+                // collect noise values over multiple octaves
+                T p = 0.5f;
+                for (int o = 0; o < octaves; ++o)
+                {
+                    T po = noise3(xf, yf, zf, o + startFrequency);
+                    T pf = fo[o] * po;
 
-					switch (type)
-					{
-					case PerlinNoiseType::Standard:
-						p += o > 0 ? 0.f : po;
-						break;
-					case PerlinNoiseType::Cloud:
-						p += pf;
-						break;
-					case PerlinNoiseType::CloudAbs:
-						p += abs(pf);
-						break;
-					case PerlinNoiseType::Wood:
-						p += (pf * 8.f) - static_cast<int>(pf * 8.f);
-						break;
-					case PerlinNoiseType::Paper:
-						p += po * po * (pf > 0 ? 1.f : -1.f);
-						break;
-					};
-				}
+                    switch (type)
+                    {
+                    case PerlinNoiseType::Standard:
+                        p += o > 0 ? 0.f : po;
+                        break;
+                    case PerlinNoiseType::Cloud:
+                        p += pf;
+                        break;
+                    case PerlinNoiseType::CloudAbs:
+                        p += abs(pf);
+                        break;
+                    case PerlinNoiseType::Wood:
+                        p += (pf * 8.f) - static_cast<int>(pf * 8.f);
+                        break;
+                    case PerlinNoiseType::Paper:
+                        p += po * po * (pf > 0 ? 1.f : -1.f);
+                        break;
+                    };
+                }
 
-				if (p > maxp)
-					maxp = p;
-				if (p < minp)
-					minp = p;
+                if (p > maxp)
+                    maxp = p;
+                if (p < minp)
+                    minp = p;
 
-				kernel[i++] = p;
+                kernel[i++] = p;
             }
         }
     }
