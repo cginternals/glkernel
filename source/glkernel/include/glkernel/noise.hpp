@@ -134,7 +134,7 @@ void normal(tkernel<V<T, P>> & kernel, const V<T, P> & mean, const V<T, P> & std
 // From // JAVA REFERENCE IMPLEMENTATION OF IMPROVED NOISE - COPYRIGHT 2002 KEN PERLIN. (http://mrl.nyu.edu/~perlin/noise/)
 // and (Improving Noise - Perlin - 2002) - http://mrl.nyu.edu/~perlin/paper445.pdf
 
-const unsigned char perm[] =
+const std::vector<unsigned char> perm =
 {
     151, 160, 137, 91, 90, 15,
     131, 13, 201, 95, 96, 53, 194, 233, 7, 225, 140, 36, 103, 30, 69, 142, 8, 99, 37, 240, 21, 10, 23,
@@ -151,7 +151,7 @@ const unsigned char perm[] =
     138, 236, 205, 93, 222, 114, 67, 29, 24, 72, 243, 141, 128, 195, 78, 66, 215, 61, 156, 180
 };
 
-const float grad[16][3] =
+const std::vector<glm::vec3> grad =
 {
     { 1.f, 1.f, 0.f }, { -1.f, 1.f, 0.f }, { 1.f, -1.f, 0.f }, { -1.f, -1.f, 0.f }
     , { 1.f, 0.f, 1.f }, { -1.f, 0.f, 1.f }, { 1.f, 0.f, -1.f }, { -1.f, 0.f, -1.f }
@@ -159,25 +159,25 @@ const float grad[16][3] =
     , { 1.f, 1.f, 0.f }, { -1.f, 1.f, 0.f }, { 0.f, -1.f, 0.f }, { 0.f, -1.f, -1.f }
 };
 
-const unsigned int MAXPERMINDEX(0xff);
-const unsigned int PERMSIZE(0xff);
+const unsigned int PERMSIZE(0x100);
 
-const unsigned int hash(
+unsigned char hash(
     const unsigned int x
     , const unsigned int y
     , const unsigned int r)
 {
-    assert(1 << r <= PERMSIZE);
-    return perm[(perm[x & ((1 << r) - 1)] + y) & ((1 << r) - 1)];
+    int frequencyMask = (1 << r) - 1;
+    assert(frequencyMask < PERMSIZE);
+    return perm[(perm[x & frequencyMask] + y) & frequencyMask];
 }
 
-const glm::vec2 grad2(
+glm::vec2 grad2(
     const unsigned int x
     , const unsigned int y
     , const unsigned int r)
 {
-    const auto p = static_cast<unsigned char>(hash(x, y, r));
-    return glm::vec2(grad[p & 0xf][0], grad[p & 0xf][1]);
+    const auto p = hash(x, y, r);
+    return glm::vec2(grad[p & 0xf]);
 }
 
 double fade(double t)
@@ -185,138 +185,133 @@ double fade(double t)
     return t * t * t * (t * (t * 6 - 15) + 10);
 }
 
-const float noise2(
+float noise2(
     const float s
     , const float t
     , const unsigned int r)
 {
-    float s_ = s * (1 << r);
-    float t_ = t * (1 << r);
+    float scaledS = s * (1 << r);
+    float scaledT = t * (1 << r);
 
-    const auto is = static_cast<int>(floor(s_));
-    const auto it = static_cast<int>(floor(t_));
+    const auto is = static_cast<int>(floor(scaledS));
+    const auto it = static_cast<int>(floor(scaledT));
 
-    const glm::vec2 f(glm::fract(s_), glm::fract(t_));
+    const auto f = glm::fract(glm::vec2(scaledS, scaledT));
 
     // range [-1;+1]
 
     const float aa = glm::dot(grad2(is + 0, it + 0, r), f);
-    const float ba = glm::dot(grad2(is + 1, it + 0, r), f -glm::vec2(1.f, 0.f));
+    const float ba = glm::dot(grad2(is + 1, it + 0, r), f - glm::vec2(1.f, 0.f));
     const float ab = glm::dot(grad2(is + 0, it + 1, r), f - glm::vec2(0.f, 1.f));
     const float bb = glm::dot(grad2(is + 1, it + 1, r), f - glm::vec2(1.f, 1.f));
 
-    const glm::vec2 i = glm::mix(glm::vec2(aa, ab), glm::vec2(ba, bb), fade(f[0]));
+    const auto i = glm::mix(glm::vec2(aa, ab), glm::vec2(ba, bb), fade(f[0]));
 
     return glm::mix(i[0], i[1], fade(f[1]));
 }
 
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type *>
 void perlin(tkernel<T> & kernel
-    , T scale
-    , NoiseType type
-    , int startFrequency
+    , const T scale
+    , const PerlinNoiseType type
+    , const int startFrequency
     , const int octaves
     , const bool normalize)
 {
     const unsigned int size = kernel.width() * kernel.height();
 
-    if(size < 1) 
+    if (size < 1)
         return;
 
-    float *temp = new float[size * octaves];
-    float *temp2 = new float[size];
+    std::vector<float> temp(size * octaves);
 
     // Generate noise data for each octave.
-    for(int f = 0; f < octaves; ++f)
+    for (int y = 0; y < kernel.height(); ++y)
     {
-
-        for (int y = 0; y < kernel.height(); ++y)
-            for (int x = 0; x < kernel.width(); ++x)
+        for (int x = 0; x < kernel.width(); ++x)
+        {
+            for (int f = 0; f < octaves; ++f)
             {
                 float xf = static_cast<float>(x) / kernel.width();
                 float yf = static_cast<float>(y) / kernel.height();
 
-                temp[(y * kernel.width()  + x) + size * f] = static_cast<float>(noise2(xf, yf, f + startFrequency));
+                temp[(y * kernel.width() + x) * octaves + f] = noise2(xf, yf, f + startFrequency);
             }
+        }
     }
 
     // Generate image using noise data.
 
-    float *fo = new float[octaves];
+    std::vector<float> fo(octaves);
 
-    for(int o = 0; o < octaves; ++o) 
+    for (int o = 0; o < octaves; ++o)
+    {
         fo[o] = 1.f / static_cast<float>(1 << o);
+    }
 
 
-    float p, f, po, pf, minp = scale, maxp = 0.;
+    float p, f, po, pf, minp = scale, maxp = 0.f;
 
-    for(int i = 0; i < kernel.width() * kernel.height(); ++i) 
+    for (int i = 0; i < kernel.width() * kernel.height(); ++i)
     {
         p = 0.f;
 
-        for(int o = 0; o < octaves; ++o) 
+        for (int o = 0; o < octaves; ++o)
         {
             f = fo[o];
 
-            po = temp[i + size * o];
+            po = temp[i * octaves + o];
             pf = f * po;
 
-            switch(type)
+            switch (type)
             {
-            case NoiseType::Standard:
-                p += o > 0 ? 0.f : po; 
+            case PerlinNoiseType::Standard:
+                p += o > 0 ? 0.f : po;
                 break;
-            case NoiseType::Cloud:
-                p += pf; 
+            case PerlinNoiseType::Cloud:
+                p += pf;
                 break;
-            case NoiseType::CloudAbs:
-                p += abs(static_cast<float>(pf)); 
+            case PerlinNoiseType::CloudAbs:
+                p += abs(pf);
                 break;
-            case NoiseType::Wood:
-                p += (pf * 8.f) - int(pf * 8.f); 
+            case PerlinNoiseType::Wood:
+                p += (pf * 8.f) - static_cast<int>(pf * 8.f);
                 break;
-            case NoiseType::Paper:
-                p += po * po * (pf > 0 ? 1.f : -1.f); 
+            case PerlinNoiseType::Paper:
+                p += po * po * (pf > 0 ? 1.f : -1.f);
                 break;
             };
         }
 
-        p += 0.5;
+        p += 0.5f;
 
-        if(p > maxp) 
+        if (p > maxp)
             maxp = p;
-        if(p < minp) 
+        if (p < minp)
             minp = p;
 
-        temp2[i] = p;
+        kernel[i] = p;
     }
 
-    if(normalize)
+    if (normalize)
     {
         const float invF = scale / (maxp - minp);
-        for(int i = 0; i < kernel.width() * kernel.height(); ++i) 
+        for (int i = 0; i < kernel.width() * kernel.height(); ++i)
         {
-            p = temp2[i];
-
+            p = kernel[i];
             p -= minp;
             p *= invF;
 
-            kernel[i] = static_cast<float>(p);
+            kernel[i] = p;
         }
     }
     else
     {
-        for(int i = 0; i < kernel.width() * kernel.height(); ++i) 
+        for (int i = 0; i < kernel.width() * kernel.height(); ++i)
         {
-            p = temp2[i];
-            p *= scale;
-
-            kernel[i] = static_cast<float>(p);
+            kernel[i] *= scale;
         }
     }
-
-    delete[] temp;
-    delete[] temp2;
 }
 
 } // namespace noise

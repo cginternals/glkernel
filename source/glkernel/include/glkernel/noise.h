@@ -35,13 +35,12 @@ void normal(tkernel<V<T, P>> & kernel, T mean, T stddev);
 template <typename T, glm::precision P, template<typename, glm::precision> class V>
 void normal(tkernel<V<T, P>> & kernel, const V<T, P> & mean, const V<T, P> & stddev);
 
-
-enum class NoiseType { Standard, Cloud, CloudAbs, Wood, Paper };
+enum class PerlinNoiseType { Standard, Cloud, CloudAbs, Wood, Paper };
 
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type * = nullptr>
 void perlin(tkernel<T> & kernel
-    , T scale
-    , NoiseType type = NoiseType::Standard
+    , const T scale
+    , const PerlinNoiseType type = PerlinNoiseType::Standard
     , const int startFrequency = 3
     , const int octaves = 5
     , const bool normalize = true);
