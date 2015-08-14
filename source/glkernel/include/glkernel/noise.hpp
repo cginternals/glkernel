@@ -161,23 +161,25 @@ const std::vector<glm::vec3> grad =
 
 const unsigned int PERMSIZE(0x100);
 
-unsigned char hash(
+unsigned char hash3(
     const unsigned int x
     , const unsigned int y
+    , const unsigned int z
     , const unsigned int r)
 {
     int frequencyMask = (1 << r) - 1;
     assert(frequencyMask < PERMSIZE);
-    return perm[(perm[x & frequencyMask] + y) & frequencyMask];
+    return perm[(perm[(perm[x & frequencyMask] + y) & frequencyMask] + z) & frequencyMask];
 }
 
-glm::vec2 grad2(
+glm::vec3 grad3(
     const unsigned int x
     , const unsigned int y
+    , const unsigned int z
     , const unsigned int r)
 {
-    const auto p = hash(x, y, r);
-    return glm::vec2(grad[p & 0xf]);
+    const auto p = hash3(x, y, z, r);
+    return grad[p & 0xf];
 }
 
 double fade(double t)
@@ -185,29 +187,37 @@ double fade(double t)
     return t * t * t * (t * (t * 6 - 15) + 10);
 }
 
-float noise2(
+float noise3(
     const float s
     , const float t
+    , const float u
     , const unsigned int r)
 {
-    float scaledS = s * (1 << r);
-    float scaledT = t * (1 << r);
+    float scaled_s = s * (1 << r);
+    float scaled_t = t * (1 << r);
+    float scaled_u = u * (1 << r);
 
-    const auto is = static_cast<int>(floor(scaledS));
-    const auto it = static_cast<int>(floor(scaledT));
+    const auto is = static_cast<int>(floor(scaled_s));
+    const auto it = static_cast<int>(floor(scaled_t));
+    const auto iu = static_cast<int>(floor(scaled_u));
 
-    const auto f = glm::fract(glm::vec2(scaledS, scaledT));
+    const auto f = glm::fract(glm::vec3(scaled_s, scaled_t, scaled_u));
 
     // range [-1;+1]
 
-    const float aa = glm::dot(grad2(is + 0, it + 0, r), f);
-    const float ba = glm::dot(grad2(is + 1, it + 0, r), f - glm::vec2(1.f, 0.f));
-    const float ab = glm::dot(grad2(is + 0, it + 1, r), f - glm::vec2(0.f, 1.f));
-    const float bb = glm::dot(grad2(is + 1, it + 1, r), f - glm::vec2(1.f, 1.f));
+    const float aaa = glm::dot(grad3(is + 0, it + 0, iu + 0, r), f);
+    const float baa = glm::dot(grad3(is + 1, it + 0, iu + 0, r), f - glm::vec3(1.f, 0.f, 0.f));
+    const float aba = glm::dot(grad3(is + 0, it + 1, iu + 0, r), f - glm::vec3(0.f, 1.f, 0.f));
+    const float bba = glm::dot(grad3(is + 1, it + 1, iu + 0, r), f - glm::vec3(1.f, 1.f, 0.f));
+    const float aab = glm::dot(grad3(is + 0, it + 0, iu + 1, r), f - glm::vec3(0.f, 0.f, 1.f));
+    const float bab = glm::dot(grad3(is + 1, it + 0, iu + 1, r), f - glm::vec3(1.f, 0.f, 1.f));
+    const float abb = glm::dot(grad3(is + 0, it + 1, iu + 1, r), f - glm::vec3(0.f, 1.f, 1.f));
+    const float bbb = glm::dot(grad3(is + 1, it + 1, iu + 1, r), f - glm::vec3(1.f, 1.f, 1.f));
 
-    const auto i = glm::mix(glm::vec2(aa, ab), glm::vec2(ba, bb), fade(f[0]));
+    const auto i = glm::mix(glm::vec4(aaa, aab, aba, abb), glm::vec4(baa, bab, bba, bbb), fade(f[0]));
+    const auto j = glm::mix(glm::vec2(i[0], i[1]), glm::vec2(i[2], i[3]), fade(f[1]));
 
-    return glm::mix(i[0], i[1], fade(f[1]));
+    return glm::mix(j[0], j[1], fade(f[2]));
 }
 
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type *>
@@ -218,7 +228,7 @@ void perlin(tkernel<T> & kernel
     , const int octaves
     , const bool normalize)
 {
-    const unsigned int size = kernel.width() * kernel.height();
+    const unsigned int size = kernel.width() * kernel.height() * kernel.depth();
 
     if (size < 1)
         return;
@@ -226,20 +236,23 @@ void perlin(tkernel<T> & kernel
     std::vector<float> temp(size * octaves);
 
     // Generate noise data for each octave.
-    for (int y = 0; y < kernel.height(); ++y)
+    int i = 0;
+    for (int z = 0; z < kernel.depth(); ++z)
     {
-        for (int x = 0; x < kernel.width(); ++x)
+        float zf = static_cast<float>(z) / kernel.depth();
+        for (int y = 0; y < kernel.height(); ++y)
         {
-            for (int f = 0; f < octaves; ++f)
+            float yf = static_cast<float>(y) / kernel.height();
+            for (int x = 0; x < kernel.width(); ++x)
             {
                 float xf = static_cast<float>(x) / kernel.width();
-                float yf = static_cast<float>(y) / kernel.height();
-
-                temp[(y * kernel.width() + x) * octaves + f] = noise2(xf, yf, f + startFrequency);
+                for (int f = 0; f < octaves; ++f)
+                {
+                    temp[i++] = noise3(xf, yf, zf, f + startFrequency);
+                }
             }
         }
     }
-
     // Generate image using noise data.
 
     std::vector<float> fo(octaves);
@@ -249,10 +262,9 @@ void perlin(tkernel<T> & kernel
         fo[o] = 1.f / static_cast<float>(1 << o);
     }
 
-
     float p, f, po, pf, minp = scale, maxp = 0.f;
 
-    for (int i = 0; i < kernel.width() * kernel.height(); ++i)
+    for (unsigned int i = 0; i < size; ++i)
     {
         p = 0.f;
 
@@ -296,18 +308,14 @@ void perlin(tkernel<T> & kernel
     if (normalize)
     {
         const float invF = scale / (maxp - minp);
-        for (int i = 0; i < kernel.width() * kernel.height(); ++i)
+        for (unsigned int i = 0; i < size; ++i)
         {
-            p = kernel[i];
-            p -= minp;
-            p *= invF;
-
-            kernel[i] = p;
+            kernel[i] = (kernel[i] - minp) * invF;
         }
     }
     else
     {
-        for (int i = 0; i < kernel.width() * kernel.height(); ++i)
+        for (unsigned int i = 0; i < size; ++i)
         {
             kernel[i] *= scale;
         }
