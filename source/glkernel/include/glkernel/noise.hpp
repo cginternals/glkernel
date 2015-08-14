@@ -131,6 +131,8 @@ void normal(tkernel<V<T, P>> & kernel, const V<T, P> & mean, const V<T, P> & std
     kernel.for_each<normal_operator<T>>(mean, stddev);
 }
 
+namespace {
+
 // From // JAVA REFERENCE IMPLEMENTATION OF IMPROVED NOISE - COPYRIGHT 2002 KEN PERLIN. (http://mrl.nyu.edu/~perlin/noise/)
 // and (Improving Noise - Perlin - 2002) - http://mrl.nyu.edu/~perlin/paper445.pdf
 
@@ -219,6 +221,8 @@ float noise3(
 
     return glm::mix(j[0], j[1], fade(f[2]));
 }
+
+} // anonymous namespace
 
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type *>
 void perlin(tkernel<T> & kernel
