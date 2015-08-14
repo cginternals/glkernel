@@ -266,18 +266,17 @@ void perlin(tkernel<T> & kernel
         fo[o] = 1.f / static_cast<float>(1 << o);
     }
 
-    float p, f, po, pf, minp = scale, maxp = 0.f;
+	float minp = scale;
+	float maxp = 0.f;
 
     for (unsigned int i = 0; i < size; ++i)
     {
-        p = 0.f;
+        float p = 0.5f;
 
         for (int o = 0; o < octaves; ++o)
         {
-            f = fo[o];
-
-            po = temp[i * octaves + o];
-            pf = f * po;
+            float po = temp[i * octaves + o];
+            float pf = fo[o] * po;
 
             switch (type)
             {
@@ -298,8 +297,6 @@ void perlin(tkernel<T> & kernel
                 break;
             };
         }
-
-        p += 0.5f;
 
         if (p > maxp)
             maxp = p;
