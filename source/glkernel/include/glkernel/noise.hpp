@@ -245,9 +245,18 @@ void perlin(tkernel<T> & kernel
     if (size < 1)
         return;
 
-    std::vector<T> temp(size * octaves);
+    std::vector<T> temp(size);
 
-    // Generate noise data for each octave.
+	std::vector<T> fo(octaves);
+
+	for (int o = 0; o < octaves; ++o)
+	{
+		fo[o] = static_cast<T>(1.0 / (1 << o));
+	}
+
+	T minp = scale;
+	T maxp = 0.0;
+
     int i = 0;
     for (int z = 0; z < kernel.depth(); ++z)
     {
@@ -258,60 +267,42 @@ void perlin(tkernel<T> & kernel
             for (int x = 0; x < kernel.width(); ++x)
             {
                 auto xf = static_cast<T>(x) / kernel.width();
-                for (int f = 0; f < octaves; ++f)
-                {
-                    temp[i++] = noise3(xf, yf, zf, f + startFrequency);
-                }
+
+				// collect noise values over multiple octaves
+				T p = 0.5f;
+				for (int o = 0; o < octaves; ++o)
+				{
+					T po = noise3(xf, yf, zf, o + startFrequency);
+					T pf = fo[o] * po;
+
+					switch (type)
+					{
+					case PerlinNoiseType::Standard:
+						p += o > 0 ? 0.f : po;
+						break;
+					case PerlinNoiseType::Cloud:
+						p += pf;
+						break;
+					case PerlinNoiseType::CloudAbs:
+						p += abs(pf);
+						break;
+					case PerlinNoiseType::Wood:
+						p += (pf * 8.f) - static_cast<int>(pf * 8.f);
+						break;
+					case PerlinNoiseType::Paper:
+						p += po * po * (pf > 0 ? 1.f : -1.f);
+						break;
+					};
+				}
+
+				if (p > maxp)
+					maxp = p;
+				if (p < minp)
+					minp = p;
+
+				kernel[i++] = p;
             }
         }
-    }
-    // Generate image using noise data.
-
-    std::vector<T> fo(octaves);
-
-    for (int o = 0; o < octaves; ++o)
-    {
-        fo[o] = static_cast<T>(1.0 / (1 << o));
-    }
-
-    T minp = scale;
-    T maxp = 0.0;
-
-    for (unsigned int i = 0; i < size; ++i)
-    {
-        T p = 0.5f;
-
-        for (int o = 0; o < octaves; ++o)
-        {
-            T po = temp[i * octaves + o];
-            T pf = fo[o] * po;
-
-            switch (type)
-            {
-            case PerlinNoiseType::Standard:
-                p += o > 0 ? 0.f : po;
-                break;
-            case PerlinNoiseType::Cloud:
-                p += pf;
-                break;
-            case PerlinNoiseType::CloudAbs:
-                p += abs(pf);
-                break;
-            case PerlinNoiseType::Wood:
-                p += (pf * 8.f) - static_cast<int>(pf * 8.f);
-                break;
-            case PerlinNoiseType::Paper:
-                p += po * po * (pf > 0 ? 1.f : -1.f);
-                break;
-            };
-        }
-
-        if (p > maxp)
-            maxp = p;
-        if (p < minp)
-            minp = p;
-
-        kernel[i] = p;
     }
 
     if (normalize)
