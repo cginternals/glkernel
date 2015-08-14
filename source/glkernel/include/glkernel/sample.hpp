@@ -224,9 +224,9 @@ size_t multi_jittered(tkernel<glm::tvec2<T, P>> & kernel)
 
     std::vector<std::pair<int, int>> pool;
     // reverse height and width inside subcells
-    for (auto x = 0; x < kernel.height(); x++)
+    for (auto x = 0; x < kernel.height(); ++x)
     {
-        for (auto y = 0; y < kernel.width(); y++)
+        for (auto y = 0; y < kernel.width(); ++y)
         {
             pool.push_back({ x, y });
         }
@@ -234,9 +234,9 @@ size_t multi_jittered(tkernel<glm::tvec2<T, P>> & kernel)
     std::random_shuffle(pool.begin(), pool.end());
 
     size_t k = 0;
-    for (auto x = 0; x < kernel.width(); x++)
+    for (auto x = 0; x < kernel.width(); ++x)
     {
-        for (auto y = 0; y < kernel.height(); y++)
+        for (auto y = 0; y < kernel.height(); ++y)
         {
             auto x_coord = x * subcell_width  + pool[k].first  * stratum_size + jitter_dist(generator);
             auto y_coord = y * subcell_height + pool[k].second * stratum_size + jitter_dist(generator);
