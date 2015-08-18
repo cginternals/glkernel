@@ -2,7 +2,7 @@
 #include <iostream>
 #include <chrono>
 
-#include <glkernel/kernel.h>
+#include <glkernel/Kernel.h>
 
 #include <glkernel/noise.h>
 #include <glkernel/sample.h>
