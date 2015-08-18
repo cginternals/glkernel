@@ -6,6 +6,15 @@ message(STATUS "Test ${target}")
 
 find_package(GLM REQUIRED)
 
+if(OPTION_USE_LOOP_PARALLELIZATION)
+
+    find_package(OpenMP QUIET)
+
+    if (NOT OPENMP_FOUND)
+        message("Loop parallelization in ${target} skipped: OpenMP not found")
+    endif()
+
+endif()
 
 # Includes
 
@@ -34,6 +43,10 @@ if (OPTION_BUILD_STATIC)
     add_definitions("-D${META_PROJECT_NAME_UPPER}_STATIC")
 endif()
 
+if(OPENMP_FOUND)
+    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   ${OpenMP_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+endif()
 
 # Sources
 
