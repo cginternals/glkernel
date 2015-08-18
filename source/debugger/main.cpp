@@ -80,7 +80,7 @@ int main(int /*argc*/, char * /*argv*/ [])
     if (file.open(QIODevice::ReadWrite)) 
     {
         QTextStream stream(&file);
-        for (int i = 0; i < screendoor_alpha.size(); ++i)
+        for (unsigned int i = 0; i < screendoor_alpha.size(); ++i)
         {
             stream << static_cast<int>(screendoor_alpha[i] * 255) << ", ";
             if ((i + 1) % screendoor_alpha.width() == 0)
