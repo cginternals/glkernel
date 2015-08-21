@@ -6,7 +6,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
-#include <glkernel/kernel.h>
+#include <glkernel/Kernel.h>
 
 
 class tkernel_test: public testing::Test
@@ -62,20 +62,20 @@ TEST_F(tkernel_test, tkernel_reset)
     EXPECT_EQ(1, fkernel.depth());
 
     {   auto accum = 0.f; // checksum
-        for (auto i = 0; i < fkernel.size(); accum += fkernel[i++]);
+        for (size_t i = 0; i < fkernel.size(); accum += fkernel[i++]);
         EXPECT_EQ(0.f, accum);   }
 
-    for (auto i = 0; i < fkernel.size(); ++i)
+    for (size_t i = 0; i < fkernel.size(); ++i)
         fkernel[i] = 1.0f;
 
     {   auto accum = 0.f; // checksum
-        for (auto i = 0; i < fkernel.size(); accum += fkernel[i++]);
+        for (size_t i = 0; i < fkernel.size(); accum += fkernel[i++]);
         EXPECT_EQ(static_cast<float>(fkernel.size()), accum);   }
 
     fkernel.reset();
 
     {   auto accum = 0.f; // checksum
-        for (auto i = 0; i < fkernel.size(); accum += fkernel[i++]);
+        for (size_t i = 0; i < fkernel.size(); accum += fkernel[i++]);
         EXPECT_EQ(0.f, accum);   }
 }
 

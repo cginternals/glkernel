@@ -6,7 +6,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
-#include <glkernel/kernel.h>
+#include <glkernel/Kernel.h>
 #include <glkernel/shuffle.h>
 
 
