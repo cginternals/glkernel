@@ -25,3 +25,25 @@ TEST_F(sample_test, poisson_square_compile)
 
     glkernel::sample::poisson_square(dkernel2);
 }
+
+TEST_F(sample_test, hammersley_compile)
+{
+    auto fkernel2 = glkernel::kernel2{ 1 };
+
+    glkernel::sample::hammersley(fkernel2);
+
+    auto dkernel2 = glkernel::dkernel2{ 1 };
+
+    glkernel::sample::hammersley(dkernel2);
+}
+
+TEST_F(sample_test, hammersley_sphere_compile)
+{
+    auto fkernel3 = glkernel::kernel3{ 1 };
+
+    glkernel::sample::hammersley_sphere(fkernel3);
+
+    auto dkernel3 = glkernel::dkernel3{ 1 };
+
+    glkernel::sample::hammersley_sphere(dkernel3);
+}

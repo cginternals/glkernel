@@ -12,6 +12,7 @@
 
 #include <glkernel/glm_compatability.h>
 
+#include <glm/gtc/constants.hpp>
 
 namespace glkernel
 {
@@ -205,6 +206,66 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, const T min_dist, cons
     }
 
     return k + 1;
+}
+
+namespace {
+
+// adapted code from "Hammersley Points on the Hemisphere", Holger Dammertz
+// http://holger.dammertz.org/stuff/notes_HammersleyOnHemisphere.html
+// which is licensed under http://creativecommons.org/licenses/by/3.0/
+
+float radical_inverse(unsigned int bits) {
+    bits = (bits << 16u) | (bits >> 16u);
+    bits = ((bits & 0x55555555u) << 1u) | ((bits & 0xAAAAAAAAu) >> 1u);
+    bits = ((bits & 0x33333333u) << 2u) | ((bits & 0xCCCCCCCCu) >> 2u);
+    bits = ((bits & 0x0F0F0F0Fu) << 4u) | ((bits & 0xF0F0F0F0u) >> 4u);
+    bits = ((bits & 0x00FF00FFu) << 8u) | ((bits & 0xFF00FF00u) >> 8u);
+    return static_cast<float>(bits) * 2.3283064365386963e-10f; // / 0x100000000
+}
+
+template <typename T, glm::precision P>
+glm::tvec3<T, P> hemisphere_sample_uniform(float u, float v) {
+    float phi = v * 2.0 * glm::pi<float>();
+    float cosTheta = 1.0 - u;
+    float sinTheta = sqrt(1.0 - cosTheta * cosTheta);
+    return { cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta };
+}
+
+template <typename T, glm::precision P>
+glm::tvec3<T, P> hemisphere_sample_cos(float u, float v) {
+    float phi = v * 2.0 * glm::pi<float>();
+    float cosTheta = sqrt(1.0 - u);
+    float sinTheta = sqrt(1.0 - cosTheta * cosTheta);
+    return { cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta };
+}
+
+} // anonymous namespace
+
+template <typename T, glm::precision P>
+size_t hammersley(tkernel<glm::tvec2<T, P>> & kernel)
+{
+    for (size_t i = 0; i < kernel.size(); ++i) {
+        kernel[i] = glm::tvec2<T, P>(static_cast<float>(i) / kernel.size(), radical_inverse(i));
+    }
+    return kernel.size();
+}
+
+template <typename T, glm::precision P>
+size_t hammersley_sphere(tkernel<glm::tvec3<T, P>> & kernel, HemisphereSampling type)
+{
+    for (size_t i = 0; i < kernel.size(); ++i) {
+        auto u = static_cast<float>(i) / kernel.size();
+        auto v = radical_inverse(i);
+        switch (type) {
+        case HemisphereSampling::Uniform:
+            kernel[i] = hemisphere_sample_uniform<T, P>(u, v);
+            break;
+        case HemisphereSampling::Cosine:
+            kernel[i] = hemisphere_sample_cos<T, P>(u, v);
+            break;
+        }
+    }
+    return kernel.size();
 }
 
 
