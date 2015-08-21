@@ -169,7 +169,7 @@ unsigned char hash3(
     , const unsigned int z
     , const unsigned int r)
 {
-    int frequencyMask = (1 << r) - 1;
+    unsigned int frequencyMask = (1 << r) - 1;
     assert(frequencyMask < PERMSIZE);
     return perm[(perm[(perm[x & frequencyMask] + y) & frequencyMask] + z) & frequencyMask];
 }
@@ -240,9 +240,7 @@ void perlin(tkernel<T> & kernel
     , const int octaves
     , const bool normalize)
 {
-    const unsigned int size = kernel.width() * kernel.height() * kernel.depth();
-
-    if (size < 1)
+    if (kernel.size() < 1)
         return;
 
     std::vector<T> fo(octaves);
@@ -255,7 +253,7 @@ void perlin(tkernel<T> & kernel
     T minp = scale;
     T maxp = 0.0;
 
-    int i = 0;
+    int k = 0;
     for (int z = 0; z < kernel.depth(); ++z)
     {
         auto zf = static_cast<T>(z) / kernel.depth();
@@ -282,7 +280,7 @@ void perlin(tkernel<T> & kernel
                         p += pf;
                         break;
                     case PerlinNoiseType::CloudAbs:
-                        p += abs(pf);
+                        p += fabs(pf);
                         break;
                     case PerlinNoiseType::Wood:
                         p += (pf * 8.f) - static_cast<int>(pf * 8.f);
@@ -298,7 +296,7 @@ void perlin(tkernel<T> & kernel
                 if (p < minp)
                     minp = p;
 
-                kernel[i++] = p;
+                kernel[k++] = p;
             }
         }
     }
@@ -306,14 +304,14 @@ void perlin(tkernel<T> & kernel
     if (normalize)
     {
         const T invF = scale / (maxp - minp);
-        for (unsigned int i = 0; i < size; ++i)
+        for (size_t i = 0; i < kernel.size(); ++i)
         {
             kernel[i] = (kernel[i] - minp) * invF;
         }
     }
     else
     {
-        for (unsigned int i = 0; i < size; ++i)
+        for (size_t i = 0; i < kernel.size(); ++i)
         {
             kernel[i] *= scale;
         }
