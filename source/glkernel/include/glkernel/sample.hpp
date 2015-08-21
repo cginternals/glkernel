@@ -14,6 +14,7 @@
 
 #include <glm/gtc/constants.hpp>
 
+
 namespace glkernel
 {
 
@@ -224,18 +225,18 @@ float radical_inverse(unsigned int bits) {
 }
 
 template <typename T, glm::precision P>
-glm::tvec3<T, P> hemisphere_sample_uniform(float u, float v) {
-    float phi = v * 2.0 * glm::pi<float>();
-    float cosTheta = 1.0 - u;
-    float sinTheta = sqrt(1.0 - cosTheta * cosTheta);
+glm::tvec3<T, P> hemisphere_sample_uniform(T u, T v) {
+    T phi = v * 2.0 * glm::pi<T>();
+    T cosTheta = 1.0 - u;
+    T sinTheta = sqrt(1.0 - cosTheta * cosTheta);
     return { cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta };
 }
 
 template <typename T, glm::precision P>
-glm::tvec3<T, P> hemisphere_sample_cos(float u, float v) {
-    float phi = v * 2.0 * glm::pi<float>();
-    float cosTheta = sqrt(1.0 - u);
-    float sinTheta = sqrt(1.0 - cosTheta * cosTheta);
+glm::tvec3<T, P> hemisphere_sample_cos(T u, T v) {
+    T phi = v * 2.0 * glm::pi<T>();
+    T cosTheta = sqrt(1.0 - u);
+    T sinTheta = sqrt(1.0 - cosTheta * cosTheta);
     return { cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta };
 }
 
