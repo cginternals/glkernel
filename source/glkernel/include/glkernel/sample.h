@@ -22,7 +22,15 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, unsigned int num_probe
 template <typename T, glm::precision P>
 size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, T min_dist, unsigned int num_probes = 32);
 
-
+/**
+*  @brief
+*  Subdivides pixel area into grid and creates one jiterred sample per row/column
+*
+*  jittering is done using a uniform distribution
+*
+*  @param[in,out] kernel
+*  The kernel to be modified, size is used for number of samples
+*/
 template <typename T, glm::precision P>
 void n_rooks(tkernel<glm::tvec2<T, P>> & kernel);
 
