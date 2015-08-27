@@ -220,6 +220,7 @@ void stratified(tkernel<glm::tvec2<T, P>> & kernel)
     std::uniform_real_distribution<> x_dist(0.0, stratum_width);
     std::uniform_real_distribution<> y_dist(0.0, stratum_height);
 
+    #pragma omp parallel for collapse(2)
     for (auto x = 0; x < kernel.width(); ++x)
     {
         for (auto y = 0; y < kernel.height(); ++y)
