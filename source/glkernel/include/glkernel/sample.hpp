@@ -217,6 +217,7 @@ void stratified(tkernel<glm::tvec2<T, P>> & kernel)
 
     std::random_device RD;
     std::mt19937_64 generator(RD());
+    // uniform distribution within stratum
     std::uniform_real_distribution<> x_dist(0.0, stratum_width);
     std::uniform_real_distribution<> y_dist(0.0, stratum_height);
 

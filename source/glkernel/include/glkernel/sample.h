@@ -22,6 +22,16 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, unsigned int num_probe
 template <typename T, glm::precision P>
 size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, T min_dist, unsigned int num_probes = 32);
 
+/**
+*  @brief
+*  Subdivides pixel area into n x m strata with one sample each
+*
+*  Reduces clustering of samples, non-uniform sampling of areas and missing of small details
+*  Within each stratum a uniform distribution is used.
+*
+*  @param[in,out] kernel
+*  The kernel to be modified, dimensions are used for number of strata
+*/
 template <typename T, glm::precision P>
 void stratified(tkernel<glm::tvec2<T, P>> & kernel);
 
