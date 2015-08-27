@@ -228,7 +228,7 @@ void stratified(tkernel<glm::tvec2<T, P>> & kernel)
         {
             const auto x_coord = x * stratum_width + x_dist(generator);
             const auto y_coord = y * stratum_height + y_dist(generator);
-			kernel.value(static_cast<glm::uint16>(x), static_cast<glm::uint16>(x)) = glm::tvec2<T, P>(x_coord, y_coord);
+			kernel.value(static_cast<glm::uint16>(x), static_cast<glm::uint16>(y)) = glm::tvec2<T, P>(x_coord, y_coord);
         }
     }
 }
