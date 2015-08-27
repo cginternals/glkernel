@@ -2,7 +2,8 @@
 
 #include <glm/gtc/type_precision.hpp>
 
-#include <glkernel/kernel.h>
+#include <glkernel/Kernel.h>
+#include <glkernel/glm_compatability.h>
 
 
 namespace glkernel
