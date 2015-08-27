@@ -218,15 +218,16 @@ void n_rooks(tkernel<glm::tvec2<T, P>> & kernel)
     std::mt19937_64 generator(RD());
     std::uniform_real_distribution<> jitter_dist(0.0, stratum_size);
 
-    std::vector<unsigned int> columnIndices;
-    for (size_t k = 0; k < kernel.size(); ++k)
+    std::vector<int> columnIndices;
+    #pragma omp parallel for
+    for (int k = 0; k < static_cast<int>(kernel.size()); ++k)
     {
         columnIndices.push_back(k);
     }
     std::random_shuffle(columnIndices.begin(), columnIndices.end());
 
     #pragma omp parallel for
-    for (size_t k = 0; k < kernel.size(); ++k)
+    for (int k = 0; k < static_cast<int>(kernel.size()); ++k)
     {
         const auto x_coord = k * stratum_size + jitter_dist(generator);
         const auto y_coord = columnIndices.at(k) * stratum_size + jitter_dist(generator);
