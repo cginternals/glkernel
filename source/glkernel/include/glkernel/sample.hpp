@@ -209,31 +209,29 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, const T min_dist, cons
 }
 
 template <typename T, glm::precision P>
-size_t n_rooks(tkernel<glm::tvec2<T, P>> & kernel)
+void n_rooks(tkernel<glm::tvec2<T, P>> & kernel)
 {
-	assert(kernel.depth() == 1);
-	assert(kernel.width() == kernel.height());
+    assert(kernel.depth() == 1);
 
-	auto stratum_size = 1.0 / kernel.width();
-	std::random_device RD;
-	std::mt19937_64 generator(RD());
-	std::uniform_real_distribution<> jitter_dist(0.0, stratum_size);
+    const auto stratum_size = 1.0 / kernel.size();
+    std::random_device RD;
+    std::mt19937_64 generator(RD());
+    std::uniform_real_distribution<> jitter_dist(0.0, stratum_size);
 
-	std::vector<unsigned int> pool;
-	for (unsigned int k = 0; k < kernel.width(); ++k)
-	{
-		pool.push_back(k);
-	}
-	std::random_shuffle(pool.begin(), pool.end());
+    std::vector<unsigned int> columnIndices;
+    for (size_t k = 0; k < kernel.size(); ++k)
+    {
+        columnIndices.push_back(k);
+    }
+    std::random_shuffle(columnIndices.begin(), columnIndices.end());
 
-	for (auto k = 0; k < kernel.width(); ++k)
-	{
-		auto x_coord = k * stratum_size + jitter_dist(generator);
-		auto y_coord = pool.at(k) * stratum_size + jitter_dist(generator);
-		auto sample = glm::tvec2<T, P>(x_coord, y_coord);
-		kernel[k] = sample;
-	}
-	return kernel.width();
+    #pragma omp parallel for
+    for (size_t k = 0; k < kernel.size(); ++k)
+    {
+        const auto x_coord = k * stratum_size + jitter_dist(generator);
+        const auto y_coord = columnIndices.at(k) * stratum_size + jitter_dist(generator);
+        kernel[k] = glm::tvec2<T, P>(x_coord, y_coord);
+    }
 }
 
 } // namespace sample
