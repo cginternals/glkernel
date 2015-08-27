@@ -219,7 +219,6 @@ void n_rooks(tkernel<glm::tvec2<T, P>> & kernel)
     std::uniform_real_distribution<> jitter_dist(0.0, stratum_size);
 
     std::vector<int> columnIndices;
-    #pragma omp parallel for
     for (int k = 0; k < static_cast<int>(kernel.size()); ++k)
     {
         columnIndices.push_back(k);
