@@ -38,8 +38,8 @@ set(source_path "${CMAKE_CURRENT_SOURCE_DIR}/source")
 set(api_includes
     ${include_path}/glm_compatability.h
 
-    ${include_path}/kernel.h
-    ${include_path}/kernel.hpp
+    ${include_path}/Kernel.h
+    ${include_path}/Kernel.hpp
 
     ${include_path}/constraint.h
     ${include_path}/constraint.hpp

@@ -169,7 +169,7 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, const T min_dist, cons
 
             // points within min_dist?
             const auto masked = occupancy.masked(probe, kernel);
-            const auto delta = abs(active - probe);
+            const auto delta = glm::abs(active - probe);
 
             probes[i] = std::make_tuple<glm::tvec2<T, P>, T>(std::move(probe), (masked ? static_cast<T>(-1.0) : glm::dot(delta, delta)));
         }
