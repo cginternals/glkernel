@@ -209,43 +209,44 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, const T min_dist, cons
 }
 
 template <typename T, glm::precision P>
-size_t multi_jittered(tkernel<glm::tvec2<T, P>> & kernel)
+void multi_jittered(tkernel<glm::tvec2<T, P>> & kernel)
 {
     assert(kernel.depth() == 1);
 
     std::random_device RD;
     std::mt19937_64 generator(RD());
 
-    auto stratum_size = 1.0 / (kernel.width() * kernel.height());
-    auto subcell_width = 1.0 / kernel.width();
-    auto subcell_height = 1.0 / kernel.height();
+    const auto stratum_size = 1.0 / (kernel.width() * kernel.height());
+    const auto subcell_width = 1.0 / kernel.width();
+    const auto subcell_height = 1.0 / kernel.height();
 
     std::uniform_real_distribution<> jitter_dist(0.0, stratum_size);
 
-    std::vector<std::pair<int, int>> pool;
+    // create pool of subcell positions and shuffle it
+    std::vector<std::pair<int, int>> subcell_positions;
     // reverse height and width inside subcells
     for (auto x = 0; x < kernel.height(); ++x)
     {
         for (auto y = 0; y < kernel.width(); ++y)
         {
-            pool.push_back({ x, y });
+            subcell_positions.push_back({ x, y });
         }
     }
-    std::random_shuffle(pool.begin(), pool.end());
+    std::random_shuffle(subcell_positions.begin(), subcell_positions.end());
 
-    size_t k = 0;
+    int k = 0;
+    #pragma omp parallel for
     for (auto x = 0; x < kernel.width(); ++x)
     {
         for (auto y = 0; y < kernel.height(); ++y)
         {
-            auto x_coord = x * subcell_width  + pool[k].first  * stratum_size + jitter_dist(generator);
-            auto y_coord = y * subcell_height + pool[k].second * stratum_size + jitter_dist(generator);
-            auto sample = glm::tvec2<T, P>(x_coord, y_coord);
-            kernel[k++] = sample;
+            // use subcell_positions for shuffled in-cell positions
+            const auto x_coord = x * subcell_width  + subcell_positions[k].first  * stratum_size + jitter_dist(generator);
+            const auto y_coord = y * subcell_height + subcell_positions[k].second * stratum_size + jitter_dist(generator);
+            kernel.value(static_cast<glm::uint16>(x), static_cast<glm::uint16>(y)) = glm::tvec2<T, P>(x_coord, y_coord);
+            ++k;
         }
     }
-
-    return k;
 }
 
 } // namespace sample
