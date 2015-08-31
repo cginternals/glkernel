@@ -222,17 +222,30 @@ void multi_jittered(tkernel<glm::tvec2<T, P>> & kernel)
 
     std::uniform_real_distribution<> jitter_dist(0.0, stratum_size);
 
-    // create pool of subcell positions and shuffle it
-    std::vector<std::pair<int, int>> subcell_positions;
+    // create pools of subcell indices
+    std::vector<std::vector<int>> column_indices(kernel.width());
+    std::vector<std::vector<int>> row_indices(kernel.height());
+
+    // reverse height and width inside subcells
+    for (auto y = 0; y < kernel.width(); ++y)
+    {
+        // shuffle columns separately to keep n-rooks condition satisfied
+        for (auto x = 0; x < kernel.height(); ++x)
+        {
+            column_indices[y].push_back(x);
+        }
+        std::random_shuffle(column_indices[y].begin(), column_indices[y].end());
+    }
     // reverse height and width inside subcells
     for (auto x = 0; x < kernel.height(); ++x)
     {
+        // shuffle rows separately to keep n-rooks condition satisfied
         for (auto y = 0; y < kernel.width(); ++y)
         {
-            subcell_positions.push_back({ x, y });
+            row_indices[x].push_back(y);
         }
+        std::random_shuffle(row_indices[x].begin(), row_indices[x].end());
     }
-    std::random_shuffle(subcell_positions.begin(), subcell_positions.end());
 
     int k = 0;
     #pragma omp parallel for
@@ -241,8 +254,8 @@ void multi_jittered(tkernel<glm::tvec2<T, P>> & kernel)
         for (auto y = 0; y < kernel.height(); ++y)
         {
             // use subcell_positions for shuffled in-cell positions
-            const auto x_coord = x * subcell_width  + subcell_positions[k].first  * stratum_size + jitter_dist(generator);
-            const auto y_coord = y * subcell_height + subcell_positions[k].second * stratum_size + jitter_dist(generator);
+            const auto x_coord = x * subcell_width + column_indices[x][y] * stratum_size + jitter_dist(generator);
+            const auto y_coord = y * subcell_height + row_indices[y][x] * stratum_size + jitter_dist(generator);
             kernel.value(static_cast<glm::uint16>(x), static_cast<glm::uint16>(y)) = glm::tvec2<T, P>(x_coord, y_coord);
             ++k;
         }
