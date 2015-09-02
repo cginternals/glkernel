@@ -187,7 +187,7 @@ glm::tvec3<T, glm::highp> grad3(
 }
 
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
-T smootherstep(T t)
+T smootherstep(const T t)
 {
     return t * t * t * (t * (t * 6 - 15) + 10);
 }
@@ -199,9 +199,9 @@ T noise3(
     , const T u
     , const unsigned int r)
 {
-    auto scaled_s = s * (1 << r);
-    auto scaled_t = t * (1 << r);
-    auto scaled_u = u * (1 << r);
+    const auto scaled_s = s * (1 << r);
+    const auto scaled_t = t * (1 << r);
+    const auto scaled_u = u * (1 << r);
 
     const auto is = static_cast<int>(floor(scaled_s));
     const auto it = static_cast<int>(floor(scaled_t));
@@ -233,7 +233,10 @@ T noise3(
 }
 
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
-T get_noise_type_value(PerlinNoiseType type, int octave, T noise_value, T octaved_noise)
+T get_noise_type_value(const PerlinNoiseType type
+    , const int octave
+    , const T noise_value
+    , const T octaved_noise)
 {
     switch (type)
     {
@@ -278,17 +281,17 @@ void perlin(tkernel<T> & kernel
     #pragma omp parallel for
     for (long long i = 0; i < static_cast<long long>(kernel.size()); ++i)
     {
-        auto location = kernel.location(i);
-        auto xf = static_cast<T>(location.x) / kernel.width();
-        auto yf = static_cast<T>(location.y) / kernel.height();
-        auto zf = static_cast<T>(location.z) / kernel.depth();
+        const auto location = static_cast<glm::tvec3<T, glm::highp>>(kernel.location(i));
+        const auto x = location.x / kernel.width();
+        const auto y = location.y / kernel.height();
+        const auto z = location.z / kernel.depth();
 
         // collect noise values over multiple octaves
         T p = 0.5;
         for (int o = 0; o < octaves; ++o)
         {
-            T po = noise3(xf, yf, zf, o + startFrequency);
-            T pf = fo[o] * po;
+            const T po = noise3(x, y, z, o + startFrequency);
+            const T pf = fo[o] * po;
 
             p += get_noise_type_value(type, o, po, pf);
         }
