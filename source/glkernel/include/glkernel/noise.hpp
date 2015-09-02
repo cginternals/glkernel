@@ -170,10 +170,8 @@ unsigned char hash3(
     , const unsigned int z
     , const unsigned int r)
 {
-
-    static const auto PERMSIZE(0x100);
     unsigned int frequencyMask = (1 << r) - 1;
-    assert(frequencyMask < PERMSIZE);
+    assert(frequencyMask < perm.size());
     return perm[(perm[(perm[x & frequencyMask] + y) & frequencyMask] + z) & frequencyMask];
 }
 
@@ -240,15 +238,15 @@ T get_noise_type_value(PerlinNoiseType type, int octave, T noise_value, T octave
     switch (type)
     {
     case PerlinNoiseType::Standard:
-        return octave > 0 ? 0.0 : noise_value;
+        return octave > 0 ? static_cast<T>(0.0) : noise_value;
     case PerlinNoiseType::Cloud:
         return octaved_noise;
     case PerlinNoiseType::CloudAbs:
         return fabs(octaved_noise);
     case PerlinNoiseType::Wood:
-        return (octaved_noise * 8.0) - static_cast<int>(octaved_noise * 8.0);
+        return static_cast<T>((octaved_noise * 8.0) - static_cast<int>(octaved_noise * 8.0));
     case PerlinNoiseType::Paper:
-        return noise_value * noise_value * (octaved_noise > 0 ? 1.0 : -1.0);
+        return noise_value * noise_value * static_cast<T>(octaved_noise > 0 ? 1.0 : -1.0);
     };
 
     return noise_value;
