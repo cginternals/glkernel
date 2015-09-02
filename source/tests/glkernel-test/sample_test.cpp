@@ -37,7 +37,7 @@ TEST_F(sample_test, n_rooks_compile)
     glkernel::sample::n_rooks(dkernel2);
 }
 
-TEST_F(sample_test, n_one_sample_per_column)
+TEST_F(sample_test, n_rooks_one_sample_per_column)
 {
     auto fkernel2 = glkernel::kernel2{ 20 };
 
@@ -56,7 +56,7 @@ TEST_F(sample_test, n_one_sample_per_column)
     ASSERT_EQ(1, count);
 }
 
-TEST_F(sample_test, n_one_sample_per_row)
+TEST_F(sample_test, n_rooks_one_sample_per_row)
 {
     auto fkernel2 = glkernel::kernel2{ 20 };
 
