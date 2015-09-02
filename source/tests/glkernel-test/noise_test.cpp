@@ -82,6 +82,6 @@ TEST_F(noise_test, perlin_compile)
     auto fkernel1 = glkernel::kernel1{ 1 };
     auto dkernel1 = glkernel::dkernel1{ 1 };
 
-    glkernel::noise::perlin(fkernel1, 1.0f);
-    glkernel::noise::perlin(dkernel1, 1.0);
+    glkernel::noise::perlin(fkernel1);
+    glkernel::noise::perlin(dkernel1);
 }

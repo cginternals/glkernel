@@ -138,30 +138,31 @@ namespace {
 
 const std::vector<unsigned char> perm =
 {
-    151, 160, 137, 91, 90, 15,
-    131, 13, 201, 95, 96, 53, 194, 233, 7, 225, 140, 36, 103, 30, 69, 142, 8, 99, 37, 240, 21, 10, 23,
-    190, 6, 148, 247, 120, 234, 75, 0, 26, 197, 62, 94, 252, 219, 203, 117, 35, 11, 32, 57, 177, 33,
-    88, 237, 149, 56, 87, 174, 20, 125, 136, 171, 168, 68, 175, 74, 165, 71, 134, 139, 48, 27, 166,
-    77, 146, 158, 231, 83, 111, 229, 122, 60, 211, 133, 230, 220, 105, 92, 41, 55, 46, 245, 40, 244,
-    102, 143, 54, 65, 25, 63, 161, 1, 216, 80, 73, 209, 76, 132, 187, 208, 89, 18, 169, 200, 196,
-    135, 130, 116, 188, 159, 86, 164, 100, 109, 198, 173, 186, 3, 64, 52, 217, 226, 250, 124, 123,
-    5, 202, 38, 147, 118, 126, 255, 82, 85, 212, 207, 206, 59, 227, 47, 16, 58, 17, 182, 189, 28, 42,
-    223, 183, 170, 213, 119, 248, 152, 2, 44, 154, 163, 70, 221, 153, 101, 155, 167, 43, 172, 9,
-    129, 22, 39, 253, 19, 98, 108, 110, 79, 113, 224, 232, 178, 185, 112, 104, 218, 246, 97, 228,
-    251, 34, 242, 193, 238, 210, 144, 12, 191, 179, 162, 241, 81, 51, 145, 235, 249, 14, 239, 107,
-    49, 192, 214, 31, 181, 199, 106, 157, 184, 84, 204, 176, 115, 121, 50, 45, 127, 4, 150, 254,
-    138, 236, 205, 93, 222, 114, 67, 29, 24, 72, 243, 141, 128, 195, 78, 66, 215, 61, 156, 180
+    151, 160, 137,  91,  90,  15, 131,  13, 201,  95,  96,  53, 194, 233,   7, 225,
+    140,  36, 103,  30,  69, 142,   8,  99,  37, 240,  21,  10,  23, 190,   6, 148,
+    247, 120, 234,  75,   0,  26, 197,  62,  94, 252, 219, 203, 117,  35,  11,  32,
+     57, 177,  33,  88, 237, 149,  56,  87, 174,  20, 125, 136, 171, 168,  68, 175,
+     74, 165,  71, 134, 139,  48,  27, 166,  77, 146, 158, 231,  83, 111, 229, 122,
+     60, 211, 133, 230, 220, 105,  92,  41,  55,  46, 245,  40, 244, 102, 143,  54,
+     65,  25,  63, 161,   1, 216,  80,  73, 209,  76, 132, 187, 208,  89,  18, 169,
+    200, 196, 135, 130, 116, 188, 159,  86, 164, 100, 109, 198, 173, 186,   3,  64,
+     52, 217, 226, 250, 124, 123,   5, 202,  38, 147, 118, 126, 255,  82,  85, 212,
+    207, 206,  59, 227,  47,  16,  58,  17, 182, 189,  28,  42, 223, 183, 170, 213,
+    119, 248, 152,   2,  44, 154, 163,  70, 221, 153, 101, 155, 167,  43, 172,   9,
+    129,  22,  39, 253,  19,  98, 108, 110,  79, 113, 224, 232, 178, 185, 112, 104,
+    218, 246,  97, 228, 251,  34, 242, 193, 238, 210, 144,  12, 191, 179, 162, 241,
+     81,  51, 145, 235, 249,  14, 239, 107,  49, 192, 214,  31, 181, 199, 106, 157,
+    184,  84, 204, 176, 115, 121,  50,  45, 127,   4, 150, 254, 138, 236, 205,  93,
+    222, 114,  67,  29,  24,  72, 243, 141, 128, 195,  78,  66, 215,  61, 156, 180
 };
 
 const std::vector<glm::vec3> grad =
 {
-    { 1.f, 1.f, 0.f }, { -1.f, 1.f, 0.f }, { 1.f, -1.f, 0.f }, { -1.f, -1.f, 0.f }
-    , { 1.f, 0.f, 1.f }, { -1.f, 0.f, 1.f }, { 1.f, 0.f, -1.f }, { -1.f, 0.f, -1.f }
-    , { 0.f, 1.f, 1.f }, { 0.f, -1.f, 1.f }, { 0.f, 1.f, -1.f }, { 0.f, -1.f, -1.f }
-    , { 1.f, 1.f, 0.f }, { -1.f, 1.f, 0.f }, { 0.f, -1.f, 0.f }, { 0.f, -1.f, -1.f }
+    { 1.0, 1.0, 0.0 }, { -1.0, 1.0, 0.0 }, { 1.0, -1.0, 0.0 }, { -1.0, -1.0, 0.0 },
+    { 1.0, 0.0, 1.0 }, { -1.0, 0.0, 1.0 }, { 1.0, 0.0, -1.0 }, { -1.0, 0.0, -1.0 },
+    { 0.0, 1.0, 1.0 }, { 0.0, -1.0, 1.0 }, { 0.0, 1.0, -1.0 }, { 0.0, -1.0, -1.0 },
+    { 1.0, 1.0, 0.0 }, { -1.0, 1.0, 0.0 }, { 0.0, -1.0, 0.0 }, { 0.0, -1.0, -1.0 }
 };
-
-const unsigned int PERMSIZE(0x100);
 
 unsigned char hash3(
     const unsigned int x
@@ -169,6 +170,8 @@ unsigned char hash3(
     , const unsigned int z
     , const unsigned int r)
 {
+
+    static const auto PERMSIZE(0x100);
     unsigned int frequencyMask = (1 << r) - 1;
     assert(frequencyMask < PERMSIZE);
     return perm[(perm[(perm[x & frequencyMask] + y) & frequencyMask] + z) & frequencyMask];
@@ -182,11 +185,11 @@ glm::tvec3<T, glm::highp> grad3(
     , const unsigned int r)
 {
     const auto p = hash3(x, y, z, r);
-    return grad[p & 0xf];
+    return glm::tvec3<T, glm::highp>(grad[p % 16]);
 }
 
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
-T fade(T t)
+T smootherstep(T t)
 {
     return t * t * t * (t * (t * 6 - 15) + 10);
 }
@@ -222,12 +225,33 @@ T noise3(
     const auto i = glm::mix(
         glm::tvec4<T, glm::highp>(aaa, aab, aba, abb),
         glm::tvec4<T, glm::highp>(baa, bab, bba, bbb), 
-        fade(f[0]));
+        smootherstep(f[0]));
     const auto j = glm::mix(
         glm::tvec2<T, glm::highp>(i[0], i[1]),
-        glm::tvec2<T, glm::highp>(i[2], i[3]), fade(f[1]));
+        glm::tvec2<T, glm::highp>(i[2], i[3]),
+        smootherstep(f[1]));
 
-    return glm::mix(j[0], j[1], fade(f[2]));
+    return glm::mix(j[0], j[1], smootherstep(f[2]));
+}
+
+template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
+T get_noise_type_value(PerlinNoiseType type, int octave, T noise_value, T octaved_noise)
+{
+    switch (type)
+    {
+    case PerlinNoiseType::Standard:
+        return octave > 0 ? 0.0 : noise_value;
+    case PerlinNoiseType::Cloud:
+        return octaved_noise;
+    case PerlinNoiseType::CloudAbs:
+        return fabs(octaved_noise);
+    case PerlinNoiseType::Wood:
+        return (octaved_noise * 8.0) - static_cast<int>(octaved_noise * 8.0);
+    case PerlinNoiseType::Paper:
+        return noise_value * noise_value * (octaved_noise > 0 ? 1.0 : -1.0);
+    };
+
+    return noise_value;
 }
 
 } // anonymous namespace
@@ -253,52 +277,30 @@ void perlin(tkernel<T> & kernel
     T minp = scale;
     T maxp = 0.0;
 
-    int k = 0;
-    for (int z = 0; z < kernel.depth(); ++z)
+    #pragma omp parallel for
+    for (long long i = 0; i < static_cast<long long>(kernel.size()); ++i)
     {
-        auto zf = static_cast<T>(z) / kernel.depth();
-        for (int y = 0; y < kernel.height(); ++y)
+        auto location = kernel.location(i);
+        auto xf = static_cast<T>(location.x) / kernel.width();
+        auto yf = static_cast<T>(location.y) / kernel.height();
+        auto zf = static_cast<T>(location.z) / kernel.depth();
+
+        // collect noise values over multiple octaves
+        T p = 0.5;
+        for (int o = 0; o < octaves; ++o)
         {
-            auto yf = static_cast<T>(y) / kernel.height();
-            for (int x = 0; x < kernel.width(); ++x)
-            {
-                auto xf = static_cast<T>(x) / kernel.width();
+            T po = noise3(xf, yf, zf, o + startFrequency);
+            T pf = fo[o] * po;
 
-                // collect noise values over multiple octaves
-                T p = 0.5f;
-                for (int o = 0; o < octaves; ++o)
-                {
-                    T po = noise3(xf, yf, zf, o + startFrequency);
-                    T pf = fo[o] * po;
-
-                    switch (type)
-                    {
-                    case PerlinNoiseType::Standard:
-                        p += o > 0 ? 0.f : po;
-                        break;
-                    case PerlinNoiseType::Cloud:
-                        p += pf;
-                        break;
-                    case PerlinNoiseType::CloudAbs:
-                        p += fabs(pf);
-                        break;
-                    case PerlinNoiseType::Wood:
-                        p += (pf * 8.f) - static_cast<int>(pf * 8.f);
-                        break;
-                    case PerlinNoiseType::Paper:
-                        p += po * po * (pf > 0 ? 1.f : -1.f);
-                        break;
-                    };
-                }
-
-                if (p > maxp)
-                    maxp = p;
-                if (p < minp)
-                    minp = p;
-
-                kernel[k++] = p;
-            }
+            p += get_noise_type_value(type, o, po, pf);
         }
+
+        if (p > maxp)
+            maxp = p;
+        if (p < minp)
+            minp = p;
+
+        kernel[i] = p;
     }
 
     if (normalize)
