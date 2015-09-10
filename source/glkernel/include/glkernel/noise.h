@@ -39,11 +39,9 @@ enum class PerlinNoiseType { Standard, Cloud, CloudAbs, Wood, Paper };
 
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type * = nullptr>
 void perlin(tkernel<T> & kernel
-    , const T scale = 1.0
     , const PerlinNoiseType type = PerlinNoiseType::Standard
     , const int startFrequency = 3
-    , const int octaves = 5
-    , const bool normalize = true);
+    , const int octaves = 5);
 
 
 } // namespace noise

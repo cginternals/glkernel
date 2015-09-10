@@ -259,11 +259,9 @@ T get_noise_type_value(const PerlinNoiseType type
 
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type *>
 void perlin(tkernel<T> & kernel
-    , const T scale
     , const PerlinNoiseType type
     , const int startFrequency
-    , const int octaves
-    , const bool normalize)
+    , const int octaves)
 {
     if (kernel.size() < 1)
         return;
@@ -274,9 +272,6 @@ void perlin(tkernel<T> & kernel
     {
         fo[o] = static_cast<T>(1.0 / (1 << o));
     }
-
-    T minp = scale;
-    T maxp = 0.0;
 
     #pragma omp parallel for
     for (long long i = 0; i < static_cast<long long>(kernel.size()); ++i)
@@ -296,28 +291,7 @@ void perlin(tkernel<T> & kernel
             p += get_noise_type_value(type, o, po, pf);
         }
 
-        if (p > maxp)
-            maxp = p;
-        if (p < minp)
-            minp = p;
-
         kernel[i] = p;
-    }
-
-    if (normalize)
-    {
-        const T invF = scale / (maxp - minp);
-        for (size_t i = 0; i < kernel.size(); ++i)
-        {
-            kernel[i] = (kernel[i] - minp) * invF;
-        }
-    }
-    else
-    {
-        for (size_t i = 0; i < kernel.size(); ++i)
-        {
-            kernel[i] *= scale;
-        }
     }
 }
 
