@@ -85,3 +85,20 @@ TEST_F(noise_test, perlin_compile)
     glkernel::noise::perlin(fkernel1);
     glkernel::noise::perlin(dkernel1);
 }
+
+TEST_F(noise_test, perlin_tileability)
+{
+    auto dkernel = glkernel::dkernel1{ 64, 64, 64 };
+    glkernel::noise::perlin(dkernel);
+
+    // tests if values at the border of the kernel are similar to those at the opposing side
+    for (glm::uint16 c1 = 0; c1 < 64; ++c1)
+    {
+        for (glm::uint16 c2 = 0; c2 < 64; ++c2)
+        {
+            ASSERT_NEAR(dkernel.value(c1, c2, 0), dkernel.value(c1, c2, 63), 0.15);
+            ASSERT_NEAR(dkernel.value(c1, 0, c2), dkernel.value(c1, 63, c2), 0.15);
+            ASSERT_NEAR(dkernel.value(0, c1, c2), dkernel.value(63, c1, c2), 0.15);
+        }
+    }
+}

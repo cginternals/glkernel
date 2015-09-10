@@ -170,9 +170,12 @@ unsigned char hash3(
     , const unsigned int z
     , const unsigned int r)
 {
-    unsigned int frequencyMask = (1 << r) - 1;
-    assert(frequencyMask < perm.size());
-    return perm[(perm[(perm[x & frequencyMask] + y) & frequencyMask] + z) & frequencyMask];
+    // the values of x, y and z will be in [0, 1 << r]
+    // the frequency mask is used for returning equal values
+    // for the minimum and the maximum input to ensure tileability
+    unsigned int frequencyMask = 1 << r;
+    assert(frequencyMask <= perm.size());
+    return perm[(perm[(perm[x % frequencyMask] + y) % frequencyMask] + z) % frequencyMask];
 }
 
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
@@ -199,13 +202,14 @@ T noise3(
     , const T u
     , const unsigned int r)
 {
+    // scale according to frequency
     const auto scaled_s = s * (1 << r);
     const auto scaled_t = t * (1 << r);
     const auto scaled_u = u * (1 << r);
 
-    const auto is = static_cast<int>(floor(scaled_s));
-    const auto it = static_cast<int>(floor(scaled_t));
-    const auto iu = static_cast<int>(floor(scaled_u));
+    const auto is = static_cast<unsigned int>(floor(scaled_s));
+    const auto it = static_cast<unsigned int>(floor(scaled_t));
+    const auto iu = static_cast<unsigned int>(floor(scaled_u));
 
     const auto f = glm::fract(glm::tvec3<T, glm::highp>(scaled_s, scaled_t, scaled_u));
 
@@ -220,6 +224,7 @@ T noise3(
     const auto abb = glm::dot(grad3<T>(is + 0, it + 1, iu + 1, r), f - glm::tvec3<T, glm::highp>(0., 1., 1.));
     const auto bbb = glm::dot(grad3<T>(is + 1, it + 1, iu + 1, r), f - glm::tvec3<T, glm::highp>(1., 1., 1.));
 
+    // interpolate noise values of the eight corners
     const auto i = glm::mix(
         glm::tvec4<T, glm::highp>(aaa, aab, aba, abb),
         glm::tvec4<T, glm::highp>(baa, bab, bba, bbb), 
@@ -234,7 +239,7 @@ T noise3(
 
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
 T get_noise_type_value(const PerlinNoiseType type
-    , const int octave
+    , const unsigned int octave
     , const T noise_value
     , const T octaved_noise)
 {
@@ -260,15 +265,15 @@ T get_noise_type_value(const PerlinNoiseType type
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type *>
 void perlin(tkernel<T> & kernel
     , const PerlinNoiseType type
-    , const int startFrequency
-    , const int octaves)
+    , const unsigned int startFrequency
+    , const unsigned int octaves)
 {
     if (kernel.size() < 1)
         return;
 
     std::vector<T> fo(octaves);
 
-    for (int o = 0; o < octaves; ++o)
+    for (unsigned int o = 0; o < octaves; ++o)
     {
         fo[o] = static_cast<T>(1.0 / (1 << o));
     }
@@ -283,7 +288,7 @@ void perlin(tkernel<T> & kernel
 
         // collect noise values over multiple octaves
         T p = 0.5;
-        for (int o = 0; o < octaves; ++o)
+        for (unsigned int o = 0; o < octaves; ++o)
         {
             const T po = noise3(x, y, z, o + startFrequency);
             const T pf = fo[o] * po;
