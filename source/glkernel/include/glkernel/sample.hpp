@@ -209,7 +209,7 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, const T min_dist, cons
 }
 
 template <typename T, glm::precision P>
-void multi_jittered(tkernel<glm::tvec2<T, P>> & kernel)
+void multi_jittered(tkernel<glm::tvec2<T, P>> & kernel, const bool correlated)
 {
     assert(kernel.depth() == 1);
 
@@ -229,6 +229,13 @@ void multi_jittered(tkernel<glm::tvec2<T, P>> & kernel)
     // reverse height and width inside subcells
     for (auto y = 0; y < kernel.width(); ++y)
     {
+        // use the same shuffle pattern for all rows for correlated shuffling
+        if (y != 0 && correlated)
+        {
+            column_indices[y] = column_indices[0];
+            continue;
+        }
+
         // shuffle columns separately to keep n-rooks condition satisfied
         for (auto x = 0; x < kernel.height(); ++x)
         {
@@ -239,6 +246,13 @@ void multi_jittered(tkernel<glm::tvec2<T, P>> & kernel)
     // reverse height and width inside subcells
     for (auto x = 0; x < kernel.height(); ++x)
     {
+        // use the same shuffle pattern for all columns for correlated shuffling
+        if (x != 0 && correlated)
+        {
+            row_indices[x] = row_indices[0];
+            continue;
+        }
+
         // shuffle rows separately to keep n-rooks condition satisfied
         for (auto y = 0; y < kernel.width(); ++y)
         {
