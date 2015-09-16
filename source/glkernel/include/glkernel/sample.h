@@ -22,17 +22,36 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, unsigned int num_probe
 template <typename T, glm::precision P>
 size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, T min_dist, unsigned int num_probes = 32);
 
+/**
+*  @brief
+*  Generates the hammersley set
+*
+*  @param[in,out] kernel
+*  The kernel to be modified
+*/
 template <typename T, glm::precision P>
 void hammersley(tkernel<glm::tvec2<T, P>> & kernel);
 
-enum class HemisphereSampling : unsigned char
+
+/**
+*  @brief
+*  Hemisphere mapping used for hammersley sampling
+*/
+enum class HemisphereMapping : unsigned char
 {
     Uniform,
     Cosine
 };
 
+/**
+*  @brief
+*  Generates the hammersley set and maps it to a hemisphere
+*
+*  @param[in,out] kernel
+*  The kernel to be modified
+*/
 template <typename T, glm::precision P>
-void hammersley_sphere(tkernel<glm::tvec3<T, P>> & kernel, HemisphereSampling type = HemisphereSampling::Uniform);
+void hammersley_sphere(tkernel<glm::tvec3<T, P>> & kernel, HemisphereMapping type = HemisphereMapping::Uniform);
 
 } // namespace sample
 

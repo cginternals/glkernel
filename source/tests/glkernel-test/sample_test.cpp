@@ -47,3 +47,22 @@ TEST_F(sample_test, hammersley_sphere_compile)
 
     glkernel::sample::hammersley_sphere(dkernel3);
 }
+
+TEST_F(sample_test, hammersley)
+{
+    auto kernel = glkernel::kernel2{ 2, 2 };
+
+    glkernel::sample::hammersley(kernel);
+
+    EXPECT_FLOAT_EQ(0.0f / 4.0f, kernel[0].x);
+    EXPECT_FLOAT_EQ(0.0f, kernel[0].y);
+
+    EXPECT_FLOAT_EQ(1.0f / 4.0f, kernel[1].x);
+    EXPECT_FLOAT_EQ(0.5f, kernel[1].y);
+
+    EXPECT_FLOAT_EQ(2.0f / 4.0f, kernel[2].x);
+    EXPECT_FLOAT_EQ(0.25f, kernel[2].y);
+
+    EXPECT_FLOAT_EQ(3.0f / 4.0f, kernel[3].x);
+    EXPECT_FLOAT_EQ(0.75f, kernel[3].y);
+}

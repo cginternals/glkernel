@@ -255,17 +255,17 @@ void hammersley(tkernel<glm::tvec2<T, P>> & kernel)
 }
 
 template <typename T, glm::precision P>
-void hammersley_sphere(tkernel<glm::tvec3<T, P>> & kernel, HemisphereSampling type)
+void hammersley_sphere(tkernel<glm::tvec3<T, P>> & kernel, HemisphereMapping type)
 {
     #pragma omp parallel for
     for (int i = 0; i < static_cast<int>(kernel.size()); ++i) {
         const auto u = static_cast<float>(i) / kernel.size();
         const auto v = radical_inverse(i);
         switch (type) {
-        case HemisphereSampling::Uniform:
+        case HemisphereMapping::Uniform:
             kernel[i] = hemisphere_sample_uniform<T, P>(u, v);
             break;
-        case HemisphereSampling::Cosine:
+        case HemisphereMapping::Cosine:
             kernel[i] = hemisphere_sample_cos<T, P>(u, v);
             break;
         }
