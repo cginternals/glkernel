@@ -22,6 +22,7 @@ namespace shuffle
 struct abstract_permutations
 {
     virtual size_t operator()(const size_t bucket, const size_t permutation) const = 0;
+    virtual ~abstract_permutations() {};
 };
   
 struct unique_index_permutations : abstract_permutations
@@ -111,7 +112,7 @@ void bucket_permutate(tkernel<T> & kernel
     buckets.resize(num_buckets);
 
     auto index = 0;
-    for (int b = 0; b < buckets.size(); ++b)
+    for (size_t b = 0; b < buckets.size(); ++b)
     {
         for (int i = 0; i < num_subkernels; ++i)
             buckets[b].push_back(index++);
@@ -177,22 +178,22 @@ void bucket_permutate(tkernel<T> & kernel
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type *>
 void bayer(tkernel<T> & kernel)
 {
-    static const auto bayer2 = std::array<size_t, 4>({
+    static const auto bayer2 = std::array<size_t, 4>({ {
          1,  3,
-         4,  2 });
+         4,  2 } });
 
-    static const auto bayer3 = std::array<size_t, 9>({
+    static const auto bayer3 = std::array<size_t, 9>({ {
          3,  7,  4,
          6,  1,  9, 
-         2,  8,  5 });
+         2,  8,  5 } });
 
-    static const auto bayer4 = std::array<size_t, 16>({
+    static const auto bayer4 = std::array<size_t, 16>({ {
          1,  9,  3, 11,
         13,  5, 15,  7,
          4, 12,  2, 10,
-        16,  8, 14,  6 });
+        16,  8, 14,  6 } });
 
-    static const auto bayer8 = std::array<size_t, 64>({
+    static const auto bayer8 = std::array<size_t, 64>({ {
          1, 49, 13, 61,  4, 52, 16, 64, 
         33, 17, 45, 29, 36, 20, 48, 32, 
          9, 57,  5, 53, 12, 60,  8, 56, 
@@ -200,7 +201,7 @@ void bayer(tkernel<T> & kernel)
          3, 51, 15, 63,  2, 50, 14, 62, 
         35, 19, 47, 31, 34, 18, 46, 30, 
         11, 59,  7, 55, 10, 58,  6, 54, 
-        43, 27, 39, 23, 42, 26, 38, 22 });
+        43, 27, 39, 23, 42, 26, 38, 22 } });
 
     const auto size = kernel.size();
     if (size != 4 && size != 9 && size != 16 && size != 64)

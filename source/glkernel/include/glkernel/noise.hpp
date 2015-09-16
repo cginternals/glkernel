@@ -56,19 +56,19 @@ T uniform_operator<T>::operator()(const size_t)
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type *>
 void uniform(tkernel<T> & kernel, const T range_min, const T range_max)
 {
-    kernel.for_each<uniform_operator<T>>(range_min, range_max);
+    kernel.template for_each<uniform_operator<T>>(range_min, range_max);
 }
 
 template <typename T, glm::precision P, template<typename, glm::precision> class V>
 void uniform(tkernel<V<T, P>> & kernel, const T range_min, const T range_max)
 {
-    kernel.for_each<uniform_operator<T>>(range_min, range_max);
+    kernel.template for_each<uniform_operator<T>>(range_min, range_max);
 }
 
 template <typename T, glm::precision P, template<typename, glm::precision> class V>
 void uniform(tkernel<V<T, P>> & kernel, const V<T, P> & range_min, const V<T, P> & range_max)
 {
-    kernel.for_each<uniform_operator<T>>(range_min, range_max);
+    kernel.template for_each<uniform_operator<T>>(range_min, range_max);
 }
 
 
@@ -116,19 +116,19 @@ T normal_operator<T>::operator()(const size_t)
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type *>
 void normal(tkernel<T> & kernel, const T mean, const T stddev)
 {
-    kernel.for_each<normal_operator<T>>(mean, stddev);
+    kernel.template for_each<normal_operator<T>>(mean, stddev);
 }
 
 template <typename T, glm::precision P, template<typename, glm::precision> class V>
 void normal(tkernel<V<T, P>> & kernel, const T mean, const T stddev)
 {
-    kernel.for_each<normal_operator<T>>(mean, stddev);
+    kernel.template for_each<normal_operator<T>>(mean, stddev);
 }
 
 template <typename T, glm::precision P, template<typename, glm::precision> class V>
 void normal(tkernel<V<T, P>> & kernel, const V<T, P> & mean, const V<T, P> & stddev)
 {
-    kernel.for_each<normal_operator<T>>(mean, stddev);
+    kernel.template for_each<normal_operator<T>>(mean, stddev);
 }
 
 

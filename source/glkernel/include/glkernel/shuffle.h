@@ -2,7 +2,7 @@
 
 #include <glm/gtc/type_precision.hpp>
 
-#include <glkernel/kernel.h>
+#include <glkernel/Kernel.h>
 
 
 namespace glkernel
