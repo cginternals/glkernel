@@ -216,6 +216,7 @@ namespace {
 // which is licensed under http://creativecommons.org/licenses/by/3.0/
 
 float radical_inverse(unsigned int bits) {
+    // the bit order of the number is inversed and interpreted as a float
     bits = (bits << 16u) | (bits >> 16u);
     bits = ((bits & 0x55555555u) << 1u) | ((bits & 0xAAAAAAAAu) >> 1u);
     bits = ((bits & 0x33333333u) << 2u) | ((bits & 0xCCCCCCCCu) >> 2u);
@@ -226,37 +227,40 @@ float radical_inverse(unsigned int bits) {
 
 template <typename T, glm::precision P>
 glm::tvec3<T, P> hemisphere_sample_uniform(T u, T v) {
-    T phi = v * 2.0 * glm::pi<T>();
-    T cosTheta = 1.0 - u;
-    T sinTheta = sqrt(1.0 - cosTheta * cosTheta);
+    const T phi = v * 2.0 * glm::pi<T>();
+    const T cosTheta = 1.0 - u;
+    const T sinTheta = sqrt(1.0 - cosTheta * cosTheta);
     return { cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta };
 }
 
 template <typename T, glm::precision P>
 glm::tvec3<T, P> hemisphere_sample_cos(T u, T v) {
-    T phi = v * 2.0 * glm::pi<T>();
-    T cosTheta = sqrt(1.0 - u);
-    T sinTheta = sqrt(1.0 - cosTheta * cosTheta);
+    const T phi = v * 2.0 * glm::pi<T>();
+    const T cosTheta = sqrt(1.0 - u);
+    const T sinTheta = sqrt(1.0 - cosTheta * cosTheta);
     return { cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta };
 }
 
 } // anonymous namespace
 
 template <typename T, glm::precision P>
-size_t hammersley(tkernel<glm::tvec2<T, P>> & kernel)
+void hammersley(tkernel<glm::tvec2<T, P>> & kernel)
 {
-    for (size_t i = 0; i < kernel.size(); ++i) {
-        kernel[i] = glm::tvec2<T, P>(static_cast<float>(i) / kernel.size(), radical_inverse(i));
+    #pragma omp parallel for
+    for (int i = 0; i < static_cast<int>(kernel.size()); ++i) {
+        const auto u = static_cast<float>(i) / kernel.size();
+        const auto v = radical_inverse(i);
+        kernel[i] = glm::tvec2<T, P>(u, v);
     }
-    return kernel.size();
 }
 
 template <typename T, glm::precision P>
-size_t hammersley_sphere(tkernel<glm::tvec3<T, P>> & kernel, HemisphereSampling type)
+void hammersley_sphere(tkernel<glm::tvec3<T, P>> & kernel, HemisphereSampling type)
 {
-    for (size_t i = 0; i < kernel.size(); ++i) {
-        auto u = static_cast<float>(i) / kernel.size();
-        auto v = radical_inverse(i);
+    #pragma omp parallel for
+    for (int i = 0; i < static_cast<int>(kernel.size()); ++i) {
+        const auto u = static_cast<float>(i) / kernel.size();
+        const auto v = radical_inverse(i);
         switch (type) {
         case HemisphereSampling::Uniform:
             kernel[i] = hemisphere_sample_uniform<T, P>(u, v);
@@ -266,7 +270,6 @@ size_t hammersley_sphere(tkernel<glm::tvec3<T, P>> & kernel, HemisphereSampling 
             break;
         }
     }
-    return kernel.size();
 }
 
 
