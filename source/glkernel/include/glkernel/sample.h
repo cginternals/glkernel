@@ -51,7 +51,7 @@ enum class HemisphereMapping : unsigned char
 *  The kernel to be modified
 */
 template <typename T, glm::precision P>
-void hammersley_sphere(tkernel<glm::tvec3<T, P>> & kernel, HemisphereMapping type = HemisphereMapping::Uniform);
+void hammersley_sphere(tkernel<glm::tvec3<T, P>> & kernel, const HemisphereMapping type = HemisphereMapping::Uniform);
 
 } // namespace sample
 

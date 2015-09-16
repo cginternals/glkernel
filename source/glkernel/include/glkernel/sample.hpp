@@ -226,18 +226,18 @@ float radical_inverse(unsigned int bits) {
 }
 
 template <typename T, glm::precision P>
-glm::tvec3<T, P> hemisphere_sample_uniform(T u, T v) {
-    const T phi = v * 2.0 * glm::pi<T>();
-    const T cosTheta = 1.0 - u;
-    const T sinTheta = sqrt(1.0 - cosTheta * cosTheta);
+glm::tvec3<T, P> hemisphere_sample_uniform(const T u, const T v) {
+    const T phi = v * static_cast<T>(2.0) * glm::pi<T>();
+    const T cosTheta = static_cast<T>(1.0) - u;
+    const T sinTheta = sqrt(static_cast<T>(1.0) - cosTheta * cosTheta);
     return { cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta };
 }
 
 template <typename T, glm::precision P>
-glm::tvec3<T, P> hemisphere_sample_cos(T u, T v) {
-    const T phi = v * 2.0 * glm::pi<T>();
-    const T cosTheta = sqrt(1.0 - u);
-    const T sinTheta = sqrt(1.0 - cosTheta * cosTheta);
+glm::tvec3<T, P> hemisphere_sample_cos(const T u, const T v) {
+    const T phi = v * static_cast<T>(2.0) * glm::pi<T>();
+    const T cosTheta = sqrt(static_cast<T>(1.0) - u);
+    const T sinTheta = sqrt(static_cast<T>(1.0) - cosTheta * cosTheta);
     return { cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta };
 }
 
@@ -248,19 +248,19 @@ void hammersley(tkernel<glm::tvec2<T, P>> & kernel)
 {
     #pragma omp parallel for
     for (int i = 0; i < static_cast<int>(kernel.size()); ++i) {
-        const auto u = static_cast<float>(i) / kernel.size();
-        const auto v = radical_inverse(i);
+        const auto u = static_cast<T>(i) / kernel.size();
+        const auto v = static_cast<T>(radical_inverse(i));
         kernel[i] = glm::tvec2<T, P>(u, v);
     }
 }
 
 template <typename T, glm::precision P>
-void hammersley_sphere(tkernel<glm::tvec3<T, P>> & kernel, HemisphereMapping type)
+void hammersley_sphere(tkernel<glm::tvec3<T, P>> & kernel, const HemisphereMapping type)
 {
     #pragma omp parallel for
     for (int i = 0; i < static_cast<int>(kernel.size()); ++i) {
-        const auto u = static_cast<float>(i) / kernel.size();
-        const auto v = radical_inverse(i);
+        const auto u = static_cast<T>(i) / kernel.size();
+        const auto v = static_cast<T>(radical_inverse(i));
         switch (type) {
         case HemisphereMapping::Uniform:
             kernel[i] = hemisphere_sample_uniform<T, P>(u, v);
