@@ -1,7 +1,7 @@
 # glkernel
 C++ library for pre-computing noise, and random sample-kernels.
 
-## Project Health (Master)
+## Project Health (master)
 
 | Service | System | Compiler | Options | Status |
 | ------- | ------ | -------- | ------- | ------ |
