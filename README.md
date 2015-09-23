@@ -15,7 +15,7 @@ C++ library for pre-computing noise, and random sample-kernels.
 
 ToDo
 
-##### ToDo
+##### Feature
 
 ToDo
 
