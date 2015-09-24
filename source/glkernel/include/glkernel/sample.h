@@ -22,6 +22,22 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, unsigned int num_probe
 template <typename T, glm::precision P>
 size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, T min_dist, unsigned int num_probes = 32);
 
+/**
+*  @brief
+*  Subdivides pixel area into n x m strata with one sample each
+*
+*  Each stratum is divided into subcells and samples are chosen,
+*  so that the n-rooks condition is satisfied for the grid created by the subcells.
+*  Reduces clumping on one dimensional projection of pattern in comparison to stratified sampling
+*
+*  @param[in] correlated
+*  Use the same shuffle pattern for all rows/column to reduce sample clumpiness
+*
+*  @param[in,out] kernel
+*  The kernel to be modified, dimensions are used for number of strata
+*/
+template <typename T, glm::precision P>
+void multi_jittered(tkernel<glm::tvec2<T, P>> & kernel, const bool correlated = false);
 
 } // namespace sample
 

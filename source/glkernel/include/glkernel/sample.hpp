@@ -9,6 +9,7 @@
 #include <list>
 #include <iterator>
 #include <tuple>
+#include <algorithm>
 
 #include <glkernel/glm_compatability.h>
 
@@ -207,6 +208,73 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, const T min_dist, cons
     return k + 1;
 }
 
+template <typename T, glm::precision P>
+void multi_jittered(tkernel<glm::tvec2<T, P>> & kernel, const bool correlated)
+{
+    assert(kernel.depth() == 1);
+
+    std::random_device RD;
+    std::mt19937_64 generator(RD());
+
+    const auto stratum_size = 1.0 / (kernel.width() * kernel.height());
+    const auto subcell_width = 1.0 / kernel.width();
+    const auto subcell_height = 1.0 / kernel.height();
+
+    std::uniform_real_distribution<> jitter_dist(0.0, stratum_size);
+
+    // create pools of subcell indices
+    std::vector<std::vector<int>> column_indices(kernel.width());
+    std::vector<std::vector<int>> row_indices(kernel.height());
+
+    // reverse height and width inside subcells
+    for (auto y = 0; y < kernel.width(); ++y)
+    {
+        // use the same shuffle pattern for all rows for correlated shuffling
+        if (y != 0 && correlated)
+        {
+            column_indices[y] = column_indices[0];
+            continue;
+        }
+
+        // shuffle columns separately to keep n-rooks condition satisfied
+        for (auto x = 0; x < kernel.height(); ++x)
+        {
+            column_indices[y].push_back(x);
+        }
+        std::random_shuffle(column_indices[y].begin(), column_indices[y].end());
+    }
+    // reverse height and width inside subcells
+    for (auto x = 0; x < kernel.height(); ++x)
+    {
+        // use the same shuffle pattern for all columns for correlated shuffling
+        if (x != 0 && correlated)
+        {
+            row_indices[x] = row_indices[0];
+            continue;
+        }
+
+        // shuffle rows separately to keep n-rooks condition satisfied
+        for (auto y = 0; y < kernel.width(); ++y)
+        {
+            row_indices[x].push_back(y);
+        }
+        std::random_shuffle(row_indices[x].begin(), row_indices[x].end());
+    }
+
+    int k = 0;
+    #pragma omp parallel for
+    for (auto x = 0; x < kernel.width(); ++x)
+    {
+        for (auto y = 0; y < kernel.height(); ++y)
+        {
+            // use subcell_positions for shuffled in-cell positions
+            const auto x_coord = x * subcell_width + column_indices[x][y] * stratum_size + jitter_dist(generator);
+            const auto y_coord = y * subcell_height + row_indices[y][x] * stratum_size + jitter_dist(generator);
+            kernel.value(static_cast<glm::uint16>(x), static_cast<glm::uint16>(y)) = glm::tvec2<T, P>(x_coord, y_coord);
+            ++k;
+        }
+    }
+}
 
 } // namespace sample
 
