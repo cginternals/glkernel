@@ -58,11 +58,52 @@ TEST_F(sample_test, hammersley)
     EXPECT_FLOAT_EQ(0.0f, kernel[0].y);
 
     EXPECT_FLOAT_EQ(1.0f / 4.0f, kernel[1].x);
-    EXPECT_FLOAT_EQ(0.5f, kernel[1].y);
+    EXPECT_FLOAT_EQ(1.0f / 2.0f, kernel[1].y);
 
     EXPECT_FLOAT_EQ(2.0f / 4.0f, kernel[2].x);
-    EXPECT_FLOAT_EQ(0.25f, kernel[2].y);
+    EXPECT_FLOAT_EQ(1.0f / 4.0f, kernel[2].y);
 
     EXPECT_FLOAT_EQ(3.0f / 4.0f, kernel[3].x);
-    EXPECT_FLOAT_EQ(0.75f, kernel[3].y);
+    EXPECT_FLOAT_EQ(3.0f / 4.0f, kernel[3].y);
+}
+
+TEST_F(sample_test, halton_compile)
+{
+    auto fkernel2 = glkernel::kernel2{ 1 };
+
+    glkernel::sample::halton(fkernel2, 2, 3);
+
+    auto dkernel2 = glkernel::dkernel2{ 1 };
+
+    glkernel::sample::halton(dkernel2, 2, 3);
+}
+
+TEST_F(sample_test, halton_sphere_compile)
+{
+    auto fkernel3 = glkernel::kernel3{ 1 };
+
+    glkernel::sample::halton_sphere(fkernel3, 2, 3);
+
+    auto dkernel3 = glkernel::dkernel3{ 1 };
+
+    glkernel::sample::halton_sphere(dkernel3, 2, 3);
+}
+
+TEST_F(sample_test, halton)
+{
+    auto kernel = glkernel::kernel2{ 2, 2 };
+
+    glkernel::sample::halton(kernel, 2, 3);
+
+    EXPECT_FLOAT_EQ(0.0f, kernel[0].x);
+    EXPECT_FLOAT_EQ(0.0f, kernel[0].y);
+
+    EXPECT_FLOAT_EQ(1.0f / 2.0f, kernel[1].x);
+    EXPECT_FLOAT_EQ(1.0f / 3.0f, kernel[1].y);
+
+    EXPECT_FLOAT_EQ(1.0f / 4.0f, kernel[2].x);
+    EXPECT_FLOAT_EQ(2.0f / 3.0f, kernel[2].y);
+
+    EXPECT_FLOAT_EQ(3.0f / 4.0f, kernel[3].x);
+    EXPECT_FLOAT_EQ(1.0f / 9.0f, kernel[3].y);
 }

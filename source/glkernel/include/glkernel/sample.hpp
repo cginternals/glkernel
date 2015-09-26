@@ -215,29 +215,48 @@ namespace {
 // http://holger.dammertz.org/stuff/notes_HammersleyOnHemisphere.html
 // which is licensed under http://creativecommons.org/licenses/by/3.0/
 
-float radical_inverse(unsigned int bits) {
+template <typename T>
+T radical_inverse(unsigned int bits) {
     // the bit order of the number is inversed and interpreted as a float
     bits = (bits << 16u) | (bits >> 16u);
     bits = ((bits & 0x55555555u) << 1u) | ((bits & 0xAAAAAAAAu) >> 1u);
     bits = ((bits & 0x33333333u) << 2u) | ((bits & 0xCCCCCCCCu) >> 2u);
     bits = ((bits & 0x0F0F0F0Fu) << 4u) | ((bits & 0xF0F0F0F0u) >> 4u);
     bits = ((bits & 0x00FF00FFu) << 8u) | ((bits & 0xFF00FF00u) >> 8u);
-    return static_cast<float>(bits) * 2.3283064365386963e-10f; // / 0x100000000
+    return static_cast<T>(bits) * static_cast<T>(2.3283064365386963e-10); // divide by 2^32
+}
+
+template <typename T>
+T van_der_corput(unsigned int n, const unsigned int base)
+{
+    if (base == 2)
+    {
+        return radical_inverse<T>(n);
+    }
+
+    const T inverse = 1 / static_cast<T>(base);
+    T result = 0;
+    for (T inverse_power = inverse; n != 0; inverse_power *= inverse)
+    {
+        result += (n % base) * inverse_power;
+        n /= base;
+    }
+    return result;
 }
 
 template <typename T, glm::precision P>
 glm::tvec3<T, P> hemisphere_sample_uniform(const T u, const T v) {
-    const T phi = v * static_cast<T>(2.0) * glm::pi<T>();
-    const T cosTheta = static_cast<T>(1.0) - u;
-    const T sinTheta = sqrt(static_cast<T>(1.0) - cosTheta * cosTheta);
+    const T phi = v * 2 * glm::pi<T>();
+    const T cosTheta = 1 - u;
+    const T sinTheta = sqrt(1 - cosTheta * cosTheta);
     return { cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta };
 }
 
 template <typename T, glm::precision P>
 glm::tvec3<T, P> hemisphere_sample_cos(const T u, const T v) {
-    const T phi = v * static_cast<T>(2.0) * glm::pi<T>();
-    const T cosTheta = sqrt(static_cast<T>(1.0) - u);
-    const T sinTheta = sqrt(static_cast<T>(1.0) - cosTheta * cosTheta);
+    const T phi = v * 2 * glm::pi<T>();
+    const T cosTheta = sqrt(1 - u);
+    const T sinTheta = sqrt(1 - cosTheta * cosTheta);
     return { cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta };
 }
 
@@ -249,7 +268,7 @@ void hammersley(tkernel<glm::tvec2<T, P>> & kernel)
     #pragma omp parallel for
     for (int i = 0; i < static_cast<int>(kernel.size()); ++i) {
         const auto u = static_cast<T>(i) / kernel.size();
-        const auto v = static_cast<T>(radical_inverse(i));
+        const auto v = radical_inverse<T>(i);
         kernel[i] = glm::tvec2<T, P>(u, v);
     }
 }
@@ -260,7 +279,40 @@ void hammersley_sphere(tkernel<glm::tvec3<T, P>> & kernel, const HemisphereMappi
     #pragma omp parallel for
     for (int i = 0; i < static_cast<int>(kernel.size()); ++i) {
         const auto u = static_cast<T>(i) / kernel.size();
-        const auto v = static_cast<T>(radical_inverse(i));
+        const auto v = radical_inverse<T>(i);
+        switch (type) {
+        case HemisphereMapping::Uniform:
+            kernel[i] = hemisphere_sample_uniform<T, P>(u, v);
+            break;
+        case HemisphereMapping::Cosine:
+            kernel[i] = hemisphere_sample_cos<T, P>(u, v);
+            break;
+        }
+    }
+}
+
+template <typename T, glm::precision P>
+void halton(tkernel<glm::tvec2<T, P>> & kernel, const unsigned int base1, const unsigned int base2)
+{
+    #pragma omp parallel for
+    for (int i = 0; i < static_cast<int>(kernel.size()); ++i) {
+        const auto u = van_der_corput<T>(i, base1);
+        const auto v = van_der_corput<T>(i, base2);
+        kernel[i] = glm::tvec2<T, P>(u, v);
+    }
+}
+
+template <typename T, glm::precision P>
+void halton_sphere(
+    tkernel<glm::tvec3<T, P>> & kernel,
+    const unsigned int base1,
+    const unsigned int base2,
+    const HemisphereMapping type)
+{
+    #pragma omp parallel for
+    for (int i = 0; i < static_cast<int>(kernel.size()); ++i) {
+        const auto u = van_der_corput<T>(i, base1);
+        const auto v = van_der_corput<T>(i, base2);
         switch (type) {
         case HemisphereMapping::Uniform:
             kernel[i] = hemisphere_sample_uniform<T, P>(u, v);
