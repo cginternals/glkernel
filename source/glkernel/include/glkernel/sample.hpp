@@ -12,6 +12,8 @@
 
 #include <glkernel/glm_compatability.h>
 
+#include <glm/gtx/norm.hpp>
+
 
 namespace glkernel
 {
@@ -205,6 +207,50 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, const T min_dist, cons
     }
 
     return k + 1;
+}
+
+template <typename T, glm::precision P>
+void best_candidate(tkernel<glm::tvec2<T, P>> & kernel, const unsigned int num_candidates)
+{
+    assert(num_candidates >= 1);
+
+    std::random_device RD;
+    std::mt19937_64 generator(RD());
+    std::uniform_real_distribution<> dist(0.0, 1.0);
+
+    for (size_t k = 0; k < kernel.size(); ++k)
+    {
+        std::vector<glm::tvec2<T, P>> candidates(num_candidates);
+        std::vector<T> min_dists(num_candidates);
+        // generate candidates
+        #pragma omp parallel for
+        for (int c = 0; c < static_cast<int>(num_candidates); ++c) {
+            candidates[c] = { dist(generator), dist(generator) };
+
+            // test candidates against previously accepted samples
+            T min_squared = 2;
+            for (size_t i = 0; i < k; ++i)
+            {
+                const T dist_squared = glm::length2(candidates[c] - kernel[i]);
+                min_squared = std::min(min_squared, dist_squared);
+            }
+            min_dists[c] = min_squared;
+        }
+
+        // find best candidate
+        T best_dist = min_dists[0];
+        unsigned int best_index = 0;
+        for (unsigned int c = 1; c < num_candidates; ++c)
+        {
+            if (min_dists[c] > best_dist)
+            {
+                best_dist = min_dists[c];
+                best_index = c;
+            }
+        }
+
+        kernel[k++] = candidates[best_index];
+    }
 }
 
 
