@@ -196,7 +196,7 @@ T smootherstep(const T t)
 }
 
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
-T noise3(
+T perlin3(
     const T s
     , const T t
     , const T u
@@ -238,34 +238,68 @@ T noise3(
 }
 
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
-T get_noise_type_value(const PerlinNoiseType type
+T simplex3(
+    const T s
+    , const T t
+    , const T u
+    , const unsigned int r)
+{
+    // scale according to frequency
+    const auto scaled_s = s * (1 << r);
+    const auto scaled_t = t * (1 << r);
+    const auto scaled_u = u * (1 << r);
+
+    return scaled_s + scaled_t + scaled_u;
+}
+
+template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
+T get_octave_type_value(const OctaveType type
     , const unsigned int octave
     , const T noise_value
     , const T octaved_noise)
 {
     switch (type)
     {
-    case PerlinNoiseType::Standard:
+    case OctaveType::Standard:
         return octave > 0 ? static_cast<T>(0.0) : noise_value;
-    case PerlinNoiseType::Cloud:
+    case OctaveType::Cloud:
         return octaved_noise;
-    case PerlinNoiseType::CloudAbs:
+    case OctaveType::CloudAbs:
         return fabs(octaved_noise);
-    case PerlinNoiseType::Wood:
+    case OctaveType::Wood:
         return static_cast<T>((octaved_noise * 8.0) - static_cast<int>(octaved_noise * 8.0));
-    case PerlinNoiseType::Paper:
+    case OctaveType::Paper:
         return noise_value * noise_value * static_cast<T>(octaved_noise > 0 ? 1.0 : -1.0);
-    };
+    }
 
     return noise_value;
+}
+
+template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
+T get_noise_type_value(const GradientNoiseType type
+    , const T x
+    , const T y
+    , const T z
+    , const unsigned int octave)
+{
+    switch (type)
+    {
+    case GradientNoiseType::Perlin:
+        return perlin3(x, y, z, octave);
+    case GradientNoiseType::Simplex:
+        return simplex3(x, y, z, octave);
+    }
+
+    return 0;
 }
 
 } // anonymous namespace
 
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type *>
-void perlin(tkernel<T> & kernel
-    , const PerlinNoiseType type
-    , const unsigned int startFrequency
+void gradient(tkernel<T> & kernel
+    , const GradientNoiseType noise_type
+    , const OctaveType octave_type
+    , const unsigned int start_frequency
     , const unsigned int octaves)
 {
     if (kernel.size() < 1)
@@ -290,10 +324,10 @@ void perlin(tkernel<T> & kernel
         T p = 0.5;
         for (unsigned int o = 0; o < octaves; ++o)
         {
-            const T po = noise3(x, y, z, o + startFrequency);
+            const T po = get_noise_type_value(noise_type, x, y, z, o + start_frequency);
             const T pf = fo[o] * po;
 
-            p += get_noise_type_value(type, o, po, pf);
+            p += get_octave_type_value(octave_type, o, po, pf);
         }
 
         kernel[i] = p;
