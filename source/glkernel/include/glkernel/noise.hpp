@@ -237,6 +237,8 @@ T perlin3(
     return glm::mix(j[0], j[1], smootherstep(f[2]));
 }
 
+// adapted from example code by Stefan Gustavson (stegu@itn.liu.se)
+// (http://webstaff.itn.liu.se/~stegu/simplexnoise/SimplexNoise.java)
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
 T simplex3(
     const T s
@@ -244,12 +246,87 @@ T simplex3(
     , const T u
     , const unsigned int r)
 {
+    const T F3 = 1.0 / 3.0;
+    const T G3 = 1.0 / 6.0;
     // scale according to frequency
     const auto scaled_s = s * (1 << r);
     const auto scaled_t = t * (1 << r);
     const auto scaled_u = u * (1 << r);
+    
+    // Skew the input space to determine which simplex cell we're in
+    const T skew_factor = (scaled_s + scaled_t + scaled_u) * F3; // Very nice and simple skew factor for 3D
+    const unsigned int i = std::floor(scaled_s + skew_factor);
+    const unsigned int j = std::floor(scaled_t + skew_factor);
+    const unsigned int k = std::floor(scaled_u + skew_factor);
+    const T unskew_factor = (i + j + k) * G3;
+    const T X0 = i - unskew_factor; // Unskew the cell origin back to (x,y,z) space
+    const T Y0 = j - unskew_factor;
+    const T Z0 = k - unskew_factor;
+    const T x0 = scaled_s - X0; // The x,y,z distances from the cell origin
+    const T y0 = scaled_t - Y0;
+    const T z0 = scaled_u - Z0;
+    // For the 3D case, the simplex shape is a slightly irregular tetrahedron.
+    // Determine which simplex we are in.
+    unsigned int i1, j1, k1; // Offsets for second corner of simplex in (i,j,k) coords
+    unsigned int i2, j2, k2; // Offsets for third corner of simplex in (i,j,k) coords
+    if(x0 >= y0)
+    {
+        if(y0 >= z0)
+        { 
+            i1=1; j1=0; k1=0; i2=1; j2=1; k2=0;
+        } // X Y Z order
+        else if(x0 >= z0)
+        {
+            i1=1; j1=0; k1=0; i2=1; j2=0; k2=1;
+        } // X Z Y order
+        else
+        {
+            i1=0; j1=0; k1=1; i2=1; j2=0; k2=1;
+        } // Z X Y order
+    }
+    else 
+    { // x0<y0
+        if(y0 < z0)
+        {
+            i1=0; j1=0; k1=1; i2=0; j2=1; k2=1;
+        } // Z Y X order
+        else if(x0 < z0)
+        {
+            i1=0; j1=1; k1=0; i2=0; j2=1; k2=1;
+        } // Y Z X order
+        else 
+        {
+            i1=0; j1=1; k1=0; i2=1; j2=1; k2=0;
+        } // Y X Z order
+    }
+    // A step of (1,0,0) in (i,j,k) means a step of (1-c,-c,-c) in (x,y,z),
+    // a step of (0,1,0) in (i,j,k) means a step of (-c,1-c,-c) in (x,y,z), and
+    // a step of (0,0,1) in (i,j,k) means a step of (-c,-c,1-c) in (x,y,z), where
+    // c = 1/6.
+    const T x1 = x0 - i1 + G3; // Offsets for second corner in (x,y,z) coords
+    const T y1 = y0 - j1 + G3;
+    const T z1 = z0 - k1 + G3;
+    const T x2 = x0 - i2 + 2.0 * G3; // Offsets for third corner in (x,y,z) coords
+    const T y2 = y0 - j2 + 2.0 * G3;
+    const T z2 = z0 - k2 + 2.0 * G3;
+    const T x3 = x0 - 1.0 + 3.0 * G3; // Offsets for last corner in (x,y,z) coords
+    const T y3 = y0 - 1.0 + 3.0 * G3;
+    const T z3 = z0 - 1.0 + 3.0 * G3;
+    // Calculate the contribution from the four corners
+    const T t0 = 0.6 - x0*x0 - y0*y0 - z0*z0;
+    const T n0 = (t0 < 0) ? 0 : (std::pow(t0, 4) * glm::dot(grad3<T>(i, j, k, r), glm::tvec3<T, glm::highp>(x0, y0, z0)));
 
-    return scaled_s + scaled_t + scaled_u;
+    const T t1 = 0.6 - x1*x1 - y1*y1 - z1*z1;
+    const T n1 = (t1 < 0) ? 0 : (std::pow(t1, 4) * glm::dot(grad3<T>(i+i1, j+j1, k+k1, r), glm::tvec3<T, glm::highp>(x1, y1, z1)));
+
+    const T t2 = 0.6 - x2*x2 - y2*y2 - z2*z2;
+    const T n2 = (t2 < 0) ? 0 : (std::pow(t2, 4) * glm::dot(grad3<T>(i+i2, j+j2, k+k2, r), glm::tvec3<T, glm::highp>(x2, y2, z2)));
+
+    const T t3 = 0.6 - x3*x3 - y3*y3 - z3*z3;
+    const T n3 = (t3 < 0) ? 0 : (std::pow(t3, 4) * glm::dot(grad3<T>(i+1, j+1, k+1, r), glm::tvec3<T, glm::highp>(x3, y3, z3)));
+    // Add contributions from each corner to get the final noise value.
+    // The result is scaled to stay just inside [-1,1]
+    return 32 * (n0 + n1 + n2 + n3);
 }
 
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
