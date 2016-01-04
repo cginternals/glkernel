@@ -168,6 +168,16 @@ size_t tkernel<T>::index(
 }
 
 template<typename T>
+glm::tvec3<glm::uint16> tkernel<T>::location(size_t k)
+{
+    return { 
+        k % m_width,
+        (k / m_width) % m_height,
+        k / (m_width * m_height)
+    };
+}
+
+template<typename T>
 template<typename Operator, typename... Args>
 void tkernel<T>::for_each(Args&&... args)
 {
