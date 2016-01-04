@@ -208,31 +208,53 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, const T min_dist, cons
     return k + 1;
 }
 
+
+template <typename T>
+class stratified_operator
+{
+public:
+    stratified_operator(const glm::u16vec3 & extent, glm::length_t);
+
+    template <typename F, glm::precision P, template<typename, glm::precision> class V>
+    stratified_operator(const glm::u16vec3 & extent, glm::length_t coefficient);
+
+    T operator()(const glm::u16vec3 & position);
+
+protected:
+    std::mt19937_64 m_generator;
+    std::uniform_real_distribution<T> m_distribute;
+
+    const T m_extent_inverse;
+    const glm::length_t m_coefficient;
+};
+
+
+template<typename T>
+stratified_operator<T>::stratified_operator(const glm::u16vec3 & extent, const glm::length_t coefficient)
+: m_generator{ std::random_device{}() }
+, m_distribute{ static_cast<T>(0.0), static_cast<T>(1.0) / extent[coefficient] }
+, m_extent_inverse{ static_cast<T>(1.0) / extent[coefficient] }
+, m_coefficient{ coefficient }
+{
+}
+
+template <typename T>
+template <typename F, glm::precision P, template<typename, glm::precision> class V>
+stratified_operator<T>::stratified_operator(const glm::u16vec3 & extent, const glm::length_t coefficient)
+: uniform_operator{ extent, coefficient }
+{
+}
+
+template<typename T>
+T stratified_operator<T>::operator()(const glm::u16vec3 & position)
+{
+    return position[m_coefficient] * m_extent_inverse + m_distribute(m_generator);
+}
+
 template <typename T, glm::precision P>
 void stratified(tkernel<glm::tvec2<T, P>> & kernel)
 {
-    assert(kernel.depth() == 1);
-
-    const auto stratum_width = 1.0 / kernel.width();
-    const auto stratum_height = 1.0 / kernel.height();
-
-    std::random_device RD;
-    std::mt19937_64 generator(RD());
-    // uniform distribution within stratum
-    std::uniform_real_distribution<> x_dist(0.0, stratum_width);
-    std::uniform_real_distribution<> y_dist(0.0, stratum_height);
-
-    #pragma omp parallel for
-    for (auto x = 0; x < kernel.width(); ++x)
-    {
-        for (auto y = 0; y < kernel.height(); ++y)
-        {
-            const auto x_coord = x * stratum_width + x_dist(generator);
-            const auto y_coord = y * stratum_height + y_dist(generator);
-            kernel.value(static_cast<glm::uint16>(x), static_cast<glm::uint16>(y)) 
-                = glm::tvec2<T, P>(x_coord, y_coord);
-        }
-    }
+    kernel.template for_each_position<stratified_operator<T>>();
 }
 
 

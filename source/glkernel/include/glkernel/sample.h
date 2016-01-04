@@ -24,10 +24,17 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, T min_dist, unsigned i
 
 /**
 *  @brief
-*  Subdivides pixel area into n x m strata with one sample each
+*  A random (uniform) sample within each kernel strata is generated.
 *
-*  Reduces clustering of samples, non-uniform sampling of areas and missing of small details
-*  Within each stratum a uniform distribution is used.
+*  This generates uniform sampled positions within each kernel cell:
+*  within each stratum a uniform distribution is used. As a result, 
+*  each kernel value comprises a position that is located within its
+*  stratum. E.g., a kernel2{2, 4} would comprise random positions, 
+*  covering 8 strata. The position of value(0, 0) would reside within
+*  [0.0, 0.5] for x and [0.0, 0.25] for y.
+*
+*  Stratified sampling reduces clustering of samples, non-uniform 
+*  sampling of areas (e.g., relevant to preserve smaller details).
 *
 *  @param[in,out] kernel
 *  The kernel to be modified, dimensions are used for number of strata
