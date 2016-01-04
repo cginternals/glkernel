@@ -170,7 +170,8 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, const T min_dist, cons
             const auto masked = occupancy.masked(probe, kernel);
             const auto delta = glm::abs(active - probe);
 
-            probes[i] = std::make_tuple<glm::tvec2<T, P>, T>(std::move(probe), (masked ? static_cast<T>(-1.0) : glm::dot(delta, delta)));
+            probes[i] = std::make_tuple<glm::tvec2<T, P>, T>(std::move(probe), 
+                (masked ? static_cast<T>(-1.0) : glm::dot(delta, delta)));
         }
         
         // pick nearest probe from sample set
@@ -228,7 +229,8 @@ void stratified(tkernel<glm::tvec2<T, P>> & kernel)
         {
             const auto x_coord = x * stratum_width + x_dist(generator);
             const auto y_coord = y * stratum_height + y_dist(generator);
-			kernel.value(static_cast<glm::uint16>(x), static_cast<glm::uint16>(y)) = glm::tvec2<T, P>(x_coord, y_coord);
+            kernel.value(static_cast<glm::uint16>(x), static_cast<glm::uint16>(y)) 
+                = glm::tvec2<T, P>(x_coord, y_coord);
         }
     }
 }
