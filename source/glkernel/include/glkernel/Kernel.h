@@ -35,6 +35,7 @@ public:
     void reset();
 
     size_t index(glm::uint16 s = 0, glm::uint16 t = 0, glm::uint16 r = 0) const;
+    glm::tvec3<glm::uint16> location(size_t i);
 
     T & operator[](size_t i);
     const T & operator[](size_t i) const;
@@ -49,6 +50,8 @@ public:
 
     template<typename Operator, typename... Args>
     void for_each(Args&&... args);
+
+
 
 protected:
     std::vector<T> m_kernel;
