@@ -252,11 +252,30 @@ T stratified_operator<T>::operator()(const glm::u16vec3 & position)
 }
 
 template <typename T, glm::precision P>
-void stratified(tkernel<glm::tvec2<T, P>> & kernel)
+void stratified(tkernel<glm::tvec1<T, P>> & kernel)
 {
+    // the kernels dimensionality should match its value type,
+    // i.e., at least two dimensions should be unused (equal 1)
+    assert(kernel.depth() == 1 && kernel.width()  == 1);
     kernel.template for_each_position<stratified_operator<T>>();
 }
 
+template <typename T, glm::precision P>
+void stratified(tkernel<glm::tvec2<T, P>> & kernel)
+{
+    // the kernels dimensionality should match its value type,
+    // i.e., at least one dimension should be unused (equal 1)
+    assert(kernel.depth() == 1);
+    kernel.template for_each_position<stratified_operator<T>>();
+}
+
+template <typename T, glm::precision P>
+void stratified(tkernel<glm::tvec3<T, P>> & kernel)
+{
+    // the kernels dimensionality should match its value type,
+    // i.e., all three dimensions can be used (no assert required)
+    kernel.template for_each_position<stratified_operator<T>>();
+}
 
 } // namespace sample
 
