@@ -342,7 +342,7 @@ stratified_operator<T>::stratified_operator(const glm::u16vec3 & extent, const g
 template <typename T>
 template <typename F, glm::precision P, template<typename, glm::precision> class V>
 stratified_operator<T>::stratified_operator(const glm::u16vec3 & extent, const glm::length_t coefficient)
-: uniform_operator{ extent, coefficient }
+: stratified_operator{ extent, coefficient }
 {
 }
 

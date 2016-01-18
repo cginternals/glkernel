@@ -191,7 +191,7 @@ glm::tvec3<T, glm::highp> grad3(
 
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
 glm::tvec3<T, glm::highp> grad3(
-    glm::tvec3<unsigned int> v
+    glm::tvec3<unsigned int, glm::highp> v
     , const unsigned int r)
 {
     const auto p = hash3(v.x, v.y, v.z, r);
@@ -262,14 +262,14 @@ T simplex3(
     const glm::tvec3<T, glm::highp> scaled_pos = pos * static_cast<T>(1 << r);
     // skew the input space to determine the simplex cell origin
     const T skew_factor = (scaled_pos.x + scaled_pos.y + scaled_pos.z) * skew_constant;
-    const glm::tvec3<unsigned int> corner = glm::floor(scaled_pos + skew_factor);
+    const glm::tvec3<unsigned int, glm::highp> corner = glm::tvec3<unsigned int, glm::highp>(glm::floor(scaled_pos + skew_factor));
     // unskew the cell origin back to (x,y,z) space
     const T unskew_factor = (corner.x + corner.y + corner.z) * unskew_constant;
     const glm::tvec3<T, glm::highp> v0 = scaled_pos + unskew_factor - static_cast<glm::tvec3<T, glm::highp>>(corner);
     // for the 3D case, the simplex shape is a slightly irregular tetrahedron.
     // determine corner offsets in skewed space for specific simplex
-    glm::tvec3<unsigned int> corner_offset1;
-    glm::tvec3<unsigned int> corner_offset2;
+    glm::tvec3<unsigned int, glm::highp> corner_offset1;
+    glm::tvec3<unsigned int, glm::highp> corner_offset2;
     if (v0.x >= v0.y)
     {
         if (v0.y >= v0.z)
