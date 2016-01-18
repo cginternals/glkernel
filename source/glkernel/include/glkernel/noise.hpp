@@ -388,7 +388,7 @@ void gradient(tkernel<T> & kernel
     #pragma omp parallel for
     for (long long i = 0; i < static_cast<long long>(kernel.size()); ++i)
     {
-        const auto location = static_cast<glm::tvec3<T, glm::highp>>(kernel.location(i));
+        const auto location = static_cast<glm::tvec3<T, glm::highp>>(kernel.position(i));
         const auto x = location.x / kernel.width();
         const auto y = location.y / kernel.height();
         const auto z = location.z / kernel.depth();
