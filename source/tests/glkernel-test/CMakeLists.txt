@@ -107,7 +107,7 @@ target_compile_options(${target}
 # 
 
 # Use pthreads on mingw and linux
-if(NOT MSVC)
+if (NOT "${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
     set(DEFAULT_LINKER_OPTIONS ${DEFAULT_LINKER_OPTIONS}
         $<$<BOOL:"${OPENMP_FOUND}">:${OpenMP_CXX_FLAGS}>)
 endif()
