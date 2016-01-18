@@ -66,7 +66,7 @@ template<typename T>
 glm::length_t tkernel<T>::length()
 {
     return kernel_length(T{ });
-};
+}
 
 template<typename T>
 const glm::u16vec3 & tkernel<T>::extent() const
