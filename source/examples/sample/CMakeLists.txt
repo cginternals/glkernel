@@ -3,7 +3,7 @@
 # External dependencies
 # 
 
-find_package(GLM REQUIRED)
+find_package(GLM 0.9.6 REQUIRED)
 
 find_package(OpenMP QUIET)
 
