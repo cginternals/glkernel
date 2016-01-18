@@ -106,8 +106,14 @@ target_compile_options(${target}
 # Linker options
 # 
 
+# Use pthreads on mingw and linux
+if(NOT MSVC)
+    set(DEFAULT_LINKER_OPTIONS ${DEFAULT_LINKER_OPTIONS}
+        $<$<BOOL:"${OPENMP_FOUND}">:${OpenMP_CXX_FLAGS}>)
+endif()
+
+
 target_link_libraries(${target}
     PRIVATE
-    $<$<BOOL:"${OPENMP_FOUND}">:${OpenMP_CXX_FLAGS}>
     ${DEFAULT_LINKER_OPTIONS}
 )
