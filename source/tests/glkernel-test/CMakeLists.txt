@@ -106,12 +106,8 @@ target_compile_options(${target}
 # Linker options
 # 
 
-if (NOT "${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
-    set(DEFAULT_LINKER_OPTIONS ${DEFAULT_LINKER_OPTIONS}
-        $<$<BOOL:"${OPENMP_FOUND}">:${OpenMP_CXX_FLAGS}>)
-endif()
-
 target_link_libraries(${target}
     PRIVATE
     ${DEFAULT_LINKER_OPTIONS}
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:$<$<BOOL:"${OPENMP_FOUND}">:${OpenMP_CXX_FLAGS}>>
 )
