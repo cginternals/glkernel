@@ -22,6 +22,79 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, unsigned int num_probe
 template <typename T, glm::precision P>
 size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, T min_dist, unsigned int num_probes = 32);
 
+/**
+*  @brief
+*  Generates the hammersley point set
+*
+*  @param[in,out] kernel
+*  The kernel to be modified
+*/
+template <typename T, glm::precision P>
+void hammersley(tkernel<glm::tvec2<T, P>> & kernel);
+
+/**
+*  @brief
+*  Generates the halton point set
+*
+*  @param[in,out] kernel
+*  The kernel to be modified
+*
+*  @param[in] base1
+*  Base for the "van der Corput" sequence used for the x coordinates
+*
+*  @param[in] base2
+*  Base for the "van der Corput" sequence used for the y coordinates
+*/
+template <typename T, glm::precision P>
+void halton(tkernel<glm::tvec2<T, P>> & kernel, const unsigned int base1, const unsigned int base2);
+
+/**
+*  @brief
+*  Hemisphere mapping used for hammersley and halton sampling
+*/
+enum class HemisphereMapping : unsigned char
+{
+    Uniform,
+    Cosine
+};
+
+/**
+*  @brief
+*  Generates the hammersley point set and maps it to a hemisphere
+*
+*  @param[in,out] kernel
+*  The kernel to be modified
+*
+*  @param[in] type
+*  Mapping used for generating points on a sphere
+*/
+template <typename T, glm::precision P>
+void hammersley_sphere(
+    tkernel<glm::tvec3<T, P>> & kernel,
+    const HemisphereMapping type = HemisphereMapping::Uniform);
+
+/**
+*  @brief
+*  Generates the halton point set and maps it to a hemisphere
+*
+*  @param[in,out] kernel
+*  The kernel to be modified
+*
+*  @param[in] type
+*  Mapping used for generating points on a sphere
+*
+*  @param[in] base1
+*  Base for the "van der Corput" sequence used for the x coordinates
+*
+*  @param[in] base2
+*  Base for the "van der Corput" sequence used for the y coordinates
+*/
+template <typename T, glm::precision P>
+void halton_sphere(
+    tkernel<glm::tvec3<T, P>> & kernel,
+    const unsigned int base1,
+    const unsigned int base2,
+    const HemisphereMapping type = HemisphereMapping::Uniform);
 
 } // namespace sample
 
