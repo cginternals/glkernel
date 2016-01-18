@@ -24,10 +24,12 @@ private:
 public:
 
     tkernel(glm::uint16 width = 1, glm::uint16 height = 1, glm::uint16 depth = 1);
+    tkernel(const glm::u16vec3 & extent);
 
     static glm::length_t length();
     size_t size() const;
 
+    const glm::u16vec3 & extent() const;
     glm::uint16 width() const;
     glm::uint16 height() const;
     glm::uint16 depth() const;
@@ -35,7 +37,7 @@ public:
     void reset();
 
     size_t index(glm::uint16 s = 0, glm::uint16 t = 0, glm::uint16 r = 0) const;
-    glm::tvec3<glm::uint16> location(size_t i);
+    glm::u16vec3 position(const size_t index) const;
 
     T & operator[](size_t i);
     const T & operator[](size_t i) const;
@@ -46,19 +48,19 @@ public:
     auto data() -> decltype(kernel_ptr<T>(s_type_workaround));
     auto data() const -> const decltype(kernel_ptr<T>(s_type_workaround));
 
-    tkernel trimed(glm::uint16 width, glm::uint16 height, glm::uint16 depth) const;
+    tkernel trimmed(glm::uint16 width, glm::uint16 height, glm::uint16 depth) const;
 
+    // index passed to operator (size and coefficient to operator constructor)
     template<typename Operator, typename... Args>
     void for_each(Args&&... args);
 
-
+    // position passed to operator (extent and coefficient to operator constructor)
+    template<typename Operator, typename... Args>
+    void for_each_position(Args&&... args);
 
 protected:
     std::vector<T> m_kernel;
-
-    glm::uint16 m_width;
-    glm::uint16 m_height;
-    glm::uint16 m_depth;
+    glm::u16vec3 m_extent;
 };
 
 using kernel1  = tkernel<float>;
