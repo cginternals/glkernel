@@ -10,14 +10,10 @@ message(STATUS "Test ${target}")
 
 find_package(GLM REQUIRED)
 
-if(OPTION_USE_LOOP_PARALLELIZATION)
+find_package(OpenMP QUIET)
 
-    find_package(OpenMP QUIET)
-
-    if (NOT OPENMP_FOUND)
-        message("Loop parallelization in ${target} skipped: OpenMP not found")
-    endif()
-
+if (NOT OPENMP_FOUND)
+    message("Loop parallelization in ${target} skipped: OpenMP not found")
 endif()
 
 
@@ -89,6 +85,7 @@ target_link_libraries(${target}
 
 target_compile_definitions(${target}
     PRIVATE
+    $<$<BOOL:"${OPENMP_FOUND}">:USE_OPENMP>
     ${DEFAULT_COMPILE_DEFINITIONS}
 )
 
@@ -99,6 +96,7 @@ target_compile_definitions(${target}
 
 target_compile_options(${target}
     PRIVATE
+    $<$<BOOL:"${OPENMP_FOUND}">:${OpenMP_CXX_FLAGS}>
     ${DEFAULT_COMPILE_OPTIONS}
 )
 
