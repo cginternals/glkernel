@@ -33,6 +33,29 @@ TEST_F(tkernel_test, tkernel_indexed_value_access)
     EXPECT_EQ(1.f, fkernel.value(1, 2, 3));
 }
 
+TEST_F(tkernel_test, tkernel_position_conformance)
+{
+    auto fkernel = glkernel::kernel1(2, 3, 4);
+
+    EXPECT_EQ(24u, fkernel.size());
+    EXPECT_EQ(2u, fkernel.width());
+    EXPECT_EQ(3u, fkernel.height());
+    EXPECT_EQ(4u, fkernel.depth());
+
+    // check if the index-position relation is bijectiv
+
+    const auto findex = fkernel.index(1, 2, 3);
+    EXPECT_EQ(static_cast<unsigned int>(2 * 3 * 3 + 2 * 2 + 1), findex);
+
+    fkernel[findex] = 1.f;
+    EXPECT_EQ(1.f, fkernel.value(1, 2, 3));
+
+    const auto fpos = fkernel.position(findex);
+    EXPECT_EQ(1u, fpos[0]);
+    EXPECT_EQ(2u, fpos[1]);
+    EXPECT_EQ(3u, fpos[2]);
+}
+
 TEST_F(tkernel_test, tkernel_data_access)
 {
     auto fkernel = glkernel::kernel1(8, 2, 4);
@@ -88,7 +111,7 @@ TEST_F(tkernel_test, tkernel_trim)
             for (glm::uint16 s = 0; s < fkernel.width(); ++s)
                 fkernel.value(s, t, r) = glm::vec3(s, t, r);
 
-    const auto trimmed = fkernel.trimed(2, 2, 2);
+    const auto trimmed = fkernel.trimmed(2, 2, 2);
 
     for (glm::uint16 r = 0; r < trimmed.depth(); ++r)
         for (glm::uint16 t = 0; t < trimmed.height(); ++t)

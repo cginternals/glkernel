@@ -40,17 +40,20 @@ glm::length_t kernel_length(const V<T, P> & type)
     return type.length();
 }
 
-
 template<typename T>
 tkernel<T>::tkernel(
     const glm::uint16 w
 ,   const glm::uint16 h
 ,   const glm::uint16 d)
-: m_width { w }
-, m_height{ h }
-, m_depth { d }
+: m_extent { w, h, d }
 {
-    m_kernel.resize(m_width * m_height * m_depth);
+    m_kernel.resize(w * h * d);
+}
+
+template<typename T>
+tkernel<T>::tkernel(const glm::u16vec3 & extent)
+: tkernel{ extent.x, extent.y, extent.z }
+{
 }
 
 template<typename T>
@@ -66,21 +69,27 @@ glm::length_t tkernel<T>::length()
 };
 
 template<typename T>
+const glm::u16vec3 & tkernel<T>::extent() const
+{
+    return m_extent;
+}
+
+template<typename T>
 glm::uint16 tkernel<T>::width() const
 {
-    return m_width;
+    return m_extent.x;
 }
 
 template<typename T>
 glm::uint16 tkernel<T>::height() const
 {
-    return m_height;
+    return m_extent.y;
 }
 
 template<typename T>
 glm::uint16 tkernel<T>::depth() const
 {
-    return m_depth;
+    return m_extent.z;
 }
 
 template<typename T>
@@ -91,14 +100,14 @@ void tkernel<T>::reset()
 }
 
 template<typename T>
-tkernel<T> tkernel<T>::trimed(
+tkernel<T> tkernel<T>::trimmed(
     const glm::uint16 width,
     const glm::uint16 height,
     const glm::uint16 depth) const
 {
-    assert(width  <= m_width);
-    assert(height <= m_height);
-    assert(depth  <= m_depth);
+    assert(width  <= m_extent[0]);
+    assert(height <= m_extent[1]);
+    assert(depth  <= m_extent[2]);
 
     auto kernel = tkernel<T>{ width, height, depth };
 
@@ -160,11 +169,26 @@ size_t tkernel<T>::index(
 ,   const glm::uint16 t
 ,   const glm::uint16 r) const
 {
-    assert(s < m_width);
-    assert(t < m_height);
-    assert(r < m_depth);
+    assert(s < m_extent[0]);
+    assert(t < m_extent[1]);
+    assert(r < m_extent[2]);
 
-    return r * m_width * m_height + t * m_width + s;
+    return r * m_extent[0] * m_extent[1] + t * m_extent[0] + s;
+}
+
+template<typename T>
+glm::u16vec3 tkernel<T>::position(const size_t index) const
+{
+    assert(index < size());
+
+    const auto wh = m_extent[0] * m_extent[1];
+
+    auto pos = glm::u16vec3{ 0, 0, 0 };
+    pos[2] = static_cast<glm::uint16>(index / wh);
+    pos[1] = static_cast<glm::uint16>(index % wh / m_extent[0]);
+    pos[0] = static_cast<glm::uint16>(index % m_extent[0]);
+
+    return pos;
 }
 
 template<typename T>
@@ -185,5 +209,25 @@ void tkernel<T>::for_each(Args&&... args)
             d[i * l + coefficient] = o(i);
     }
 }
+
+template<typename T>
+template<typename Operator, typename... Args>
+void tkernel<T>::for_each_position(Args&&... args)
+{
+    static const auto l = length();
+
+    auto d = data();
+    const auto s = size();
+
+    #pragma omp parallel for
+    for (glm::length_t coefficient = 0; coefficient < l; ++coefficient)
+    {
+        auto o = Operator(extent(), coefficient, std::forward<Args>(args)...);
+
+        for (size_t i = 0; i < s; ++i)
+            d[i * l + coefficient] = o(position(i));
+    }
+}
+
 
 } // namespace glkernel
