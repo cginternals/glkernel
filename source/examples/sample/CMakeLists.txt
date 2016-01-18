@@ -137,7 +137,6 @@ endif()
 target_link_libraries(${target}
     PRIVATE
     ${DEFAULT_LINKER_OPTIONS}
-    $<$<BOOL:"${OPENMP_FOUND}">:${OpenMP_CXX_FLAGS}>
 )
 
 
