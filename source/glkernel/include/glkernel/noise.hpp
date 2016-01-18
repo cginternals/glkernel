@@ -190,13 +190,22 @@ glm::tvec3<T, glm::highp> grad3(
 }
 
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
+glm::tvec3<T, glm::highp> grad3(
+    glm::tvec3<unsigned int> v
+    , const unsigned int r)
+{
+    const auto p = hash3(v.x, v.y, v.z, r);
+    return glm::tvec3<T, glm::highp>(grad[p % 16]);
+}
+
+template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
 T smootherstep(const T t)
 {
     return t * t * t * (t * (t * 6 - 15) + 10);
 }
 
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
-T noise3(
+T perlin3(
     const T s
     , const T t
     , const T u
@@ -237,35 +246,133 @@ T noise3(
     return glm::mix(j[0], j[1], smootherstep(f[2]));
 }
 
+// adapted from example code by Stefan Gustavson (stegu@itn.liu.se)
+// (http://webstaff.itn.liu.se/~stegu/simplexnoise/SimplexNoise.java)
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
-T get_noise_type_value(const PerlinNoiseType type
+T simplex3(
+    const T s
+    , const T t
+    , const T u
+    , const unsigned int r)
+{
+    const T skew_constant = 1 / static_cast<T>(3);
+    const T unskew_constant = 1 / static_cast<T>(6);
+    // scale according to frequency
+    const glm::tvec3<T, glm::highp> pos = {s, t, u};
+    const glm::tvec3<T, glm::highp> scaled_pos = pos * static_cast<T>(1 << r);
+    // skew the input space to determine the simplex cell origin
+    const T skew_factor = (scaled_pos.x + scaled_pos.y + scaled_pos.z) * skew_constant;
+    const glm::tvec3<unsigned int> corner = glm::floor(scaled_pos + skew_factor);
+    // unskew the cell origin back to (x,y,z) space
+    const T unskew_factor = (corner.x + corner.y + corner.z) * unskew_constant;
+    const glm::tvec3<T, glm::highp> v0 = scaled_pos + unskew_factor - static_cast<glm::tvec3<T, glm::highp>>(corner);
+    // for the 3D case, the simplex shape is a slightly irregular tetrahedron.
+    // determine corner offsets in skewed space for specific simplex
+    glm::tvec3<unsigned int> corner_offset1;
+    glm::tvec3<unsigned int> corner_offset2;
+    if (v0.x >= v0.y)
+    {
+        if (v0.y >= v0.z)
+        {
+            corner_offset1 = {1, 0, 0};
+            corner_offset2 = {1, 1, 0};
+        } // X Y Z order
+        else if (v0.x >= v0.z)
+        {
+            corner_offset1 = {1, 0, 0};
+            corner_offset2 = {1, 0, 1};
+        } // X Z Y order
+        else
+        {
+            corner_offset1 = {0, 0, 1};
+            corner_offset2 = {1, 0, 1};
+        } // Z X Y order
+    }
+    else
+    { // v0.x < v0.y
+        if (v0.y < v0.z)
+        {
+            corner_offset1 = {0, 0, 1};
+            corner_offset2 = {0, 1, 1};
+        } // Z Y X order
+        else if (v0.x < v0.z)
+        {
+            corner_offset1 = {0, 1, 0};
+            corner_offset2 = {0, 1, 1};
+        } // Y Z X order
+        else
+        {
+            corner_offset1 = {0, 1, 0};
+            corner_offset2 = {1, 1, 0};
+        } // Y X Z order
+    }
+    // corner offsets in (x,y,z) space
+    const glm::tvec3<T, glm::highp> v1 = v0 +      unskew_constant - static_cast<glm::tvec3<T, glm::highp>>(corner_offset1);
+    const glm::tvec3<T, glm::highp> v2 = v0 +  2 * unskew_constant - static_cast<glm::tvec3<T, glm::highp>>(corner_offset2);
+    const glm::tvec3<T, glm::highp> v3 = v0 + (3 * unskew_constant - 1);
+    // contribution factors
+    const T t0 = static_cast<T>(0.5) - glm::dot(v0, v0);
+    const T t1 = static_cast<T>(0.5) - glm::dot(v1, v1);
+    const T t2 = static_cast<T>(0.5) - glm::dot(v2, v2);
+    const T t3 = static_cast<T>(0.5) - glm::dot(v3, v3);
+    // Calculate the contribution from the four corners
+    const T n0 = (t0 < 0) ? 0 : (std::pow(t0, 4) * glm::dot(grad3<T>(corner,                  r), v0));
+    const T n1 = (t1 < 0) ? 0 : (std::pow(t1, 4) * glm::dot(grad3<T>(corner + corner_offset1, r), v1));
+    const T n2 = (t2 < 0) ? 0 : (std::pow(t2, 4) * glm::dot(grad3<T>(corner + corner_offset2, r), v2));
+    const T n3 = (t3 < 0) ? 0 : (std::pow(t3, 4) * glm::dot(grad3<T>(corner + 1u,             r), v3));
+    // Add contributions from each corner to get the final noise value.
+    // The result is scaled to stay just inside [-1,1]
+    return 32 * (n0 + n1 + n2 + n3);
+}
+
+template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
+T get_octave_type_value(const OctaveType type
     , const unsigned int octave
     , const T noise_value
     , const T octaved_noise)
 {
     switch (type)
     {
-    case PerlinNoiseType::Standard:
-        return octave > 0 ? static_cast<T>(0.0) : noise_value;
-    case PerlinNoiseType::Cloud:
+    case OctaveType::Standard:
+        return octave > 0 ? 0 : noise_value;
+    case OctaveType::Cloud:
         return octaved_noise;
-    case PerlinNoiseType::CloudAbs:
+    case OctaveType::CloudAbs:
         return fabs(octaved_noise);
-    case PerlinNoiseType::Wood:
-        return static_cast<T>((octaved_noise * 8.0) - static_cast<int>(octaved_noise * 8.0));
-    case PerlinNoiseType::Paper:
-        return noise_value * noise_value * static_cast<T>(octaved_noise > 0 ? 1.0 : -1.0);
-    };
+    case OctaveType::Wood:
+        return octaved_noise * 8 - static_cast<int>(octaved_noise * 8);
+    case OctaveType::Paper:
+        return noise_value * noise_value * static_cast<T>(octaved_noise > 0 ? 1 : -1);
+    }
 
     return noise_value;
+}
+
+template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
+T get_noise_type_value(const GradientNoiseType type
+    , const T x
+    , const T y
+    , const T z
+    , const unsigned int octave)
+{
+    switch (type)
+    {
+    case GradientNoiseType::Perlin:
+        return perlin3(x, y, z, octave);
+    case GradientNoiseType::Simplex:
+        return simplex3(x, y, z, octave);
+    }
+
+    return 0;
 }
 
 } // anonymous namespace
 
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type *>
-void perlin(tkernel<T> & kernel
-    , const PerlinNoiseType type
-    , const unsigned int startFrequency
+void gradient(tkernel<T> & kernel
+    , const GradientNoiseType noise_type
+    , const OctaveType octave_type
+    , const unsigned int start_frequency
     , const unsigned int octaves)
 {
     if (kernel.size() < 1)
@@ -290,10 +397,10 @@ void perlin(tkernel<T> & kernel
         T p = 0.5;
         for (unsigned int o = 0; o < octaves; ++o)
         {
-            const T po = noise3(x, y, z, o + startFrequency);
+            const T po = get_noise_type_value(noise_type, x, y, z, o + start_frequency);
             const T pf = fo[o] * po;
 
-            p += get_noise_type_value(type, o, po, pf);
+            p += get_octave_type_value(octave_type, o, po, pf);
         }
 
         kernel[i] = p;

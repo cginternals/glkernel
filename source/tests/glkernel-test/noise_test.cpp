@@ -77,19 +77,19 @@ TEST_F(noise_test, uniform_compile)
     glkernel::noise::uniform(dkernel4, glm::dvec4{ 0.0 }, glm::dvec4{ 1.0 });
 }
 
-TEST_F(noise_test, perlin_compile)
+TEST_F(noise_test, gradient_compile)
 {
     auto fkernel1 = glkernel::kernel1{ 1 };
     auto dkernel1 = glkernel::dkernel1{ 1 };
 
-    glkernel::noise::perlin(fkernel1);
-    glkernel::noise::perlin(dkernel1);
+    glkernel::noise::gradient(fkernel1);
+    glkernel::noise::gradient(dkernel1);
 }
 
 TEST_F(noise_test, perlin_tileability)
 {
     auto dkernel = glkernel::dkernel1{ 64, 64, 64 };
-    glkernel::noise::perlin(dkernel);
+    glkernel::noise::gradient(dkernel, glkernel::noise::GradientNoiseType::Perlin);
 
     // tests if values at the border of the kernel are similar to those at the opposing side
     for (glm::uint16 c1 = 0; c1 < 64; ++c1)
