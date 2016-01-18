@@ -9,6 +9,7 @@
 #include <list>
 #include <iterator>
 #include <tuple>
+#include <algorithm>
 
 #include <glkernel/glm_compatability.h>
 
@@ -208,6 +209,34 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, const T min_dist, cons
     return k + 1;
 }
 
+template <typename T, glm::precision P>
+void n_rooks(tkernel<glm::tvec2<T, P>> & kernel)
+{
+    assert(kernel.depth() == 1);
+
+    const auto stratum_size = 1.0 / kernel.size();
+    std::random_device RD;
+    std::mt19937_64 generator(RD());
+    // use uniform distribution for jittering inside strata
+    std::uniform_real_distribution<> jitter_dist(0.0, stratum_size);
+
+    // create pool of column indices and shuffle it
+    std::vector<int> columnIndices;
+    for (int k = 0; k < static_cast<int>(kernel.size()); ++k)
+    {
+        columnIndices.push_back(k);
+    }
+    std::random_shuffle(columnIndices.begin(), columnIndices.end());
+
+    // use columnIndices to shuffle samples in y-direction
+    #pragma omp parallel for
+    for (int k = 0; k < static_cast<int>(kernel.size()); ++k)
+    {
+        const auto x_coord = k * stratum_size + jitter_dist(generator);
+        const auto y_coord = columnIndices.at(k) * stratum_size + jitter_dist(generator);
+        kernel[k] = glm::tvec2<T, P>(x_coord, y_coord);
+    }
+}
 
 template <typename T>
 class stratified_operator
