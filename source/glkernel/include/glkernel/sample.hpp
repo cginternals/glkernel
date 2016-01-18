@@ -13,6 +13,9 @@
 
 #include <glkernel/glm_compatability.h>
 
+#include <glm/gtx/norm.hpp>
+#include <glm/gtc/constants.hpp>
+
 
 namespace glkernel
 {
@@ -374,6 +377,165 @@ void stratified(tkernel<glm::tvec3<T, P>> & kernel)
     // i.e., all three dimensions can be used (no assert required)
     kernel.template for_each_position<stratified_operator<T>>();
 }
+namespace {
+
+// adapted code from "Hammersley Points on the Hemisphere", Holger Dammertz
+// http://holger.dammertz.org/stuff/notes_HammersleyOnHemisphere.html
+// which is licensed under http://creativecommons.org/licenses/by/3.0/
+
+template <typename T>
+T radical_inverse(unsigned int bits) {
+    // the bit order of the number is inversed and interpreted as a float
+    bits = (bits << 16u) | (bits >> 16u);
+    bits = ((bits & 0x55555555u) << 1u) | ((bits & 0xAAAAAAAAu) >> 1u);
+    bits = ((bits & 0x33333333u) << 2u) | ((bits & 0xCCCCCCCCu) >> 2u);
+    bits = ((bits & 0x0F0F0F0Fu) << 4u) | ((bits & 0xF0F0F0F0u) >> 4u);
+    bits = ((bits & 0x00FF00FFu) << 8u) | ((bits & 0xFF00FF00u) >> 8u);
+    return static_cast<T>(bits) * static_cast<T>(2.3283064365386963e-10); // divide by 2^32
+}
+
+template <typename T>
+T van_der_corput(unsigned int n, const unsigned int base)
+{
+    if (base == 2)
+    {
+        return radical_inverse<T>(n);
+    }
+
+    const T inverse = 1 / static_cast<T>(base);
+    T result = 0;
+    for (T inverse_power = inverse; n != 0; inverse_power *= inverse)
+    {
+        result += (n % base) * inverse_power;
+        n /= base;
+    }
+    return result;
+}
+
+template <typename T, glm::precision P>
+glm::tvec3<T, P> hemisphere_sample_uniform(const T u, const T v) {
+    const T phi = v * 2 * glm::pi<T>();
+    const T cosTheta = 1 - u;
+    const T sinTheta = sqrt(1 - cosTheta * cosTheta);
+    return { cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta };
+}
+
+template <typename T, glm::precision P>
+glm::tvec3<T, P> hemisphere_sample_cos(const T u, const T v) {
+    const T phi = v * 2 * glm::pi<T>();
+    const T cosTheta = sqrt(1 - u);
+    const T sinTheta = sqrt(1 - cosTheta * cosTheta);
+    return { cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta };
+}
+
+} // anonymous namespace
+
+template <typename T, glm::precision P>
+void hammersley(tkernel<glm::tvec2<T, P>> & kernel)
+{
+    #pragma omp parallel for
+    for (int i = 0; i < static_cast<int>(kernel.size()); ++i) {
+        const auto u = static_cast<T>(i) / kernel.size();
+        const auto v = radical_inverse<T>(i);
+        kernel[i] = glm::tvec2<T, P>(u, v);
+    }
+}
+
+template <typename T, glm::precision P>
+void hammersley_sphere(tkernel<glm::tvec3<T, P>> & kernel, const HemisphereMapping type)
+{
+    #pragma omp parallel for
+    for (int i = 0; i < static_cast<int>(kernel.size()); ++i) {
+        const auto u = static_cast<T>(i) / kernel.size();
+        const auto v = radical_inverse<T>(i);
+        switch (type) {
+        case HemisphereMapping::Uniform:
+            kernel[i] = hemisphere_sample_uniform<T, P>(u, v);
+            break;
+        case HemisphereMapping::Cosine:
+            kernel[i] = hemisphere_sample_cos<T, P>(u, v);
+            break;
+        }
+    }
+}
+
+template <typename T, glm::precision P>
+void halton(tkernel<glm::tvec2<T, P>> & kernel, const unsigned int base1, const unsigned int base2)
+{
+    #pragma omp parallel for
+    for (int i = 0; i < static_cast<int>(kernel.size()); ++i) {
+        const auto u = van_der_corput<T>(i, base1);
+        const auto v = van_der_corput<T>(i, base2);
+        kernel[i] = glm::tvec2<T, P>(u, v);
+    }
+}
+
+template <typename T, glm::precision P>
+void halton_sphere(
+    tkernel<glm::tvec3<T, P>> & kernel,
+    const unsigned int base1,
+    const unsigned int base2,
+    const HemisphereMapping type)
+{
+    #pragma omp parallel for
+    for (int i = 0; i < static_cast<int>(kernel.size()); ++i) {
+        const auto u = van_der_corput<T>(i, base1);
+        const auto v = van_der_corput<T>(i, base2);
+        switch (type) {
+        case HemisphereMapping::Uniform:
+            kernel[i] = hemisphere_sample_uniform<T, P>(u, v);
+            break;
+        case HemisphereMapping::Cosine:
+            kernel[i] = hemisphere_sample_cos<T, P>(u, v);
+            break;
+        }
+    }
+}
+
+template <typename T, glm::precision P>
+void best_candidate(tkernel<glm::tvec2<T, P>> & kernel, const unsigned int num_candidates)
+{
+    assert(num_candidates >= 1);
+
+    std::random_device RD;
+    std::mt19937_64 generator(RD());
+    std::uniform_real_distribution<> dist(0.0, 1.0);
+
+    for (size_t k = 0; k < kernel.size(); ++k)
+    {
+        std::vector<glm::tvec2<T, P>> candidates(num_candidates);
+        std::vector<T> min_dists(num_candidates);
+        // generate candidates
+        #pragma omp parallel for
+        for (int c = 0; c < static_cast<int>(num_candidates); ++c) {
+            candidates[c] = { dist(generator), dist(generator) };
+
+            // test candidates against previously accepted samples
+            T min_squared = 2;
+            for (size_t i = 0; i < k; ++i)
+            {
+                const T dist_squared = glm::length2(candidates[c] - kernel[i]);
+                min_squared = std::min(min_squared, dist_squared);
+            }
+            min_dists[c] = min_squared;
+        }
+
+        // find best candidate
+        T best_dist = min_dists[0];
+        unsigned int best_index = 0;
+        for (unsigned int c = 1; c < num_candidates; ++c)
+        {
+            if (min_dists[c] > best_dist)
+            {
+                best_dist = min_dists[c];
+                best_index = c;
+            }
+        }
+
+        kernel[k++] = candidates[best_index];
+    }
+}
+
 
 } // namespace sample
 
