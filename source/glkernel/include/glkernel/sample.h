@@ -95,6 +95,19 @@ void halton_sphere(
     const unsigned int base1,
     const unsigned int base2,
     const HemisphereMapping type = HemisphereMapping::Uniform);
+/*
+*  @brief
+*  Generates several candidates for each samples and selects the one
+*  that is farthest to the previously selected samples
+*
+*  @param[in,out] kernel
+*  The kernel to be modified
+*
+*  @param[in] num_candidates
+*  Number of candidates generated for each sample
+*/
+template <typename T, glm::precision P>
+void best_candidate(tkernel<glm::tvec2<T, P>> & kernel, unsigned int num_candidates = 32);
 
 } // namespace sample
 

@@ -107,3 +107,14 @@ TEST_F(sample_test, halton)
     EXPECT_FLOAT_EQ(3.0f / 4.0f, kernel[3].x);
     EXPECT_FLOAT_EQ(1.0f / 9.0f, kernel[3].y);
 }
+
+TEST_F(sample_test, best_candidate_compile)
+{
+    auto fkernel2 = glkernel::kernel2{ 1 };
+
+    glkernel::sample::best_candidate(fkernel2);
+
+    auto dkernel2 = glkernel::dkernel2{ 1 };
+
+    glkernel::sample::best_candidate(dkernel2);
+}
