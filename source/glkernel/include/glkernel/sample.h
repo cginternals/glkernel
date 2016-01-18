@@ -61,6 +61,18 @@ void stratified(tkernel<glm::tvec2<T, P>> & kernel);
 
 template <typename T, glm::precision P>
 void stratified(tkernel<glm::tvec3<T, P>> & kernel);
+
+/**
+*  @brief
+*  Subdivides pixel area into grid and creates one jiterred sample per row/column
+*
+*  jittering is done using a uniform distribution
+*
+*  @param[in,out] kernel
+*  The kernel to be modified, size is used for number of samples
+*/
+template <typename T, glm::precision P>
+void n_rooks(tkernel<glm::tvec2<T, P>> & kernel);
 //@}
 
 } // namespace sample
