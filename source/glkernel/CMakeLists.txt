@@ -188,13 +188,6 @@ target_link_libraries(${target}
 # Deployment
 # 
 
-# Library
-#install(TARGETS ${target}
-#    EXPORT  "${target}-export"            COMPONENT dev
-#    RUNTIME DESTINATION ${INSTALL_BIN}    COMPONENT runtime
-#    LIBRARY DESTINATION ${INSTALL_SHARED} COMPONENT runtime
-#    ARCHIVE DESTINATION ${INSTALL_LIB}    COMPONENT dev
-#)
 
 # Header files
 install(DIRECTORY
@@ -206,11 +199,4 @@ install(DIRECTORY
 install(DIRECTORY
     ${CMAKE_CURRENT_BINARY_DIR}/include/${target} DESTINATION ${INSTALL_INCLUDE}
     COMPONENT dev
-)
-
-# CMake config
-install(EXPORT ${target}-export
-    NAMESPACE   ${META_PROJECT_NAME}::
-    DESTINATION ${INSTALL_CMAKE}/${target}
-    COMPONENT   dev
 )
