@@ -95,7 +95,7 @@ target_include_directories(${target}
     $<INSTALL_INTERFACE:include>
 
     ${DEFAULT_INCLUDE_DIRECTORIES}
-    ${GLM_INCLUDE_DIR}
+    $<BUILD_INTERFACE:${GLM_INCLUDE_DIR}>
 )
 
 
