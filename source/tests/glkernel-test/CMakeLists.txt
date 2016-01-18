@@ -108,5 +108,6 @@ target_compile_options(${target}
 
 target_link_libraries(${target}
     PRIVATE
+    $<$<BOOL:"${OPENMP_FOUND}">:${OpenMP_CXX_FLAGS}>
     ${DEFAULT_LINKER_OPTIONS}
 )
