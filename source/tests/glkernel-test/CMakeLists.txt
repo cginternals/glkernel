@@ -85,6 +85,7 @@ target_link_libraries(${target}
 
 target_compile_definitions(${target}
     PRIVATE
+    GLM_FORCE_RADIANS
     $<$<BOOL:"${OPENMP_FOUND}">:USE_OPENMP>
     ${DEFAULT_COMPILE_DEFINITIONS}
 )
