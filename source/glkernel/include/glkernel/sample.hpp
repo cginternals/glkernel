@@ -171,7 +171,8 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, const T min_dist, cons
             const auto masked = occupancy.masked(probe, kernel);
             const auto delta = glm::abs(active - probe);
 
-            probes[i] = std::make_tuple<glm::tvec2<T, P>, T>(std::move(probe), (masked ? static_cast<T>(-1.0) : glm::dot(delta, delta)));
+            probes[i] = std::make_tuple<glm::tvec2<T, P>, T>(std::move(probe), 
+                (masked ? static_cast<T>(-1.0) : glm::dot(delta, delta)));
         }
         
         // pick nearest probe from sample set
@@ -235,6 +236,74 @@ void n_rooks(tkernel<glm::tvec2<T, P>> & kernel)
         const auto y_coord = columnIndices.at(k) * stratum_size + jitter_dist(generator);
         kernel[k] = glm::tvec2<T, P>(x_coord, y_coord);
     }
+}
+
+template <typename T>
+class stratified_operator
+{
+public:
+    stratified_operator(const glm::u16vec3 & extent, glm::length_t);
+
+    template <typename F, glm::precision P, template<typename, glm::precision> class V>
+    stratified_operator(const glm::u16vec3 & extent, glm::length_t coefficient);
+
+    T operator()(const glm::u16vec3 & position);
+
+protected:
+    std::mt19937_64 m_generator;
+    std::uniform_real_distribution<T> m_distribute;
+
+    const T m_extent_inverse;
+    const glm::length_t m_coefficient;
+};
+
+
+template<typename T>
+stratified_operator<T>::stratified_operator(const glm::u16vec3 & extent, const glm::length_t coefficient)
+: m_generator{ std::random_device{}() }
+, m_distribute{ static_cast<T>(0.0), static_cast<T>(1.0) / extent[coefficient] }
+, m_extent_inverse{ static_cast<T>(1.0) / extent[coefficient] }
+, m_coefficient{ coefficient }
+{
+}
+
+template <typename T>
+template <typename F, glm::precision P, template<typename, glm::precision> class V>
+stratified_operator<T>::stratified_operator(const glm::u16vec3 & extent, const glm::length_t coefficient)
+: uniform_operator{ extent, coefficient }
+{
+}
+
+template<typename T>
+T stratified_operator<T>::operator()(const glm::u16vec3 & position)
+{
+    return position[m_coefficient] * m_extent_inverse + m_distribute(m_generator);
+}
+
+template <typename T, glm::precision P>
+void stratified(tkernel<glm::tvec1<T, P>> & kernel)
+{
+    // the kernels dimensionality should match its value type,
+    // i.e., at least two dimensions should be unused (equal 1)
+    assert(kernel.depth() == 1 && kernel.width()  == 1);
+    kernel.template for_each_position<stratified_operator<T>>();
+}
+
+template <typename T, glm::precision P>
+void stratified(tkernel<glm::tvec2<T, P>> & kernel)
+{
+    // the kernels dimensionality should match its value type,
+    // i.e., at least one dimension should be unused (equal 1)
+    assert(kernel.depth() == 1);
+    kernel.template for_each_position<stratified_operator<T>>();
+}
+
+template <typename T, glm::precision P>
+void stratified(tkernel<glm::tvec3<T, P>> & kernel)
+{
+    // the kernels dimensionality should match its value type,
+    // i.e., all three dimensions can be used (no assert required)
+    kernel.template for_each_position<stratified_operator<T>>();
 }
 
 } // namespace sample
