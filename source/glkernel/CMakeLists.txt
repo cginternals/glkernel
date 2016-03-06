@@ -46,6 +46,8 @@ set(headers
     ${include_path}/sequence.hpp
     ${include_path}/shuffle.h
     ${include_path}/shuffle.hpp
+    ${include_path}/sort.h
+    ${include_path}/sort.hpp
 )
 
 # Group source files

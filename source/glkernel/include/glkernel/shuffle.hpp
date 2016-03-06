@@ -234,6 +234,11 @@ void bayer(tkernel<T> & kernel)
     }
 }
 
+template<typename T>
+void random(tkernel<T> & kernel)
+{
+    std::random_shuffle(kernel.begin(), kernel.end());
+}
 
 } // namespace shuffle
 

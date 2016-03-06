@@ -132,6 +132,31 @@ auto tkernel<T>::data() const -> const decltype(kernel_ptr<T>(s_type_workaround)
 }
 
 template<typename T>
+auto tkernel<T>::begin() -> decltype(s_type_workaround.begin())
+{
+    return m_kernel.begin();
+}
+
+template<typename T>
+auto tkernel<T>::cbegin() const -> const decltype(s_type_workaround.cbegin())
+{
+    return m_kernel.cbegin();
+}
+
+
+template<typename T>
+auto tkernel<T>::end() -> decltype(s_type_workaround.end())
+{
+    return m_kernel.end();
+}
+
+template<typename T>
+auto tkernel<T>::cend() const -> const decltype(s_type_workaround.cend())
+{
+    return m_kernel.cend();
+}
+
+template<typename T>
 T & tkernel<T>::operator[](const size_t i)
 {
     assert(i < m_kernel.size());
