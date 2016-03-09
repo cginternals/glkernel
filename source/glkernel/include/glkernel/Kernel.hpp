@@ -254,5 +254,24 @@ void tkernel<T>::for_each_position(Args&&... args)
     }
 }
 
+template<typename T>
+template<typename Operator, typename... Args>
+void tkernel<T>::for_each_element(Args&&... args)
+{
+    static const auto l = length();
+
+    auto d = data();
+    const auto s = size();
+
+    #pragma omp parallel for
+    for (glm::length_t coefficient = 0; coefficient < l; ++coefficient)
+    {
+        auto o = Operator(extent(), coefficient, std::forward<Args>(args)...);
+
+        for (size_t i = 0; i < s; ++i)
+            d[i * l + coefficient] = o(d[i * l + coefficient]);
+    }
+}
+
 
 } // namespace glkernel

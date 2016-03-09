@@ -64,6 +64,10 @@ public:
     template<typename Operator, typename... Args>
     void for_each_position(Args&&... args);
 
+    // element passed to operator (extent and coefficient to operator constructor)
+    template<typename Operator, typename... Args>
+    void for_each_element(Args&&... args);
+
 protected:
     std::vector<T> m_kernel;
     glm::u16vec3 m_extent;
