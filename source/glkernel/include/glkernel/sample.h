@@ -143,6 +143,8 @@ void halton_sphere(
 template <typename T, glm::precision P>
 void best_candidate(tkernel<glm::tvec2<T, P>> & kernel, unsigned int num_candidates = 32);
 template <typename T, glm::precision P>
+void best_candidate(tkernel<glm::tvec3<T, P>> & kernel, unsigned int num_candidates = 32);
+template <typename T, glm::precision P>
 void stratified(tkernel<glm::tvec2<T, P>> & kernel);
 
 template <typename T, glm::precision P>

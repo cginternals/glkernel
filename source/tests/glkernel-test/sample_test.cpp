@@ -347,4 +347,12 @@ TEST_F(sample_test, best_candidate_compile)
     auto dkernel2 = glkernel::dkernel2{ 1 };
 
     glkernel::sample::best_candidate(dkernel2);
+
+    auto fkernel3 = glkernel::kernel3{ 1 };
+
+    glkernel::sample::best_candidate(fkernel3);
+
+    auto dkernel3 = glkernel::dkernel3{ 1 };
+
+    glkernel::sample::best_candidate(dkernel3);
 }
