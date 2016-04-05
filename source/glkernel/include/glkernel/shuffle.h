@@ -23,6 +23,9 @@ void bucket_permutate(tkernel<T> & kernel
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type * = nullptr>
 void bayer(tkernel<T> & kernel);
 
+// uses std::random_shuffle
+template<typename T>
+void random(tkernel<T> & kernel, size_t start = 1);
 
 } // namespace shuffle
 

@@ -25,8 +25,10 @@ set(sources
     main.cpp
     noise_test.cpp
     sample_test.cpp
+    scale_test.cpp
     sequence_test.cpp
     shuffle_test.cpp
+    sort_test.cpp
     tkernel_test.cpp
 )
 

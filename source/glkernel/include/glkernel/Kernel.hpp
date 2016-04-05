@@ -132,6 +132,31 @@ auto tkernel<T>::data() const -> const decltype(kernel_ptr<T>(s_type_workaround)
 }
 
 template<typename T>
+auto tkernel<T>::begin() -> decltype(s_type_workaround.begin())
+{
+    return m_kernel.begin();
+}
+
+template<typename T>
+auto tkernel<T>::cbegin() const -> const decltype(s_type_workaround.cbegin())
+{
+    return m_kernel.cbegin();
+}
+
+
+template<typename T>
+auto tkernel<T>::end() -> decltype(s_type_workaround.end())
+{
+    return m_kernel.end();
+}
+
+template<typename T>
+auto tkernel<T>::cend() const -> const decltype(s_type_workaround.cend())
+{
+    return m_kernel.cend();
+}
+
+template<typename T>
 T & tkernel<T>::operator[](const size_t i)
 {
     assert(i < m_kernel.size());
@@ -226,6 +251,25 @@ void tkernel<T>::for_each_position(Args&&... args)
 
         for (size_t i = 0; i < s; ++i)
             d[i * l + coefficient] = o(position(i));
+    }
+}
+
+template<typename T>
+template<typename Operator, typename... Args>
+void tkernel<T>::for_each_element(Args&&... args)
+{
+    static const auto l = length();
+
+    auto d = data();
+    const auto s = size();
+
+    #pragma omp parallel for
+    for (glm::length_t coefficient = 0; coefficient < l; ++coefficient)
+    {
+        auto o = Operator(extent(), coefficient, std::forward<Args>(args)...);
+
+        for (size_t i = 0; i < s; ++i)
+            d[i * l + coefficient] = o(d[i * l + coefficient]);
     }
 }
 

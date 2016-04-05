@@ -48,6 +48,12 @@ public:
     auto data() -> decltype(kernel_ptr<T>(s_type_workaround));
     auto data() const -> const decltype(kernel_ptr<T>(s_type_workaround));
 
+    auto begin() -> decltype(s_type_workaround.begin());
+    auto cbegin() const -> const decltype(s_type_workaround.cbegin());
+
+    auto end() -> decltype(s_type_workaround.end());
+    auto cend() const -> const decltype(s_type_workaround.cend());
+
     tkernel trimmed(glm::uint16 width, glm::uint16 height, glm::uint16 depth) const;
 
     // index passed to operator (size and coefficient to operator constructor)
@@ -57,6 +63,10 @@ public:
     // position passed to operator (extent and coefficient to operator constructor)
     template<typename Operator, typename... Args>
     void for_each_position(Args&&... args);
+
+    // element passed to operator (extent and coefficient to operator constructor)
+    template<typename Operator, typename... Args>
+    void for_each_element(Args&&... args);
 
 protected:
     std::vector<T> m_kernel;

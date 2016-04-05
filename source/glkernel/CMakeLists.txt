@@ -42,10 +42,14 @@ set(headers
     ${include_path}/noise.hpp
     ${include_path}/sample.h
     ${include_path}/sample.hpp
+    ${include_path}/scale.h
+    ${include_path}/scale.hpp
     ${include_path}/sequence.h
     ${include_path}/sequence.hpp
     ${include_path}/shuffle.h
     ${include_path}/shuffle.hpp
+    ${include_path}/sort.h
+    ${include_path}/sort.hpp
 )
 
 # Group source files
