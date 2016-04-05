@@ -85,7 +85,6 @@ target_include_directories(${target}
 
     INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
     $<INSTALL_INTERFACE:include>
 
     ${DEFAULT_INCLUDE_DIRECTORIES}
