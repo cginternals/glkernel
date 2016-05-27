@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <glm/gtc/type_precision.hpp>
@@ -7,6 +8,7 @@
 
 namespace glkernel
 {
+
 
 namespace sequence
 {
@@ -24,6 +26,8 @@ void uniform(tkernel<V<T, P>> & kernel, const V<T, P> & range_min, const V<T, P>
 
 } // namespace sequence
 
+
 } // namespace glkernel
+
 
 #include <glkernel/sequence.hpp>

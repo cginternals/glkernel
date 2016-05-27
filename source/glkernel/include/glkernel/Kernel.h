@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <vector>
@@ -7,6 +8,7 @@
 
 namespace glkernel
 {
+
 
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type * = nullptr>
 T * kernel_ptr(std::vector<T> & kernel);
@@ -49,10 +51,10 @@ public:
     auto data() const -> const decltype(kernel_ptr<T>(s_type_workaround));
 
     auto begin() -> decltype(s_type_workaround.begin());
-    auto cbegin() const -> const decltype(s_type_workaround.cbegin());
+    auto cbegin() const -> decltype(s_type_workaround.cbegin());
 
     auto end() -> decltype(s_type_workaround.end());
-    auto cend() const -> const decltype(s_type_workaround.cend());
+    auto cend() const -> decltype(s_type_workaround.cend());
 
     tkernel trimmed(glm::uint16 width, glm::uint16 height, glm::uint16 depth) const;
 
@@ -83,6 +85,8 @@ using dkernel2 = tkernel<glm::dvec2>;
 using dkernel3 = tkernel<glm::dvec3>;
 using dkernel4 = tkernel<glm::dvec4>;
 
+
 } // namespace glkernel
+
 
 #include <glkernel/Kernel.hpp>

@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <glkernel/sample.h>
@@ -19,6 +20,7 @@
 
 namespace glkernel
 {
+
 
 namespace sample
 {
@@ -384,7 +386,8 @@ namespace {
 // which is licensed under http://creativecommons.org/licenses/by/3.0/
 
 template <typename T>
-T radical_inverse(unsigned int bits) {
+T radical_inverse(unsigned int bits)
+{
     // the bit order of the number is inversed and interpreted as a float
     bits = (bits << 16u) | (bits >> 16u);
     bits = ((bits & 0x55555555u) << 1u) | ((bits & 0xAAAAAAAAu) >> 1u);
@@ -413,7 +416,8 @@ T van_der_corput(unsigned int n, const unsigned int base)
 }
 
 template <typename T, glm::precision P>
-glm::tvec3<T, P> hemisphere_sample_uniform(const T u, const T v) {
+glm::tvec3<T, P> hemisphere_sample_uniform(const T u, const T v)
+{
     const T phi = v * 2 * glm::pi<T>();
     const T cosTheta = 1 - u;
     const T sinTheta = sqrt(1 - cosTheta * cosTheta);
@@ -421,7 +425,8 @@ glm::tvec3<T, P> hemisphere_sample_uniform(const T u, const T v) {
 }
 
 template <typename T, glm::precision P>
-glm::tvec3<T, P> hemisphere_sample_cos(const T u, const T v) {
+glm::tvec3<T, P> hemisphere_sample_cos(const T u, const T v)
+{
     const T phi = v * 2 * glm::pi<T>();
     const T cosTheta = sqrt(1 - u);
     const T sinTheta = sqrt(1 - cosTheta * cosTheta);
@@ -434,7 +439,8 @@ template <typename T, glm::precision P>
 void hammersley(tkernel<glm::tvec2<T, P>> & kernel)
 {
     #pragma omp parallel for
-    for (int i = 0; i < static_cast<int>(kernel.size()); ++i) {
+    for (int i = 0; i < static_cast<int>(kernel.size()); ++i)
+{
         const auto u = static_cast<T>(i) / kernel.size();
         const auto v = radical_inverse<T>(i);
         kernel[i] = glm::tvec2<T, P>(u, v);
@@ -445,15 +451,19 @@ template <typename T, glm::precision P>
 void hammersley_sphere(tkernel<glm::tvec3<T, P>> & kernel, const HemisphereMapping type)
 {
     #pragma omp parallel for
-    for (int i = 0; i < static_cast<int>(kernel.size()); ++i) {
+    for (int i = 0; i < static_cast<int>(kernel.size()); ++i)
+{
         const auto u = static_cast<T>(i) / kernel.size();
         const auto v = radical_inverse<T>(i);
-        switch (type) {
+        switch (type)
+{
         case HemisphereMapping::Uniform:
             kernel[i] = hemisphere_sample_uniform<T, P>(u, v);
             break;
         case HemisphereMapping::Cosine:
             kernel[i] = hemisphere_sample_cos<T, P>(u, v);
+            break;
+        default:
             break;
         }
     }
@@ -463,7 +473,8 @@ template <typename T, glm::precision P>
 void halton(tkernel<glm::tvec2<T, P>> & kernel, const unsigned int base1, const unsigned int base2)
 {
     #pragma omp parallel for
-    for (int i = 0; i < static_cast<int>(kernel.size()); ++i) {
+    for (int i = 0; i < static_cast<int>(kernel.size()); ++i)
+{
         const auto u = van_der_corput<T>(i, base1);
         const auto v = van_der_corput<T>(i, base2);
         kernel[i] = glm::tvec2<T, P>(u, v);
@@ -478,15 +489,19 @@ void halton_sphere(
     const HemisphereMapping type)
 {
     #pragma omp parallel for
-    for (int i = 0; i < static_cast<int>(kernel.size()); ++i) {
+    for (int i = 0; i < static_cast<int>(kernel.size()); ++i)
+{
         const auto u = van_der_corput<T>(i, base1);
         const auto v = van_der_corput<T>(i, base2);
-        switch (type) {
+        switch (type)
+{
         case HemisphereMapping::Uniform:
             kernel[i] = hemisphere_sample_uniform<T, P>(u, v);
             break;
         case HemisphereMapping::Cosine:
             kernel[i] = hemisphere_sample_cos<T, P>(u, v);
+            break;
+        default:
             break;
         }
     }
@@ -507,7 +522,8 @@ void best_candidate(tkernel<glm::tvec2<T, P>> & kernel, const unsigned int num_c
         std::vector<T> min_dists(num_candidates);
         // generate candidates
         #pragma omp parallel for
-        for (int c = 0; c < static_cast<int>(num_candidates); ++c) {
+        for (int c = 0; c < static_cast<int>(num_candidates); ++c)
+{
             candidates[c] = { dist(generator), dist(generator) };
 
             // test candidates against previously accepted samples
@@ -551,7 +567,8 @@ void best_candidate(tkernel<glm::tvec3<T, P>> & kernel, const unsigned int num_c
         std::vector<T> min_dists(num_candidates);
         // generate candidates
         #pragma omp parallel for
-        for (int c = 0; c < static_cast<int>(num_candidates); ++c) {
+        for (int c = 0; c < static_cast<int>(num_candidates); ++c)
+{
             candidates[c] = { dist(generator), dist(generator), dist(generator) };
 
             // test candidates against previously accepted samples
@@ -582,5 +599,6 @@ void best_candidate(tkernel<glm::tvec3<T, P>> & kernel, const unsigned int num_c
 
 
 } // namespace sample
+
 
 } // namespace glkernel

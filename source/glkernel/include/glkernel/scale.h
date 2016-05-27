@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <glm/gtc/type_precision.hpp>
@@ -8,14 +9,19 @@
 namespace glkernel
 {
 
+
 namespace scale
 {
+
 
 template <typename T, glm::precision P, template<typename, glm::precision> class V>
 void range(tkernel<V<T, P>> & kernel, T rangeToLower, T rangeToUpper, T rangeFromLower = 0, T rangeFromUpper = 1);
 
+
 } // namespace scale
 
+
 } // namespace glkernel
+
 
 #include <glkernel/scale.hpp>

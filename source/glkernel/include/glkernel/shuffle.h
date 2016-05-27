@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <glm/gtc/type_precision.hpp>
@@ -8,8 +9,10 @@
 namespace glkernel
 {
 
+
 namespace shuffle
 {
+
 
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type * = nullptr>
 void bucket_permutate(tkernel<T> & kernel
@@ -27,8 +30,11 @@ void bayer(tkernel<T> & kernel);
 template<typename T>
 void random(tkernel<T> & kernel, size_t start = 1);
 
+
 } // namespace shuffle
 
+
 } // namespace glkernel
+
 
 #include <glkernel/shuffle.hpp>

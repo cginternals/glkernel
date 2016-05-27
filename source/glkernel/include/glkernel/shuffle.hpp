@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <glkernel/shuffle.h>
@@ -16,15 +17,18 @@
 namespace glkernel
 {
 
+
 namespace shuffle
 {
+
 
 struct abstract_permutations
 {
     virtual size_t operator()(const size_t bucket, const size_t permutation) const = 0;
-    virtual ~abstract_permutations() {};
+    virtual ~abstract_permutations()
+{}
 };
-  
+
 struct unique_index_permutations : abstract_permutations
 {
     unique_index_permutations(const int num_indices, const int num_permutations)
@@ -231,6 +235,8 @@ void bayer(tkernel<T> & kernel)
         for (size_t i = 0; i < 64; ++i)
             kernel[i] = read_kernel[bayer8[i] - 1];
         break;
+    default:
+        break;
     }
 }
 
@@ -241,6 +247,8 @@ void random(tkernel<T> & kernel, size_t start)
     std::random_shuffle(kernel.begin() + start, kernel.end());
 }
 
+
 } // namespace shuffle
+
 
 } // namespace glkernel

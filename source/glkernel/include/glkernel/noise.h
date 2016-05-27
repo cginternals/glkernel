@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <type_traits>
@@ -11,6 +12,7 @@
 
 namespace glkernel
 {
+
 
 namespace noise
 {
@@ -51,11 +53,11 @@ enum class GradientNoiseType : unsigned char
 */
 enum class OctaveType : unsigned char
 {
-	Standard,
-	Cloud,
-	CloudAbs,
-	Wood,
-	Paper
+    Standard,
+    Cloud,
+    CloudAbs,
+    Wood,
+Paper
 };
 
 /**
@@ -92,6 +94,8 @@ void gradient(tkernel<T> & kernel
 
 } // namespace noise
 
+
 } // namespace glkernel
+
 
 #include <glkernel/noise.hpp>

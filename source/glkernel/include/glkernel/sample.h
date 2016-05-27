@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <glm/gtc/type_precision.hpp>
@@ -9,8 +10,10 @@
 namespace glkernel
 {
 
+
 namespace sample
 {
+
 
 //@{
 /**
@@ -179,8 +182,11 @@ void n_rooks(tkernel<glm::tvec2<T, P>> & kernel);
 template <typename T, glm::precision P>
 void multi_jittered(tkernel<glm::tvec2<T, P>> & kernel, const bool correlated = false);
 
+
 } // namespace sample
 
+
 } // namespace glkernel
+
 
 #include <glkernel/sample.hpp>

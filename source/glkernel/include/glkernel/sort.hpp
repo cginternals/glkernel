@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <glkernel/sort.h>
@@ -10,8 +11,10 @@
 namespace glkernel
 {
 
+
 namespace sort
 {
+
 
 template <typename T, glm::precision P, template<typename, glm::precision> class V>
 struct distance_comparator
@@ -39,5 +42,6 @@ void distance(tkernel<V<T, P>> & kernel, const V<T, P> & origin)
 
 
 } // namespace sort
+
 
 } // namespace glkernel

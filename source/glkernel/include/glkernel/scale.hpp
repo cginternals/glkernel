@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <glkernel/scale.h>
@@ -8,8 +9,10 @@
 namespace glkernel
 {
 
+
 namespace scale
 {
+
 
 template <typename T>
 class range_operator
@@ -58,6 +61,8 @@ void range(tkernel<V<T, P>> & kernel, T rangeToLower, T rangeToUpper, T rangeFro
     kernel.template for_each_element<range_operator<T>>(rangeToLower, rangeToUpper, rangeFromLower, rangeFromUpper);
 }
 
+
 } // namespace scale
+
 
 } // namespace glkernel

@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <glkernel/sequence.h>
@@ -7,6 +8,7 @@
 
 namespace glkernel
 {
+
 
 namespace sequence
 {
@@ -76,5 +78,6 @@ void uniform(tkernel<V<T, P>> & kernel, const V<T, P> & range_min, const V<T, P>
 
 
 } // namesapce sequence
+
 
 } // namespace glkernel
