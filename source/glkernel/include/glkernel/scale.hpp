@@ -33,7 +33,7 @@ protected:
 
 template<typename T>
 range_operator<T>::range_operator(
-    const glm::u16vec3 & extent, const glm::length_t coefficient,
+    const glm::u16vec3 & /*extent*/, const glm::length_t /*coefficient*/,
     T rangeToLower, T rangeToUpper, T rangeFromLower, T rangeFromUpper)
 : m_factor{ (rangeToUpper - rangeToLower) / (rangeFromUpper - rangeFromLower) }
 , m_summand{ rangeToLower - rangeFromLower * m_factor }

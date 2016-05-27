@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <array>
 #include <ctime>
+#include <memory>
 
 #include <glkernel/glm_compatability.h>
 
@@ -142,11 +143,11 @@ void bucket_permutate(tkernel<T> & kernel
 
 
     // create permutations (or use single, static permutation)
-    abstract_permutations * permutations{ nullptr };
+    std::unique_ptr<abstract_permutations> permutations;
     if (permutate_per_bucket)
-        permutations = new unique_index_permutations{ num_buckets, num_subkernels };
+        permutations.reset(new unique_index_permutations{ num_buckets, num_subkernels });
     else
-        permutations = new static_index_permutation{ num_buckets };
+        permutations.reset(new static_index_permutation{ num_buckets });
 
 
     for (int k = 0; k < num_subkernels; ++k)
@@ -172,8 +173,6 @@ void bucket_permutate(tkernel<T> & kernel
             buckets[i_bucket].pop_back();
         }
     }
-    delete permutations;
-    permutations = nullptr;
 }
 
 
@@ -198,7 +197,7 @@ void bayer(tkernel<T> & kernel)
         16,  8, 14,  6 } });
 
     static const auto bayer8 = std::array<size_t, 64>({ {
-         1, 49, 13, 61,  4, 52, 16, 64, 
+         1, 49, 13, 61,  4, 52, 16, 64,
         33, 17, 45, 29, 36, 20, 48, 32, 
          9, 57,  5, 53, 12, 60,  8, 56, 
         41, 25, 37, 21, 44, 28, 40, 24, 
