@@ -55,6 +55,12 @@ T range_operator<T>::operator()(const T element)
     return element * m_factor + m_summand;
 }
 
+template <typename T>
+void range(tkernel<T> & kernel, T rangeToLower, T rangeToUpper, T rangeFromLower, T rangeFromUpper)
+{
+    kernel.template for_each_element<range_operator<T>>(rangeToLower, rangeToUpper, rangeFromLower, rangeFromUpper);
+}
+
 template <typename T, glm::precision P, template<typename, glm::precision> class V>
 void range(tkernel<V<T, P>> & kernel, T rangeToLower, T rangeToUpper, T rangeFromLower, T rangeFromUpper)
 {
