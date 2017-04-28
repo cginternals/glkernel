@@ -24,6 +24,9 @@ add_subdirectory(examples)
 set(IDE_FOLDER "Tests")
 add_subdirectory(tests)
 
+# Tools
+set(IDE_FOLDER "Tools")
+add_subdirectory(tools)
 
 # 
 # Deployment
