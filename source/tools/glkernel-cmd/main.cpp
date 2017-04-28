@@ -1,11 +1,9 @@
-#include "jsonConverter.h"
+#include "variantConversion.h"
 
-#include <iostream>
+#include <fstream>
 
-#include <QFile>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonArray>
+#include <cppexpose/json/JSON.h>
+#include <cppassist/cmdline/ArgumentParser.h>
 
 #include <glkernel/Kernel.h>
 #include <glkernel/noise.h>
@@ -16,16 +14,9 @@ int main()
 
     glkernel::noise::uniform(kernel, glm::vec3{ 0.f, 0.f, 0.f } , glm::vec3{ 1.f, 1.f, 1.f });
 
-    auto jsonObject = toJson(kernel);
+    auto kernelVariant = toVariant(kernel);
 
-    QJsonDocument jsonDocument(jsonObject);
+    std::ofstream outStream("kernel.json");
 
-    QFile outFile("kernel.json");
-
-    if (!outFile.open(QIODevice::WriteOnly))
-    {
-        return 1;
-    }
-
-    outFile.write(jsonDocument.toJson(QJsonDocument::JsonFormat::Indented));
+    outStream << cppexpose::JSON::stringify(kernelVariant, cppexpose::JSON::OutputMode::Beautify) << std::endl;
 }

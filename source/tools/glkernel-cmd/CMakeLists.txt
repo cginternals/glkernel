@@ -3,13 +3,8 @@
 # External dependencies
 #
 
-find_package(GLM 0.9.6 REQUIRED)
-
-find_package(Qt5Core 5.1 QUIET)
-
-# ENABLE CMP0020: Automatically link Qt executables to qtmain target on Windows.
-set_policy(CMP0020 NEW)
-
+find_package(cppassist REQUIRED)
+find_package(cppexpose REQUIRED)
 
 #
 # Executable name and options
@@ -18,22 +13,26 @@ set_policy(CMP0020 NEW)
 # Target name
 set(target glkernel-cmd)
 
-# Exit here if required dependencies are not met
-if (NOT Qt5Core_FOUND)
-    message(STATUS "Example ${target} skipped: Qt5 not found")
-    return()
-else()
-    message(STATUS "Example ${target}")
-endif()
-
 
 #
 # Sources
 #
 
+set(headers
+    variantConversion.h
+)
+
 set(sources
     main.cpp
+    variantConversion.cpp
 )
+
+set(header_group "Header Files (API)")
+set(source_group "Source Files")
+source_group_by_path(${CMAKE_CURRENT_SOURCE_DIR} "\\\\.h$"
+    ${header_group} ${headers})
+source_group_by_path(${CMAKE_CURRENT_SOURCE_DIR} "\\\\.cpp$"
+    ${source_group} ${sources})
 
 
 #
@@ -44,7 +43,9 @@ set(sources
 add_executable(${target}
     MACOSX_BUNDLE
     ${sources}
+    ${headers}
 )
+
 
 # Create namespaced alias
 add_executable(${META_PROJECT_NAME}::${target} ALIAS ${target})
@@ -80,7 +81,8 @@ target_include_directories(${target}
 target_link_libraries(${target}
     PRIVATE
     ${DEFAULT_LIBRARIES}
-    Qt5::Core
+    cppassist::cppassist
+    cppexpose::cppexpose
     ${META_PROJECT_NAME}::glkernel
 )
 
