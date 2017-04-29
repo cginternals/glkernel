@@ -20,11 +20,12 @@ set(target glkernel-cmd)
 
 set(headers
     variantConversion.h
+    parsing.h
 )
 
 set(sources
     main.cpp
-    variantConversion.cpp
+    parsing.cpp
 )
 
 set(header_group "Header Files (API)")

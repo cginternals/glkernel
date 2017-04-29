@@ -1,7 +1,9 @@
 #include "variantConversion.h"
+#include "parsing.h"
 
 #include <fstream>
 
+#include <cppexpose/variant/Variant.h>
 #include <cppexpose/json/JSON.h>
 #include <cppassist/cmdline/ArgumentParser.h>
 
@@ -10,13 +12,33 @@
 
 int main()
 {
-    auto kernel = glkernel::kernel3(3, 3, 3);
+    cppexpose::Variant kernelVariant;
 
-    glkernel::noise::uniform(kernel, glm::vec3{ 0.f, 0.f, 0.f } , glm::vec3{ 1.f, 1.f, 1.f });
+    if (!generateKernelFromJSON(kernelVariant, "scaled-noise.json"))
+    {
+        return 1;
+    }
 
-    auto kernelVariant = toVariant(kernel);
+    //auto kernel = glkernel::kernel3(3, 3, 3);
+
+    //glkernel::noise::uniform(kernel, glm::vec3{ 0.f, 0.f, 0.f } , glm::vec3{ 1.f, 1.f, 1.f });
+
+    cppexpose::Variant kernelJSON;
+
+    if (kernelVariant.hasType<glkernel::kernel3>())
+    {
+        kernelJSON = toJSON(kernelVariant.value<glkernel::kernel3>());
+    }
+    else if (kernelVariant.hasType<glkernel::kernel2>())
+    {
+        kernelJSON = toJSON(kernelVariant.value<glkernel::kernel2>());
+    }
+    else if (kernelVariant.hasType<glkernel::kernel1>())
+    {
+        kernelJSON = toJSON(kernelVariant.value<glkernel::kernel1>());
+    }
 
     std::ofstream outStream("kernel.json");
 
-    outStream << cppexpose::JSON::stringify(kernelVariant, cppexpose::JSON::OutputMode::Beautify) << std::endl;
+    outStream << cppexpose::JSON::stringify(kernelJSON, cppexpose::JSON::OutputMode::Beautify) << std::endl;
 }
