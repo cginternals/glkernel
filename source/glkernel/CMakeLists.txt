@@ -17,10 +17,12 @@ set(target glkernel)
 message(STATUS "Lib ${target}")
 
 # Set API export file and macro
-string(TOUPPER ${target} target_upper)
-set(feature_file "include/${target}/${target}_features.h")
-set(export_file  "include/${target}/${target}_api.h")
-set(export_macro "${target_upper}_API")
+string(MAKE_C_IDENTIFIER ${target} target_id)
+string(TOUPPER ${target_id} target_id)
+set(feature_file         "include/${target}/${target}_features.h")
+set(export_file          "include/${target}/${target}_export.h")
+set(template_export_file "include/${target}/${target}_api.h")
+set(export_macro         "${target_id}_API")
 
 
 # 
@@ -76,6 +78,19 @@ add_library(${META_PROJECT_NAME}::${target} ALIAS ${target})
 # Export library for downstream projects
 export(TARGETS ${target} NAMESPACE ${META_PROJECT_NAME}:: FILE ${PROJECT_BINARY_DIR}/cmake/${target}/${target}-export.cmake)
 
+# Create API export header
+generate_template_export_header(${target}
+    ${target_id}
+    ${template_export_file}
+)
+
+
+# 
+# Project options
+# 
+
+# none allowed, since interface library (header-only)
+
 
 # 
 # Include directories
@@ -115,6 +130,16 @@ target_include_directories(${target}
 # 
 
 # none required, since interface library (header-only)
+
+
+#
+# Target Health
+#
+
+#perform_health_checks(
+#    ${target}
+#    ${headers}
+#)
 
 
 # 
