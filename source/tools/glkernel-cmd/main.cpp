@@ -29,10 +29,6 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    //auto kernel = glkernel::kernel3(3, 3, 3);
-
-    //glkernel::noise::uniform(kernel, glm::vec3{ 0.f, 0.f, 0.f } , glm::vec3{ 1.f, 1.f, 1.f });
-
     cppexpose::Variant kernelJSON;
 
     if (kernelVariant.hasType<glkernel::kernel4>())
