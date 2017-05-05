@@ -4,17 +4,264 @@
 
 #include <glkernel/Kernel.h>
 #include <glkernel/noise.h>
+#include <glkernel/sample.h>
+#include <glkernel/scale.h>
+#include <glkernel/sequence.h>
+#include <glkernel/shuffle.h>
+#include <glkernel/sort.h>
 
 #include <cppexpose/json/JSON.h>
 
 namespace
 {
     template <typename T>
+    void processPoissonSquare(glkernel::tkernel<T>& kernel)
+    {
+        std::cout << "Poisson square is not implemented for the specified kernel type. Only kernel2 is supported." << std::endl;
+    }
+
+    template <>
+    void processPoissonSquare<glm::vec2>(glkernel::kernel2& kernel)
+    {
+        glkernel::sample::poisson_square(kernel);
+    }
+
+    //////////////////////////
+
+    template <typename T>
+    void processStratified(glkernel::tkernel<T>& kernel)
+    {
+    }
+
+    // TODO: find out why this specialization does not compile
+//    template <>
+//    void processStratified<float>(glkernel::kernel1& kernel)
+//    {
+//        glkernel::sample::stratified(kernel);
+//    }
+
+    template <>
+    void processStratified<glm::vec2>(glkernel::kernel2& kernel)
+    {
+        glkernel::sample::stratified(kernel);
+    }
+
+    template <>
+    void processStratified<glm::vec3>(glkernel::kernel3& kernel)
+    {
+        glkernel::sample::stratified(kernel);
+    }
+
+    template <>
+    void processStratified<glm::vec4>(glkernel::kernel4& kernel)
+    {
+        std::cout << "Stratified is not implemented for kernel4." << std::endl;
+    }
+
+    //////////////////////////
+
+    template <typename T>
+    void processHammersley(glkernel::tkernel<T>& kernel)
+    {
+        std::cout << "Hammersley is not implemented for the specified kernel type. Only kernel2 is supported." << std::endl;
+    }
+
+    template <>
+    void processHammersley<glm::vec2>(glkernel::kernel2& kernel)
+    {
+        glkernel::sample::hammersley(kernel);
+    }
+
+    //////////////////////////
+
+    template <typename T>
+    void processHalton(glkernel::tkernel<T>& kernel, uint base1, uint base2)
+    {
+        std::cout << "Hammersley is not implemented for the specified kernel type. Only kernel2 is supported." << std::endl;
+    }
+
+    template <>
+    void processHalton<glm::vec2>(glkernel::kernel2& kernel, uint base1, uint base2)
+    {
+        glkernel::sample::halton(kernel, base1, base2);
+    }
+
+    //////////////////////////
+
+    template <typename T>
+    void processHammersleySphere(glkernel::tkernel<T>& kernel)
+    {
+        std::cout << "Hammersley is not implemented for the specified kernel type. Only kernel3 is supported." << std::endl;
+    }
+
+    template <>
+    void processHammersleySphere<glm::vec3>(glkernel::kernel3& kernel)
+    {
+        glkernel::sample::hammersley_sphere(kernel);
+    }
+
+    //////////////////////////
+
+    template <typename T>
+    void processHaltonSphere(glkernel::tkernel<T>& kernel, uint base1, uint base2)
+    {
+        std::cout << "Hammersley is not implemented for the specified kernel type. Only kernel3 is supported." << std::endl;
+    }
+
+    template <>
+    void processHaltonSphere<glm::vec3>(glkernel::kernel3& kernel, uint base1, uint base2)
+    {
+        glkernel::sample::halton_sphere(kernel, base1, base2);
+    }
+
+    //////////////////////////
+
+    template <typename T>
+    void processBestCandidate(glkernel::tkernel<T>& kernel, uint numCandidates)
+    {
+        std::cout << "Best Candidate is not implemented for the specified kernel type. Only kernel2 and kernel3 are supported." << std::endl;
+    }
+
+    template <>
+    void processBestCandidate<glm::vec2>(glkernel::kernel2& kernel, uint numCandidates)
+    {
+        glkernel::sample::best_candidate(kernel, numCandidates);
+    }
+
+    template <>
+    void processBestCandidate<glm::vec3>(glkernel::kernel3& kernel, uint numCandidates)
+    {
+        glkernel::sample::best_candidate(kernel, numCandidates);
+    }
+
+    //////////////////////////
+
+    template <typename T>
+    void processNRooks(glkernel::tkernel<T>& kernel)
+    {
+        std::cout << "N rooks is not implemented for the specified kernel type. Only kernel2 is supported." << std::endl;
+    }
+
+    template <>
+    void processNRooks<glm::vec2>(glkernel::kernel2& kernel)
+    {
+        glkernel::sample::n_rooks(kernel);
+    }
+
+    //////////////////////////
+
+    template <typename T>
+    void processMultiJittered(glkernel::tkernel<T>& kernel)
+    {
+        std::cout << "Multi jittered is not implemented for the specified kernel type. Only kernel2 is supported." << std::endl;
+    }
+
+    template <>
+    void processMultiJittered<glm::vec2>(glkernel::kernel2& kernel)
+    {
+        glkernel::sample::multi_jittered(kernel);
+    }
+
+    //////////////////////////
+
+    template <typename T>
     void processCommand(glkernel::tkernel<T>& kernel, const std::string& command, const cppexpose::VariantMap& arguments)
     {
+        auto parseArg = [&](const std::string& argName, const float stdValue) -> float
+        {
+            if (arguments.find(argName) == arguments.end())
+            {
+                std::cout << "Argument " << argName << " was not supplied to command " << command << ". Assuming standard value of " << stdValue << "." << std::endl;
+                return stdValue;
+            }
+
+            return arguments.at(argName).value<float>();
+        };
+
+        ///// NOISE /////
+        /////////////////
         if (command == "noise.uniform")
         {
-            glkernel::noise::uniform(kernel, 0.0f, 1.0f);
+            glkernel::noise::uniform(kernel, parseArg("range_min", 0.0f), parseArg("range_max", 1.0f));
+        }
+        else if (command == "noise.normal")
+        {
+            glkernel::noise::normal(kernel, parseArg("mean", 0.0f), parseArg("stddev", 1.0f));
+        }
+        ///// SAMPLING /////
+        ////////////////////
+        else if (command == "sample.poisson_square")
+        {
+            // TODO: min_dist argument
+
+            processPoissonSquare(kernel);
+        }
+        else if (command == "sample.stratified")
+        {
+            processStratified(kernel);
+        }
+        else if (command == "sample.hammersley")
+        {
+            processHammersley(kernel);
+        }
+        else if (command == "sample.hammersley_sphere")
+        {
+            processHammersleySphere(kernel);
+        }
+        else if (command == "sample.halton")
+        {
+            processHalton(kernel, parseArg("base1", 2), parseArg("base2", 2));
+        }
+        else if (command == "sample.halton_sphere")
+        {
+            processHaltonSphere(kernel, parseArg("base1", 2), parseArg("base2", 2));
+        }
+        else if (command == "sample.best_candidate")
+        {
+            processBestCandidate(kernel, parseArg("num_candidates", 32));
+        }
+        else if (command == "sample.n_rooks")
+        {
+            processNRooks(kernel);
+        }
+        else if (command == "sample.multi_jittered")
+        {
+            processMultiJittered(kernel);
+        }
+        ///// SCALE /////
+        /////////////////
+        else if (command == "scale.range")
+        {
+            glkernel::scale::range(kernel, parseArg("range_to_lower", 0.0), parseArg("range_to_upper", 1.0), parseArg("range_from_lower", 0.0), parseArg("range_from_upper", 1.0));
+        }
+        ///// SEQUENCE /////
+        ////////////////////
+        else if (command == "sequence.uniform")
+        {
+            glkernel::sequence::uniform(kernel, parseArg("range_min", 0.0), parseArg("range_max", 1.0));
+        }
+        ///// SHUFFLE /////
+        ///////////////////
+        else if (command == "shuffle.bucket_permutate")
+        {
+            // TODO: width, height, depth arguments
+            glkernel::shuffle::bucket_permutate(kernel);
+        }
+        else if (command == "shuffle.bayer")
+        {
+            glkernel::shuffle::bayer(kernel);
+        }
+        else if (command == "shuffle.random")
+        {
+            // TODO: start argument
+            glkernel::shuffle::random(kernel);
+        }
+        ///// SORT /////
+        ////////////////
+        else if (command == "sort.distance")
+        {
+            // TODO: read origin, needs to be based on T
+            glkernel::sort::distance(kernel, T());
         }
         else
         {
