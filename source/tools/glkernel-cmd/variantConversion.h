@@ -7,27 +7,36 @@
 namespace
 {
     template <typename T>
-    void appendValueToVariantArray(cppexpose::Variant& variant, T t);
+    void appendValueToVariantArray(cppexpose::Variant& variant, const T& t);
 
     template <>
-    void appendValueToVariantArray<float>(cppexpose::Variant& variant, float t)
+    void appendValueToVariantArray<float>(cppexpose::Variant& variant, const float& t)
     {
         variant.asArray()->push_back(t);
     }
 
     template <>
-    void appendValueToVariantArray<glm::vec2>(cppexpose::Variant& variant, glm::vec2 t)
+    void appendValueToVariantArray<glm::vec2>(cppexpose::Variant& variant, const glm::vec2& t)
     {
         variant.asArray()->push_back(t.x);
         variant.asArray()->push_back(t.y);
     }
 
     template <>
-    void appendValueToVariantArray<glm::vec3>(cppexpose::Variant& variant, glm::vec3 t)
+    void appendValueToVariantArray<glm::vec3>(cppexpose::Variant& variant, const glm::vec3& t)
     {
         variant.asArray()->push_back(t.x);
         variant.asArray()->push_back(t.y);
         variant.asArray()->push_back(t.z);
+    }
+
+    template <>
+    void appendValueToVariantArray<glm::vec4>(cppexpose::Variant& variant, const glm::vec4& t)
+    {
+        variant.asArray()->push_back(t.x);
+        variant.asArray()->push_back(t.y);
+        variant.asArray()->push_back(t.z);
+        variant.asArray()->push_back(t.w);
     }
 }
 

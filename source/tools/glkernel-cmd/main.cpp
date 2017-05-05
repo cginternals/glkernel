@@ -1,6 +1,7 @@
 #include "variantConversion.h"
 #include "parsing.h"
 
+#include <iostream>
 #include <fstream>
 
 #include <cppassist/cmdline/ArgumentParser.h>
@@ -24,6 +25,7 @@ int main(int argc, char* argv[])
 
     if (!generateKernelFromJSON(kernelVariant, inFilename))
     {
+        std::cout << "Could not generate kernel. Possibly the input specification could not be parsed." << std::endl;
         return 1;
     }
 
@@ -33,7 +35,11 @@ int main(int argc, char* argv[])
 
     cppexpose::Variant kernelJSON;
 
-    if (kernelVariant.hasType<glkernel::kernel3>())
+    if (kernelVariant.hasType<glkernel::kernel4>())
+    {
+        kernelJSON = toJSON(kernelVariant.value<glkernel::kernel4>());
+    }
+    else if (kernelVariant.hasType<glkernel::kernel3>())
     {
         kernelJSON = toJSON(kernelVariant.value<glkernel::kernel3>());
     }

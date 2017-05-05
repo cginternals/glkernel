@@ -33,6 +33,14 @@ bool generateKernelFromJSON(cppexpose::Variant& kernelVariant, const std::string
     auto height = initKernelMap->at("height").value<glm::uint16>();
     auto depth = initKernelMap->at("depth").value<glm::uint16>();
 
+    if (components == 4)
+    {
+        glkernel::kernel4 kernel{ width, height, depth };
+
+        kernelVariant = cppexpose::Variant::fromValue(kernel);
+
+        return true;
+    }
     if (components == 3)
     {
         glkernel::kernel3 kernel{ width, height, depth };
@@ -58,6 +66,5 @@ bool generateKernelFromJSON(cppexpose::Variant& kernelVariant, const std::string
         return true;
     }
 
-    assert(false);
     return false;
 }
