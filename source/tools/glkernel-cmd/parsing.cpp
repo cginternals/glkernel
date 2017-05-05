@@ -232,13 +232,13 @@ namespace
         /////////////////
         else if (command == "scale.range")
         {
-            glkernel::scale::range(kernel, parseArg("range_to_lower", 0.0), parseArg("range_to_upper", 1.0), parseArg("range_from_lower", 0.0), parseArg("range_from_upper", 1.0));
+            glkernel::scale::range(kernel, parseArg("range_to_lower", 0.0f), parseArg("range_to_upper", 1.0f), parseArg("range_from_lower", 0.0f), parseArg("range_from_upper", 1.0f));
         }
         ///// SEQUENCE /////
         ////////////////////
         else if (command == "sequence.uniform")
         {
-            glkernel::sequence::uniform(kernel, parseArg("range_min", 0.0), parseArg("range_max", 1.0));
+            glkernel::sequence::uniform(kernel, parseArg("range_min", 0.0f), parseArg("range_max", 1.0f));
         }
         ///// SHUFFLE /////
         ///////////////////
