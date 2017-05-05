@@ -440,7 +440,7 @@ void hammersley(tkernel<glm::tvec2<T, P>> & kernel)
 {
     #pragma omp parallel for
     for (int i = 0; i < static_cast<int>(kernel.size()); ++i)
-{
+    {
         const auto u = static_cast<T>(i) / kernel.size();
         const auto v = radical_inverse<T>(i);
         kernel[i] = glm::tvec2<T, P>(u, v);
@@ -452,11 +452,11 @@ void hammersley_sphere(tkernel<glm::tvec3<T, P>> & kernel, const HemisphereMappi
 {
     #pragma omp parallel for
     for (int i = 0; i < static_cast<int>(kernel.size()); ++i)
-{
+    {
         const auto u = static_cast<T>(i) / kernel.size();
         const auto v = radical_inverse<T>(i);
         switch (type)
-{
+        {
         case HemisphereMapping::Uniform:
             kernel[i] = hemisphere_sample_uniform<T, P>(u, v);
             break;
@@ -474,7 +474,7 @@ void halton(tkernel<glm::tvec2<T, P>> & kernel, const unsigned int base1, const 
 {
     #pragma omp parallel for
     for (int i = 0; i < static_cast<int>(kernel.size()); ++i)
-{
+    {
         const auto u = van_der_corput<T>(i, base1);
         const auto v = van_der_corput<T>(i, base2);
         kernel[i] = glm::tvec2<T, P>(u, v);
@@ -490,11 +490,11 @@ void halton_sphere(
 {
     #pragma omp parallel for
     for (int i = 0; i < static_cast<int>(kernel.size()); ++i)
-{
+    {
         const auto u = van_der_corput<T>(i, base1);
         const auto v = van_der_corput<T>(i, base2);
         switch (type)
-{
+        {
         case HemisphereMapping::Uniform:
             kernel[i] = hemisphere_sample_uniform<T, P>(u, v);
             break;
@@ -523,7 +523,7 @@ void best_candidate(tkernel<glm::tvec2<T, P>> & kernel, const unsigned int num_c
         // generate candidates
         #pragma omp parallel for
         for (int c = 0; c < static_cast<int>(num_candidates); ++c)
-{
+        {
             candidates[c] = { dist(generator), dist(generator) };
 
             // test candidates against previously accepted samples
@@ -568,7 +568,7 @@ void best_candidate(tkernel<glm::tvec3<T, P>> & kernel, const unsigned int num_c
         // generate candidates
         #pragma omp parallel for
         for (int c = 0; c < static_cast<int>(num_candidates); ++c)
-{
+        {
             candidates[c] = { dist(generator), dist(generator), dist(generator) };
 
             // test candidates against previously accepted samples
