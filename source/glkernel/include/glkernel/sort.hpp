@@ -19,12 +19,12 @@ namespace sort
 template <typename T>
 struct distance_comparator
 {
-    distance_comparator(const T& origin)
+    distance_comparator(const T & origin)
     : m_origin {origin}
     {
     }
 
-    bool operator()(const T& a, const T& b) const
+    bool operator()(const T & a, const T & b) const
     {
         return glm::distance(a, m_origin) < glm::distance(b, m_origin);
     }
