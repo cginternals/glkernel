@@ -16,27 +16,27 @@ namespace sort
 {
 
 
-template <typename T, glm::precision P, template<typename, glm::precision> class V>
+template <typename T>
 struct distance_comparator
 {
-    distance_comparator(const V<T, P>& origin)
+    distance_comparator(const T& origin)
     : m_origin {origin}
     {
     }
 
-    bool operator()(const V<T, P>& a, const V<T, P>& b) const
+    bool operator()(const T& a, const T& b) const
     {
         return glm::distance(a, m_origin) < glm::distance(b, m_origin);
     }
 
 private:
-    V<T, P> m_origin;
+    T m_origin;
 };
 
-template <typename T, glm::precision P, template<typename, glm::precision> class V>
-void distance(tkernel<V<T, P>> & kernel, const V<T, P> & origin)
+template <typename T>
+void distance(tkernel<T> & kernel, const T & origin)
 {
-    const distance_comparator<T, P, V> comparator {origin};
+    const distance_comparator<T> comparator {origin};
     std::sort(kernel.begin(), kernel.end(), comparator);
 }
 
