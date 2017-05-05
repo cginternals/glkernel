@@ -3,6 +3,8 @@
 
 #include <fstream>
 
+#include <cppassist/cmdline/ArgumentParser.h>
+
 #include <cppexpose/variant/Variant.h>
 #include <cppexpose/json/JSON.h>
 #include <cppassist/cmdline/ArgumentParser.h>
@@ -10,11 +12,17 @@
 #include <glkernel/Kernel.h>
 #include <glkernel/noise.h>
 
-int main()
+int main(int argc, char* argv[])
 {
+    cppassist::ArgumentParser argParser;
+    argParser.parse(argc, argv);
+
+    auto inFilename = argParser.value("--i");
+    auto outFilename = argParser.value("--o");
+
     cppexpose::Variant kernelVariant;
 
-    if (!generateKernelFromJSON(kernelVariant, "scaled-noise.json"))
+    if (!generateKernelFromJSON(kernelVariant, inFilename))
     {
         return 1;
     }
@@ -38,7 +46,7 @@ int main()
         kernelJSON = toJSON(kernelVariant.value<glkernel::kernel1>());
     }
 
-    std::ofstream outStream("kernel.json");
+    std::ofstream outStream(outFilename);
 
     outStream << cppexpose::JSON::stringify(kernelJSON, cppexpose::JSON::OutputMode::Beautify) << std::endl;
 }
