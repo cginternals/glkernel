@@ -42,7 +42,6 @@ source_group_by_path(${CMAKE_CURRENT_SOURCE_DIR} "\\\\.cpp$"
 
 # Build executable
 add_executable(${target}
-    MACOSX_BUNDLE
     ${sources}
     ${headers}
 )
