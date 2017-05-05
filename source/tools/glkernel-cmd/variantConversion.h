@@ -71,10 +71,13 @@ cppexpose::Variant toJSON(const glkernel::tkernel<T>& kernel)
     }
 
     cppexpose::Variant result = cppexpose::Variant::map();
+    cppexpose::Variant size = cppexpose::Variant::map();
 
-    result.asMap()->emplace("height", kernel.height());
-    result.asMap()->emplace("width", kernel.width());
-    result.asMap()->emplace("depth", kernel.depth());
+    size.asMap()->emplace("height", kernel.height());
+    size.asMap()->emplace("width", kernel.width());
+    size.asMap()->emplace("depth", kernel.depth());
+
+    result.asMap()->emplace("size", size);
     result.asMap()->emplace("kernel", zArray);
     
     return result;

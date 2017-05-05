@@ -33,12 +33,11 @@ namespace
     {
     }
 
-    // TODO: find out why this specialization does not compile
-//    template <>
-//    void processStratified<float>(glkernel::kernel1& kernel)
-//    {
-//        glkernel::sample::stratified(kernel);
-//    }
+    template <>
+    void processStratified<float>(glkernel::kernel1& kernel)
+    {
+        glkernel::sample::stratified(kernel);
+    }
 
     template <>
     void processStratified<glm::vec2>(glkernel::kernel2& kernel)
