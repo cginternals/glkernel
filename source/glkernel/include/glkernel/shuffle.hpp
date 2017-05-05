@@ -80,7 +80,7 @@ protected:
 };
 
 
-template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type *>
+template<typename T>
 void bucket_permutate(tkernel<T> & kernel
     , const glm::uint16 subkernel_width
     , const glm::uint16 subkernel_height
@@ -178,7 +178,7 @@ void bucket_permutate(tkernel<T> & kernel
 
 
 
-template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type *>
+template<typename T>
 void bayer(tkernel<T> & kernel)
 {
     static const auto bayer2 = std::array<size_t, 4>({ {
