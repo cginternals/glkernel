@@ -623,6 +623,7 @@ void golden_point_set(tkernel<glm::tvec2<T, P>> & kernel)
             idx = i;
         }
 
+        // increment the coordinate by the inverted golden ratio
         x += 0.618033988749894;
 
         if (x >= 1)
@@ -683,7 +684,7 @@ void golden_point_set(tkernel<glm::tvec2<T, P>> & kernel)
     {
         kernel[i].y = y;
 
-        // increment the coordinate
+        // increment the coordinate by the inverted golden ratio
         y += 0.618033988749894;
 
         if (y >= 1)
