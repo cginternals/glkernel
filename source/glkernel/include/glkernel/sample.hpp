@@ -354,12 +354,12 @@ T stratified_operator<T>::operator()(const glm::u16vec3 & position)
     return position[m_coefficient] * m_extent_inverse + m_distribute(m_generator);
 }
 
-template <typename T, glm::precision P>
-void stratified(tkernel<glm::tvec1<T, P>> & kernel)
+template <typename T>
+void stratified(tkernel<T> & kernel)
 {
     // the kernels dimensionality should match its value type,
     // i.e., at least two dimensions should be unused (equal 1)
-    assert(kernel.depth() == 1 && kernel.width()  == 1);
+    assert(kernel.depth() == 1 && kernel.height()  == 1);
     kernel.template for_each_position<stratified_operator<T>>();
 }
 
@@ -597,6 +597,96 @@ void best_candidate(tkernel<glm::tvec3<T, P>> & kernel, const unsigned int num_c
     }
 }
 
+template <typename T, glm::precision P>
+void golden_point_set(tkernel<glm::tvec2<T, P>> & kernel)
+{
+    std::random_device RD;
+    std::mt19937_64 generator(RD());
+
+    std::uniform_real_distribution<> rand_dist(0.0, 1.0);
+
+    T x = rand_dist(generator);
+
+    T min = x;
+    unsigned int idx = 0;
+
+    // set the first coordinates
+    for (unsigned int i = 0; i < kernel.size(); ++i)
+    {
+        auto& item = kernel[i];
+
+        item.y = x;
+
+        if (x < min)
+        {
+            min = x;
+            idx = i;
+        }
+
+        x += 0.618033988749894;
+
+        if (x >= 1)
+        {
+            --x;
+        }
+    }
+
+    // find the first Fibonacci >= N
+    unsigned int f = 1;
+    unsigned int fp = 1;
+    unsigned int parity = 0;
+
+    while(f + fp < kernel.size())
+    {
+        unsigned int tmp = f;
+        f += fp;
+        fp = tmp;
+
+        ++parity;
+    }
+
+    // set the increment and decrement
+    unsigned int inc = fp, dec = f;
+    if (parity & 1)
+        inc = f, dec = fp;
+
+    // permute the first coordinates
+    kernel[0].x = kernel[idx].y;
+
+    for (unsigned int i = 1; i < kernel.size(); ++i)
+    {
+        if (idx < dec)
+        {
+            idx += inc;
+
+            if(idx >= kernel.size())
+                idx -= dec;
+        }
+        else
+        {
+            idx -= dec;
+        }
+
+        kernel[i].x = kernel[idx].y;
+    }
+
+    // set the initial second coordinate
+    T y = rand_dist(generator);
+
+    // set the second coordinates
+    for (unsigned int i = 0; i < kernel.size(); ++i)
+    {
+        kernel[i].y = y;
+
+        // increment the coordinate
+        y += 0.618033988749894;
+
+        if (y >= 1)
+        {
+            --y;
+        }
+    }
+}
 
 } // namespace sample
 
