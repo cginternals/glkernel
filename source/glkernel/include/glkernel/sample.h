@@ -56,8 +56,8 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, T min_dist, unsigned i
 *    of strata. Note: the value type should match the kernels extent,
 *    e.g., a vec2 kernel should not be used for a kernel of 3d extent.
 */
-template <typename T, glm::precision P>
-void stratified(tkernel<glm::tvec1<T, P>> & kernel);
+template <typename T>
+void stratified(tkernel<T> & kernel);
 
 template <typename T, glm::precision P>
 void stratified(tkernel<glm::tvec2<T, P>> & kernel);
@@ -165,6 +165,7 @@ void best_candidate(tkernel<glm::tvec3<T, P>> & kernel, unsigned int num_candida
 */
 template <typename T, glm::precision P>
 void n_rooks(tkernel<glm::tvec2<T, P>> & kernel);
+
 //@}
 /**
 *  @brief
@@ -182,6 +183,18 @@ void n_rooks(tkernel<glm::tvec2<T, P>> & kernel);
 */
 template <typename T, glm::precision P>
 void multi_jittered(tkernel<glm::tvec2<T, P>> & kernel, const bool correlated = false);
+
+//@}
+/**
+*  @brief
+*  Generates a golden point set as described in "Golden Ratio Sequences For Low-Discrepancy Sampling"
+*  by Schretter et al. in 2011.
+*
+*  @param[in,out] kernel
+*  The kernel to be modified
+*/
+template <typename T, glm::precision P>
+void golden_point_set(tkernel<glm::tvec2<T, P>> & kernel);
 
 
 } // namespace sample
