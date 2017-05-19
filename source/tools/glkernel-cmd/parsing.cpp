@@ -15,13 +15,13 @@
 namespace
 {
     template <typename T>
-    void processPoissonSquare(glkernel::tkernel<T>& kernel, unsigned int num_probes)
+    void processPoissonSquare(glkernel::tkernel<T> & kernel, unsigned int num_probes)
     {
         std::cout << "Poisson square is not implemented for the specified kernel type. Only kernel2 is supported." << std::endl;
     }
 
     template <>
-    void processPoissonSquare<glm::vec2>(glkernel::kernel2& kernel, unsigned int num_probes)
+    void processPoissonSquare<glm::vec2>(glkernel::kernel2 & kernel, unsigned int num_probes)
     {
         glkernel::sample::poisson_square(kernel, num_probes);
     }
@@ -29,30 +29,30 @@ namespace
     //////////////////////////
 
     template <typename T>
-    void processStratified(glkernel::tkernel<T>& kernel)
+    void processStratified(glkernel::tkernel<T> & kernel)
     {
     }
 
     template <>
-    void processStratified<float>(glkernel::kernel1& kernel)
-    {
-        glkernel::sample::stratified(kernel);
-    }
-
-    template <>
-    void processStratified<glm::vec2>(glkernel::kernel2& kernel)
+    void processStratified<float>(glkernel::kernel1 & kernel)
     {
         glkernel::sample::stratified(kernel);
     }
 
     template <>
-    void processStratified<glm::vec3>(glkernel::kernel3& kernel)
+    void processStratified<glm::vec2>(glkernel::kernel2 & kernel)
     {
         glkernel::sample::stratified(kernel);
     }
 
     template <>
-    void processStratified<glm::vec4>(glkernel::kernel4& kernel)
+    void processStratified<glm::vec3>(glkernel::kernel3 & kernel)
+    {
+        glkernel::sample::stratified(kernel);
+    }
+
+    template <>
+    void processStratified<glm::vec4>(glkernel::kernel4 & kernel)
     {
         std::cout << "Stratified is not implemented for kernel4." << std::endl;
     }
@@ -60,7 +60,7 @@ namespace
     //////////////////////////
 
     template <typename T>
-    void processHammersley(glkernel::tkernel<T>& kernel)
+    void processHammersley(glkernel::tkernel<T> & kernel)
     {
         std::cout << "Hammersley is not implemented for the specified kernel type. Only kernel2 is supported." << std::endl;
     }
@@ -74,13 +74,13 @@ namespace
     //////////////////////////
 
     template <typename T>
-    void processHalton(glkernel::tkernel<T>& kernel, uint base1, uint base2)
+    void processHalton(glkernel::tkernel<T> & kernel, uint base1, uint base2)
     {
         std::cout << "Hammersley is not implemented for the specified kernel type. Only kernel2 is supported." << std::endl;
     }
 
     template <>
-    void processHalton<glm::vec2>(glkernel::kernel2& kernel, uint base1, uint base2)
+    void processHalton<glm::vec2>(glkernel::kernel2 & kernel, uint base1, uint base2)
     {
         glkernel::sample::halton(kernel, base1, base2);
     }
@@ -88,13 +88,13 @@ namespace
     //////////////////////////
 
     template <typename T>
-    void processHammersleySphere(glkernel::tkernel<T>& kernel)
+    void processHammersleySphere(glkernel::tkernel<T> & kernel)
     {
         std::cout << "Hammersley is not implemented for the specified kernel type. Only kernel3 is supported." << std::endl;
     }
 
     template <>
-    void processHammersleySphere<glm::vec3>(glkernel::kernel3& kernel)
+    void processHammersleySphere<glm::vec3>(glkernel::kernel3 & kernel)
     {
         glkernel::sample::hammersley_sphere(kernel);
     }
@@ -102,13 +102,13 @@ namespace
     //////////////////////////
 
     template <typename T>
-    void processHaltonSphere(glkernel::tkernel<T>& kernel, uint base1, uint base2)
+    void processHaltonSphere(glkernel::tkernel<T> & kernel, uint base1, uint base2)
     {
         std::cout << "Hammersley is not implemented for the specified kernel type. Only kernel3 is supported." << std::endl;
     }
 
     template <>
-    void processHaltonSphere<glm::vec3>(glkernel::kernel3& kernel, uint base1, uint base2)
+    void processHaltonSphere<glm::vec3>(glkernel::kernel3 & kernel, uint base1, uint base2)
     {
         glkernel::sample::halton_sphere(kernel, base1, base2);
     }
@@ -116,19 +116,19 @@ namespace
     //////////////////////////
 
     template <typename T>
-    void processBestCandidate(glkernel::tkernel<T>& kernel, uint numCandidates)
+    void processBestCandidate(glkernel::tkernel<T> & kernel, uint numCandidates)
     {
         std::cout << "Best Candidate is not implemented for the specified kernel type. Only kernel2 and kernel3 are supported." << std::endl;
     }
 
     template <>
-    void processBestCandidate<glm::vec2>(glkernel::kernel2& kernel, uint numCandidates)
+    void processBestCandidate<glm::vec2>(glkernel::kernel2 & kernel, uint numCandidates)
     {
         glkernel::sample::best_candidate(kernel, numCandidates);
     }
 
     template <>
-    void processBestCandidate<glm::vec3>(glkernel::kernel3& kernel, uint numCandidates)
+    void processBestCandidate<glm::vec3>(glkernel::kernel3 & kernel, uint numCandidates)
     {
         glkernel::sample::best_candidate(kernel, numCandidates);
     }
@@ -136,13 +136,13 @@ namespace
     //////////////////////////
 
     template <typename T>
-    void processNRooks(glkernel::tkernel<T>& kernel)
+    void processNRooks(glkernel::tkernel<T> & kernel)
     {
         std::cout << "N rooks is not implemented for the specified kernel type. Only kernel2 is supported." << std::endl;
     }
 
     template <>
-    void processNRooks<glm::vec2>(glkernel::kernel2& kernel)
+    void processNRooks<glm::vec2>(glkernel::kernel2 & kernel)
     {
         glkernel::sample::n_rooks(kernel);
     }
@@ -150,13 +150,13 @@ namespace
     //////////////////////////
 
     template <typename T>
-    void processMultiJittered(glkernel::tkernel<T>& kernel)
+    void processMultiJittered(glkernel::tkernel<T> & kernel)
     {
         std::cout << "Multi jittered is not implemented for the specified kernel type. Only kernel2 is supported." << std::endl;
     }
 
     template <>
-    void processMultiJittered<glm::vec2>(glkernel::kernel2& kernel)
+    void processMultiJittered<glm::vec2>(glkernel::kernel2 & kernel)
     {
         glkernel::sample::multi_jittered(kernel);
     }
@@ -164,13 +164,13 @@ namespace
     //////////////////////////
 
     template <typename T>
-    void processGoldenPointSet(glkernel::tkernel<T>& kernel)
+    void processGoldenPointSet(glkernel::tkernel<T> & kernel)
     {
         std::cout << "Golden point set is not implemented for the specified kernel type. Only kernel2 is supported." << std::endl;
     }
 
     template <>
-    void processGoldenPointSet<glm::vec2>(glkernel::kernel2& kernel)
+    void processGoldenPointSet<glm::vec2>(glkernel::kernel2 & kernel)
     {
         glkernel::sample::golden_point_set(kernel);
     }
@@ -178,7 +178,7 @@ namespace
     //////////////////////////
 
     template <typename T>
-    void processCommand(glkernel::tkernel<T>& kernel, const std::string& command, const cppexpose::VariantMap& arguments)
+    void processCommand(glkernel::tkernel<T> & kernel, const std::string & command, const cppexpose::VariantMap & arguments)
     {
         auto parseArg = [&](const std::string& argName, const float stdValue) -> float
         {
@@ -283,7 +283,7 @@ namespace
     }
 
     template <typename T>
-    void processCommands(glkernel::tkernel<T>& kernel, const cppexpose::VariantArray& commandArray)
+    void processCommands(glkernel::tkernel<T> & kernel, const cppexpose::VariantArray & commandArray)
     {
         for (auto& command : commandArray)
         {
@@ -301,7 +301,7 @@ namespace
     }
 }
 
-bool generateKernelFromJSON(cppexpose::Variant& kernelVariant, const std::string& filePath)
+bool generateKernelFromJSON(cppexpose::Variant & kernelVariant, const std::string & filePath)
 {
     cppexpose::Variant root;
 

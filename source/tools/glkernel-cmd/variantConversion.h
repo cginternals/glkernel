@@ -7,23 +7,23 @@
 namespace
 {
     template <typename T>
-    void appendValueToVariantArray(cppexpose::Variant& variant, const T& t);
+    void appendValueToVariantArray(cppexpose::Variant & variant, const T & t);
 
     template <>
-    void appendValueToVariantArray<float>(cppexpose::Variant& variant, const float& t)
+    void appendValueToVariantArray<float>(cppexpose::Variant & variant, const float & t)
     {
         variant.asArray()->push_back(t);
     }
 
     template <>
-    void appendValueToVariantArray<glm::vec2>(cppexpose::Variant& variant, const glm::vec2& t)
+    void appendValueToVariantArray<glm::vec2>(cppexpose::Variant & variant, const glm::vec2 & t)
     {
         variant.asArray()->push_back(t.x);
         variant.asArray()->push_back(t.y);
     }
 
     template <>
-    void appendValueToVariantArray<glm::vec3>(cppexpose::Variant& variant, const glm::vec3& t)
+    void appendValueToVariantArray<glm::vec3>(cppexpose::Variant & variant, const glm::vec3 & t)
     {
         variant.asArray()->push_back(t.x);
         variant.asArray()->push_back(t.y);
@@ -31,7 +31,7 @@ namespace
     }
 
     template <>
-    void appendValueToVariantArray<glm::vec4>(cppexpose::Variant& variant, const glm::vec4& t)
+    void appendValueToVariantArray<glm::vec4>(cppexpose::Variant & variant, const glm::vec4 & t)
     {
         variant.asArray()->push_back(t.x);
         variant.asArray()->push_back(t.y);
@@ -41,7 +41,7 @@ namespace
 }
 
 template <typename T>
-cppexpose::Variant toJSON(const glkernel::tkernel<T>& kernel)
+cppexpose::Variant toJSON(const glkernel::tkernel<T> & kernel)
 {
     cppexpose::Variant zArray = cppexpose::Variant::array();
 
