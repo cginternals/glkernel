@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 
     if (!generateKernelFromJSON(kernelVariant, inFilename))
     {
-        std::cout << "Could not generate kernel. Possibly the input specification could not be parsed." << std::endl;
+        std::cout << "Error in kernel generation. Aborting..." << std::endl;
         return 1;
     }
 

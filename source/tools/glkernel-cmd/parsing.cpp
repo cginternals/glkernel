@@ -15,15 +15,15 @@
 namespace
 {
     template <typename T>
-    void processPoissonSquare(glkernel::tkernel<T>& kernel)
+    void processPoissonSquare(glkernel::tkernel<T>& kernel, unsigned int num_probes)
     {
         std::cout << "Poisson square is not implemented for the specified kernel type. Only kernel2 is supported." << std::endl;
     }
 
     template <>
-    void processPoissonSquare<glm::vec2>(glkernel::kernel2& kernel)
+    void processPoissonSquare<glm::vec2>(glkernel::kernel2& kernel, unsigned int num_probes)
     {
-        glkernel::sample::poisson_square(kernel);
+        glkernel::sample::poisson_square(kernel, num_probes);
     }
 
     //////////////////////////
@@ -205,9 +205,7 @@ namespace
         ////////////////////
         else if (command == "sample.poisson_square")
         {
-            // TODO: min_dist argument
-
-            processPoissonSquare(kernel);
+            processPoissonSquare(kernel, parseArg("num_probes", 32));
         }
         else if (command == "sample.stratified")
         {
@@ -261,8 +259,7 @@ namespace
         ///////////////////
         else if (command == "shuffle.bucket_permutate")
         {
-            // TODO: width, height, depth arguments
-            glkernel::shuffle::bucket_permutate(kernel);
+            glkernel::shuffle::bucket_permutate(kernel, parseArg("subkernel_width", 1), parseArg("subkernel_height", 1), parseArg("subkernel_depth", 1));
         }
         else if (command == "shuffle.bayer")
         {
@@ -270,8 +267,7 @@ namespace
         }
         else if (command == "shuffle.random")
         {
-            // TODO: start argument
-            glkernel::shuffle::random(kernel);
+            glkernel::shuffle::random(kernel, parseArg("start", 1));
         }
         ///// SORT /////
         ////////////////
@@ -311,11 +307,13 @@ bool generateKernelFromJSON(cppexpose::Variant& kernelVariant, const std::string
 
     if (!cppexpose::JSON::load(root, filePath))
     {
+        std::cout << "Input file could not be loaded." << std::endl;
         return false;
     }
 
     if (!root.isVariantMap())
     {
+        std::cout << "Invalid JSON format. JSON does not contain a JSON object" << std::endl;
         return false;
     }
 
@@ -323,6 +321,7 @@ bool generateKernelFromJSON(cppexpose::Variant& kernelVariant, const std::string
 
     if (rootMap->find("init-kernel") == rootMap->end())
     {
+        std::cout << "Invalid JSON format. Entry 'init-kernel' not found. " << std::endl;
         return false;
     }
 
@@ -331,6 +330,7 @@ bool generateKernelFromJSON(cppexpose::Variant& kernelVariant, const std::string
 
     if (!initKernelMap)
     {
+        std::cout << "Invalid JSON format. Entry 'init-kernel' does not contain a JSON object. " << std::endl;
         return false;
     }
 
@@ -342,6 +342,7 @@ bool generateKernelFromJSON(cppexpose::Variant& kernelVariant, const std::string
 
     if (rootMap->find("commands") == rootMap->end())
     {
+        std::cout << "Invalid JSON format. Entry 'commands' not found. " << std::endl;
         return false;
     }
 
@@ -350,6 +351,7 @@ bool generateKernelFromJSON(cppexpose::Variant& kernelVariant, const std::string
 
     if (!commandArray)
     {
+        std::cout << "Invalid JSON format. Entry 'commands' is not a JSON array. " << std::endl;
         return false;
     }
 
