@@ -646,9 +646,14 @@ void golden_point_set(tkernel<glm::tvec2<T, P>> & kernel)
     }
 
     // set the increment and decrement
-    unsigned int inc = fp, dec = f;
+    unsigned int inc = fp;
+    unsigned int dec = f;
+    
     if (parity & 1)
-        inc = f, dec = fp;
+    {
+        inc = f;
+        dec = fp;
+    }
 
     // permute the first coordinates
     kernel[0].x = kernel[idx].y;
