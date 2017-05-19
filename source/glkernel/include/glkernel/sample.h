@@ -21,16 +21,16 @@ namespace sample
 *    Values of the kernel are set to positions using poisson disk sampling.
 *
 *  @return
-*    The number of actual generated points. Note: this number is 
+*    The number of actual generated points. Note: this number is
 *    between 0 and the kernel's size.
 */
 
-// Guess a good number that targets the actual generated number of 
+// Guess a good number that targets the actual generated number of
 // points generated to match kernel's size.
 template <typename T, glm::precision P>
 size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, unsigned int num_probes = 32);
 
-// In contrast to the typical default impl. this impl uses the best 
+// In contrast to the typical default impl. this impl uses the best
 // of num_probes, randomizes the actives, ...
 template <typename T, glm::precision P>
 size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, T min_dist, unsigned int num_probes = 32);
@@ -42,22 +42,28 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, T min_dist, unsigned i
 *    A random (uniform) sample within each kernel strata is generated.
 *
 *    This generates uniform sampled positions within each kernel cell:
-*    within each stratum a uniform distribution is used. As a result, 
+*    within each stratum a uniform distribution is used. As a result,
 *    each kernel value comprises a position that is located within its
-*    stratum. E.g., a kernel2{2, 4} would comprise random positions, 
+*    stratum. E.g., a kernel2{2, 4} would comprise random positions,
 *    covering 8 strata. The position of value(0, 0) would reside within
 *    [0.0, 0.5] for x and [0.0, 0.25] for y.
 *
-*    Stratified sampling reduces clustering of samples, non-uniform 
+*    Stratified sampling reduces clustering of samples, non-uniform
 *    sampling of areas (e.g., relevant to preserve smaller details).
 *
 *  @param[in,out] kernel
-*    The kernel to be modified, with its extent specifying the number 
+*    The kernel to be modified, with its extent specifying the number
 *    of strata. Note: the value type should match the kernels extent,
 *    e.g., a vec2 kernel should not be used for a kernel of 3d extent.
 */
 template <typename T, glm::precision P>
 void stratified(tkernel<glm::tvec1<T, P>> & kernel);
+
+template <typename T, glm::precision P>
+void stratified(tkernel<glm::tvec2<T, P>> & kernel);
+
+template <typename T, glm::precision P>
+void stratified(tkernel<glm::tvec3<T, P>> & kernel);
 
 /**
 *  @brief
@@ -147,11 +153,6 @@ template <typename T, glm::precision P>
 void best_candidate(tkernel<glm::tvec2<T, P>> & kernel, unsigned int num_candidates = 32);
 template <typename T, glm::precision P>
 void best_candidate(tkernel<glm::tvec3<T, P>> & kernel, unsigned int num_candidates = 32);
-template <typename T, glm::precision P>
-void stratified(tkernel<glm::tvec2<T, P>> & kernel);
-
-template <typename T, glm::precision P>
-void stratified(tkernel<glm::tvec3<T, P>> & kernel);
 
 /**
 *  @brief
