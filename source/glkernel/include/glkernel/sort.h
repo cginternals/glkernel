@@ -14,8 +14,8 @@ namespace sort
 {
 
 
-template <typename T, glm::precision P, template<typename, glm::precision> class V>
-void distance(tkernel<V<T, P>> & kernel, const V<T, P> & origin);
+template <typename T>
+void distance(tkernel<T> & kernel, const T & origin);
 
 
 } // namespace sort
