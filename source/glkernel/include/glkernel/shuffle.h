@@ -14,7 +14,7 @@ namespace shuffle
 {
 
 
-template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type * = nullptr>
+template<typename T>
 void bucket_permutate(tkernel<T> & kernel
     , glm::uint16 subkernel_width  = 1
     , glm::uint16 subkernel_height = 1
@@ -23,7 +23,7 @@ void bucket_permutate(tkernel<T> & kernel
 
 // uses classic bayer matrices for kernel sizes 4, 9, 16, and 64 to remap the kernel
 // Note: kernel remains unchanged if its size is unsupported 
-template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type * = nullptr>
+template<typename T>
 void bayer(tkernel<T> & kernel);
 
 // uses std::random_shuffle
