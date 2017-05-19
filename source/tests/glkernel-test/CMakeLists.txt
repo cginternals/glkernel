@@ -1,16 +1,19 @@
 
 # 
+# External dependencies
+# 
+
+find_package(${META_PROJECT_NAME} REQUIRED HINTS "${CMAKE_CURRENT_SOURCE_DIR}/../../../")
+find_package(GLM 0.9.6 REQUIRED)
+find_package(OpenMP)
+
+# 
 # Executable name and options
 # 
 
 # Target name
 set(target glkernel-test)
 message(STATUS "Test ${target}")
-
-
-find_package(GLM 0.9.6 REQUIRED)
-
-find_package(OpenMP QUIET)
 
 if (NOT OPENMP_FOUND)
     message("Loop parallelization in ${target} skipped: OpenMP not found")
