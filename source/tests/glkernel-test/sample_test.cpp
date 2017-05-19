@@ -201,6 +201,10 @@ TEST_F(sample_test, n_rooks_one_sample_per_row)
 
 TEST_F(sample_test, stratified_compile)
 {
+    auto fkernel1 = glkernel::kernel1{ 1 };
+
+    glkernel::sample::stratified(fkernel1);
+
     auto fkernel2 = glkernel::kernel2{ 1 };
 
     glkernel::sample::stratified(fkernel2);
@@ -355,4 +359,15 @@ TEST_F(sample_test, best_candidate_compile)
     auto dkernel3 = glkernel::dkernel3{ 1 };
 
     glkernel::sample::best_candidate(dkernel3);
+}
+
+TEST_F(sample_test, golden_point_set_compile)
+{
+    auto fkernel2 = glkernel::kernel2{ 1 };
+
+    glkernel::sample::golden_point_set(fkernel2);
+
+    auto dkernel2 = glkernel::kernel2{ 1 };
+
+    glkernel::sample::golden_point_set(dkernel2);
 }
