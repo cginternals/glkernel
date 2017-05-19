@@ -164,6 +164,20 @@ namespace
     //////////////////////////
 
     template <typename T>
+    void processGoldenPointSet(glkernel::tkernel<T>& kernel)
+    {
+        std::cout << "Golden point set is not implemented for the specified kernel type. Only kernel2 is supported." << std::endl;
+    }
+
+    template <>
+    void processGoldenPointSet<glm::vec2>(glkernel::kernel2& kernel)
+    {
+        glkernel::sample::golden_point_set(kernel);
+    }
+
+    //////////////////////////
+
+    template <typename T>
     void processCommand(glkernel::tkernel<T>& kernel, const std::string& command, const cppexpose::VariantMap& arguments)
     {
         auto parseArg = [&](const std::string& argName, const float stdValue) -> float
@@ -226,6 +240,10 @@ namespace
         else if (command == "sample.multi_jittered")
         {
             processMultiJittered(kernel);
+        }
+        else if (command == "sample.golden_point_set")
+        {
+            processGoldenPointSet(kernel);
         }
         ///// SCALE /////
         /////////////////
@@ -311,6 +329,11 @@ bool generateKernelFromJSON(cppexpose::Variant& kernelVariant, const std::string
     auto initKernel = rootMap->at("init-kernel");
     auto initKernelMap = initKernel.asMap();
 
+    if (!initKernelMap)
+    {
+        return false;
+    }
+
     auto components = initKernelMap->at("components").value<int>();
 
     auto width = initKernelMap->at("width").value<glm::uint16>();
@@ -324,6 +347,11 @@ bool generateKernelFromJSON(cppexpose::Variant& kernelVariant, const std::string
 
     auto commandJson = rootMap->at("commands");
     auto commandArray = commandJson.asArray();
+
+    if (!commandArray)
+    {
+        return false;
+    }
 
     if (components == 4)
     {
