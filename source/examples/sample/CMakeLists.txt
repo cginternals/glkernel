@@ -6,11 +6,6 @@
 find_package(GLM 0.9.6 REQUIRED)
 
 find_package(OpenMP QUIET)
-
-if (NOT OPENMP_FOUND)
-    message("Loop parallelization in ${target} skipped: OpenMP not found")
-endif()
-
 find_package(Qt5OpenGL  5.1 QUIET)
 find_package(Qt5Core    5.1 QUIET)
 find_package(Qt5Gui     5.1 QUIET)
@@ -39,6 +34,10 @@ if (NOT Qt5Core_FOUND)
     return()
 else()
     message(STATUS "Example ${target}")
+endif()
+
+if (NOT OPENMP_FOUND)
+    message("Loop parallelization in ${target} skipped: OpenMP not found")
 endif()
 
 
@@ -133,6 +132,16 @@ target_link_libraries(${target}
     PRIVATE
     ${DEFAULT_LINKER_OPTIONS}
     $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:$<$<BOOL:"${OPENMP_FOUND}">:${OpenMP_CXX_FLAGS}>>
+)
+
+
+#
+# Target Health
+#
+
+perform_health_checks(
+    ${target}
+    ${sources}
 )
 
 
