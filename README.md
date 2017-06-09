@@ -31,3 +31,62 @@ ToDo
 ##### Linking binaries
 
 ToDo
+
+##### glkernel-cmd
+
+Additionally to using glkernel as a library, there is a standalone command line tool to generate kernels from JSON descriptions.
+The usage is as follows: ```glkernel-cmd --i {input filename} --o {output filename}```, where {input filename} is a JSON kernel description file and {output file} is a JSON file containing a kernel.
+
+The description file must contain an entry "init-kernel" that describes the size and the number of components of the the kernel that will be generated.
+It also has to contain an entry "commands", which is an array of commands that will be executed on the kernel.
+For these, all glkernel commands can be used.
+The naming convention for them is ```"{namespace}.{function name}"```, e.g. ```"noise.uniform"``` for ```noise::uniform```.
+Arguments can be passed as a JSON object, e.g. ```{ "noise.uniform": { "range_min": -1.0, "range_max": 1.0 } }``` will call ```noise::uniform(kernel, -1.0, 1.0)```.
+
+Here is an input JSON for generating 8 samples using golden point set sampling:
+```json
+{
+    "init-kernel": {
+        "components": 2,
+        "width": 8,
+        "height": 1,
+        "depth": 1
+    },
+
+    "commands": [
+        { "sample.golden_point_set": { } },
+        { "scale.range": { "range_to_lower": -0.5, "range_to_upper": 0.5 } },
+        { "shuffle.random": { } }
+    ]
+}
+```
+
+The generated output JSON will have the following form:
+```json
+{
+    "kernel": [
+        [
+            [
+                [
+                    -0.41692,
+                    -0.0735727
+                ],
+                [
+                    0.201114,
+                    0.0165974
+                ],
+                [
+                    -0.0906823,
+                    -0.219471
+                ],
+                ...
+            ]
+        ]
+    ],
+    "size": {
+        "depth": 1,
+        "height": 1,
+        "width": 8
+    }
+}
+```
