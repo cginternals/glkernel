@@ -1,5 +1,5 @@
-#include "variantConversion.h"
-#include "parsing.h"
+#include "KernelGeneration.h"
+#include "KernelToJson.h"
 
 #include <iostream>
 #include <fstream>
@@ -8,10 +8,6 @@
 
 #include <cppexpose/variant/Variant.h>
 #include <cppexpose/json/JSON.h>
-#include <cppassist/cmdline/ArgumentParser.h>
-
-#include <glkernel/Kernel.h>
-#include <glkernel/noise.h>
 
 int main(int argc, char* argv[])
 {
@@ -21,34 +17,40 @@ int main(int argc, char* argv[])
     auto inFilename = argParser.value("--i");
     auto outFilename = argParser.value("--o");
 
-    cppexpose::Variant kernelVariant;
+    cppexpose::Variant kernelDescription;
 
-    if (!generateKernelFromJSON(kernelVariant, inFilename))
+    if (!generateKernelFromDescription(kernelDescription, inFilename))
     {
-        std::cout << "Error in kernel generation. Aborting..." << std::endl;
+        std::cerr << "ERROR: kernel generation failed. Aborting..." << std::endl;
         return 1;
     }
 
     cppexpose::Variant kernelJSON;
 
-    if (kernelVariant.hasType<glkernel::kernel4>())
+    if (kernelDescription.hasType<glkernel::kernel4>())
     {
-        kernelJSON = toJSON(kernelVariant.value<glkernel::kernel4>());
+        kernelJSON = toJSON(kernelDescription.value<glkernel::kernel4>());
     }
-    else if (kernelVariant.hasType<glkernel::kernel3>())
+    else if (kernelDescription.hasType<glkernel::kernel3>())
     {
-        kernelJSON = toJSON(kernelVariant.value<glkernel::kernel3>());
+        kernelJSON = toJSON(kernelDescription.value<glkernel::kernel3>());
     }
-    else if (kernelVariant.hasType<glkernel::kernel2>())
+    else if (kernelDescription.hasType<glkernel::kernel2>())
     {
-        kernelJSON = toJSON(kernelVariant.value<glkernel::kernel2>());
+        kernelJSON = toJSON(kernelDescription.value<glkernel::kernel2>());
     }
-    else if (kernelVariant.hasType<glkernel::kernel1>())
+    else if (kernelDescription.hasType<glkernel::kernel1>())
     {
-        kernelJSON = toJSON(kernelVariant.value<glkernel::kernel1>());
+        kernelJSON = toJSON(kernelDescription.value<glkernel::kernel1>());
     }
 
     std::ofstream outStream(outFilename);
+
+    if (!outStream.is_open())
+    {
+        std::cerr << "ERROR: Output file could not be created. Aborting..." << std::endl;
+        return 1;
+    }
 
     outStream << cppexpose::JSON::stringify(kernelJSON, cppexpose::JSON::OutputMode::Beautify) << std::endl;
 }

@@ -1,4 +1,4 @@
-#include "parsing.h"
+#include "KernelGeneration.h"
 
 #include <iostream>
 
@@ -25,8 +25,6 @@ namespace
     {
         glkernel::sample::poisson_square(kernel, num_probes);
     }
-
-    //////////////////////////
 
     template <typename T>
     void processStratified(glkernel::tkernel<T> & kernel)
@@ -57,8 +55,6 @@ namespace
         std::cout << "Stratified is not implemented for kernel4." << std::endl;
     }
 
-    //////////////////////////
-
     template <typename T>
     void processHammersley(glkernel::tkernel<T> & kernel)
     {
@@ -70,8 +66,6 @@ namespace
     {
         glkernel::sample::hammersley(kernel);
     }
-
-    //////////////////////////
 
     template <typename T>
     void processHalton(glkernel::tkernel<T> & kernel, uint base1, uint base2)
@@ -85,8 +79,6 @@ namespace
         glkernel::sample::halton(kernel, base1, base2);
     }
 
-    //////////////////////////
-
     template <typename T>
     void processHammersleySphere(glkernel::tkernel<T> & kernel)
     {
@@ -99,8 +91,6 @@ namespace
         glkernel::sample::hammersley_sphere(kernel);
     }
 
-    //////////////////////////
-
     template <typename T>
     void processHaltonSphere(glkernel::tkernel<T> & kernel, uint base1, uint base2)
     {
@@ -112,8 +102,6 @@ namespace
     {
         glkernel::sample::halton_sphere(kernel, base1, base2);
     }
-
-    //////////////////////////
 
     template <typename T>
     void processBestCandidate(glkernel::tkernel<T> & kernel, uint numCandidates)
@@ -133,8 +121,6 @@ namespace
         glkernel::sample::best_candidate(kernel, numCandidates);
     }
 
-    //////////////////////////
-
     template <typename T>
     void processNRooks(glkernel::tkernel<T> & kernel)
     {
@@ -146,8 +132,6 @@ namespace
     {
         glkernel::sample::n_rooks(kernel);
     }
-
-    //////////////////////////
 
     template <typename T>
     void processMultiJittered(glkernel::tkernel<T> & kernel)
@@ -161,8 +145,6 @@ namespace
         glkernel::sample::multi_jittered(kernel);
     }
 
-    //////////////////////////
-
     template <typename T>
     void processGoldenPointSet(glkernel::tkernel<T> & kernel)
     {
@@ -174,8 +156,6 @@ namespace
     {
         glkernel::sample::golden_point_set(kernel);
     }
-
-    //////////////////////////
 
     template <typename T>
     void processCommand(glkernel::tkernel<T> & kernel, const std::string & command, const cppexpose::VariantMap & arguments)
@@ -191,8 +171,7 @@ namespace
             return arguments.at(argName).value<float>();
         };
 
-        ///// NOISE /////
-        /////////////////
+        // Noise
         if (command == "noise.uniform")
         {
             glkernel::noise::uniform(kernel, parseArg("range_min", 0.0f), parseArg("range_max", 1.0f));
@@ -201,8 +180,8 @@ namespace
         {
             glkernel::noise::normal(kernel, parseArg("mean", 0.0f), parseArg("stddev", 1.0f));
         }
-        ///// SAMPLING /////
-        ////////////////////
+
+        // Sampling
         else if (command == "sample.poisson_square")
         {
             processPoissonSquare(kernel, parseArg("num_probes", 32));
@@ -243,20 +222,20 @@ namespace
         {
             processGoldenPointSet(kernel);
         }
-        ///// SCALE /////
-        /////////////////
+
+        // Scale
         else if (command == "scale.range")
         {
             glkernel::scale::range(kernel, parseArg("range_to_lower", 0.0f), parseArg("range_to_upper", 1.0f), parseArg("range_from_lower", 0.0f), parseArg("range_from_upper", 1.0f));
         }
-        ///// SEQUENCE /////
-        ////////////////////
+
+        // Sequence
         else if (command == "sequence.uniform")
         {
             glkernel::sequence::uniform(kernel, parseArg("range_min", 0.0f), parseArg("range_max", 1.0f));
         }
-        ///// SHUFFLE /////
-        ///////////////////
+
+        // Shuffle
         else if (command == "shuffle.bucket_permutate")
         {
             glkernel::shuffle::bucket_permutate(kernel, parseArg("subkernel_width", 1), parseArg("subkernel_height", 1), parseArg("subkernel_depth", 1));
@@ -269,8 +248,8 @@ namespace
         {
             glkernel::shuffle::random(kernel, parseArg("start", 1));
         }
-        ///// SORT /////
-        ////////////////
+
+        // Sort
         else if (command == "sort.distance")
         {
             // TODO: read origin, needs to be based on T
@@ -301,19 +280,19 @@ namespace
     }
 }
 
-bool generateKernelFromJSON(cppexpose::Variant & kernelVariant, const std::string & filePath)
+bool generateKernelFromDescription(cppexpose::Variant & kernelVariant, const std::string & filePath)
 {
     cppexpose::Variant root;
 
     if (!cppexpose::JSON::load(root, filePath))
     {
-        std::cout << "Input file could not be loaded." << std::endl;
+        std::cerr << "Input file could not be loaded." << std::endl;
         return false;
     }
 
     if (!root.isVariantMap())
     {
-        std::cout << "Invalid JSON format. JSON does not contain a JSON object" << std::endl;
+        std::cerr << "Invalid JSON format. JSON does not contain a JSON object" << std::endl;
         return false;
     }
 
@@ -321,7 +300,7 @@ bool generateKernelFromJSON(cppexpose::Variant & kernelVariant, const std::strin
 
     if (rootMap->find("init-kernel") == rootMap->end())
     {
-        std::cout << "Invalid JSON format. Entry 'init-kernel' not found. " << std::endl;
+        std::cerr << "Invalid JSON format. Entry 'init-kernel' not found. " << std::endl;
         return false;
     }
 
@@ -330,7 +309,7 @@ bool generateKernelFromJSON(cppexpose::Variant & kernelVariant, const std::strin
 
     if (!initKernelMap)
     {
-        std::cout << "Invalid JSON format. Entry 'init-kernel' does not contain a JSON object. " << std::endl;
+        std::cerr << "Invalid JSON format. Entry 'init-kernel' does not contain a JSON object. " << std::endl;
         return false;
     }
 
@@ -342,7 +321,7 @@ bool generateKernelFromJSON(cppexpose::Variant & kernelVariant, const std::strin
 
     if (rootMap->find("commands") == rootMap->end())
     {
-        std::cout << "Invalid JSON format. Entry 'commands' not found. " << std::endl;
+        std::cerr << "Invalid JSON format. Entry 'commands' not found. " << std::endl;
         return false;
     }
 
@@ -351,7 +330,7 @@ bool generateKernelFromJSON(cppexpose::Variant & kernelVariant, const std::strin
 
     if (!commandArray)
     {
-        std::cout << "Invalid JSON format. Entry 'commands' is not a JSON array. " << std::endl;
+        std::cerr << "Invalid JSON format. Entry 'commands' is not a JSON array. " << std::endl;
         return false;
     }
 
