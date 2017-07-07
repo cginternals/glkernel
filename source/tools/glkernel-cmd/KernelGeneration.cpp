@@ -268,6 +268,8 @@ namespace
         {
             auto commandMap = command.asMap();
 
+            assert(!commandMap->empty());
+
             auto& element = *commandMap->begin();
 
             auto& commandName = element.first;

@@ -53,4 +53,6 @@ int main(int argc, char* argv[])
     }
 
     outStream << cppexpose::JSON::stringify(kernelJSON, cppexpose::JSON::OutputMode::Beautify) << std::endl;
+
+    return 0;
 }
