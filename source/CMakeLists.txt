@@ -26,6 +26,9 @@ if(OPTION_BUILD_TESTS)
     add_subdirectory(tests)
 endif()
 
+# Tools
+set(IDE_FOLDER "Tools")
+add_subdirectory(tools)
 
 # 
 # Deployment

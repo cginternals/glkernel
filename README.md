@@ -31,3 +31,67 @@ ToDo
 ##### Linking binaries
 
 ToDo
+
+##### glkernel-cmd
+
+Additionally to using glkernel as a library, there is a standalone command line tool to generate kernels from JSON descriptions.
+The usage is as follows: ```glkernel-cmd --i {input filename} --o {output filename}```, where ```{input filename}``` is a JSON kernel description file and ```{output file}``` is a JSON file containing a kernel.
+
+The description file must contain an entry "init-kernel" that describes the size and the number of components of the the kernel that will be generated.
+It also has to contain an entry "commands", which is an array of commands that will be executed on the kernel.
+For these, all glkernel commands can be used.
+
+The naming convention for applying glkernel commands is ```"{namespace}.{function name}"```, e.g. ```"noise.uniform"``` for ```noise::uniform```.
+Arguments can be passed as a JSON object, e.g. ```{ "noise.uniform": { "range_min": -1.0, "range_max": 1.0 } }``` will call ```noise::uniform(kernel, -1.0, 1.0)```.
+
+Here is an input JSON for generating 4 samples using golden point set sampling, scaling them to [-0.5, 0.5] and shuffling them randomly:
+```json
+{
+    "init-kernel": {
+        "components": 2,
+        "width": 4,
+        "height": 1,
+        "depth": 1
+    },
+
+    "commands": [
+        { "sample.golden_point_set": { } },
+        { "scale.range": { "range_to_lower": -0.5, "range_to_upper": 0.5 } },
+        { "shuffle.random": { } }
+    ]
+}
+```
+
+The generated output JSON will look like this:
+```json
+{
+    "kernel": [
+        [
+            [
+                [
+                    -0.286392,
+                    -0.437815
+                ],
+                [
+                    -0.140494,
+                    0.180219
+                ],
+                [
+                    0.0955744,
+                    -0.201747
+                ],
+                [
+                    0.47754,
+                    0.416287
+                ]
+            ]
+        ]
+    ],
+    "size": {
+        "depth": 1,
+        "height": 1,
+        "width": 4
+    }
+}
+
+```
