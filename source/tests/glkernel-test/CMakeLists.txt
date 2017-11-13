@@ -15,7 +15,7 @@ find_package(OpenMP)
 set(target glkernel-test)
 message(STATUS "Test ${target}")
 
-if (NOT OPENMP_FOUND)
+if (NOT OpenMP_FOUND)
     message("Loop parallelization in ${target} skipped: OpenMP not found")
 endif()
 
@@ -91,7 +91,7 @@ target_link_libraries(${target}
 target_compile_definitions(${target}
     PRIVATE
     GLM_FORCE_RADIANS
-    $<$<BOOL:"${OPENMP_FOUND}">:USE_OPENMP>
+    $<$<BOOL:${OpenMP_FOUND}>:USE_OPENMP>
     ${DEFAULT_COMPILE_DEFINITIONS}
 )
 
@@ -102,7 +102,7 @@ target_compile_definitions(${target}
 
 target_compile_options(${target}
     PRIVATE
-    $<$<BOOL:"${OPENMP_FOUND}">:${OpenMP_CXX_FLAGS}>
+    $<$<BOOL:${OpenMP_FOUND}>:${OpenMP_CXX_FLAGS}>
     ${DEFAULT_COMPILE_OPTIONS}
 )
 
@@ -114,5 +114,5 @@ target_compile_options(${target}
 target_link_libraries(${target}
     PRIVATE
     ${DEFAULT_LINKER_OPTIONS}
-    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:$<$<BOOL:"${OPENMP_FOUND}">:${OpenMP_CXX_FLAGS}>>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:$<$<BOOL:${OpenMP_FOUND}>:${OpenMP_CXX_FLAGS}>>
 )
