@@ -6,3 +6,5 @@ endif()
 
 # Example applications
 add_subdirectory(glkernel-cmd)
+
+add_subdirectory(glkernel-cli)
