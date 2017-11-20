@@ -26,6 +26,10 @@ endif()
 
 set(sources
     noise_benchmark.cpp
+    scale_benchmark.cpp
+    shuffle_benchmark.cpp
+    sort_benchmark.cpp
+    sample_benchmark.cpp
 )
 
 
