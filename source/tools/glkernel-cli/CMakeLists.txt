@@ -4,6 +4,7 @@
 #
 
 find_package(cppassist REQUIRED)
+find_package(cppexpose REQUIRED)
 
 #
 # Executable name and options
@@ -78,6 +79,7 @@ target_link_libraries(${target}
     PRIVATE
     ${DEFAULT_LIBRARIES}
     cppassist::cppassist
+    cppexpose::cppexpose
     ${META_PROJECT_NAME}::glkernel
     )
 
