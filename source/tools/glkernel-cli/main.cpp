@@ -1,8 +1,9 @@
 #include <iostream>
 #include <string>
 
-#include <cppassist/cmdline/ArgumentParser.h>
+#include "scripting.h"
 
+#include <cppassist/cmdline/ArgumentParser.h>
 
 int main(int argc, char* argv[])
 {
@@ -25,4 +26,5 @@ int main(int argc, char* argv[])
     std::cout << "Using kernel description \"" << inFileName << "\" to generate kernel \"" << outFileName << "\" (type: " << outFileType << ")" << std::endl;
   }
 
+  doScripting();
 }
