@@ -9,7 +9,10 @@ public:
     ScriptingObject();
 
     void uniform(float range_min, float range_max);
+    void shuffle_random();
     void print();
+    cppexpose::Variant toArray();
+    void fromArray(const cppexpose::Variant& array);
 
 protected:
     glkernel::kernel1 m_kernel;
