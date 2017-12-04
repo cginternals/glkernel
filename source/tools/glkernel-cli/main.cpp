@@ -3,20 +3,20 @@
 
 #include <cppassist/logging/logging.h>
 
+#include <glkernel/glkernel-version.h>
+
 #include <cppassist/cmdline/ArgumentParser.h>
 #include <cppassist/cmdline/CommandLineProgram.h>
 #include <cppassist/cmdline/CommandLineAction.h>
 #include <cppassist/cmdline/CommandLineCommand.h>
 #include <cppassist/cmdline/CommandLineOption.h>
-#include <cppassist/cmdline/CommandLineSwitch.h>
-#include <cppassist/cmdline/CommandLineParameter.h>
 
 
 int main(int argc, char* argv[])
 {
     auto program = cppassist::CommandLineProgram{
         "glkernel-cli",
-        "glkernel-cli", // TODO version, license?
+        "glkernel-cli " GLKERNEL_VERSION,
         "A command line interface for generating and converting kernels."};
 
 
