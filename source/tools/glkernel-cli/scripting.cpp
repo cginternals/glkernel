@@ -14,14 +14,6 @@ void printKernel(const std::array<float, 10>& kernel) {
     }
 }
 
-//void printKernel2(const cppexpose::Variant& variant) {
-//    const auto& map = *variant.asMap();
-//    const auto& kernelVariant = map.at("kernel");
-//    const auto kernel = kernelVariant.value<glkernel::kernel1>();
-
-//    std::cout << kernel.size() << std::endl;
-//}
-
 void doScripting()
 {
     ScriptingObject obj;
