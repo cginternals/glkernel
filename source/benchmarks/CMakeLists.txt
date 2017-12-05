@@ -68,7 +68,7 @@ target_link_libraries(benchmark-dev
 # 
 
 add_custom_target(benchmarking)
-set_target_properties(test PROPERTIES EXCLUDE_FROM_DEFAULT_BUILD 1)
+set_target_properties(benchmarking PROPERTIES EXCLUDE_FROM_DEFAULT_BUILD 1)
 
 
 # 
