@@ -4,7 +4,7 @@
 #include <glkernel/Kernel.h>
 #include <glkernel/sample.h>
 
-static void BM_possion_quad(benchmark::State& state) {
+static void BM_poisson_quad(benchmark::State& state) {
     auto dkernel = glkernel::dkernel2{state.range(0), state.range(0)};
 
     for (auto _ : state)
