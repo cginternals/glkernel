@@ -12,6 +12,42 @@
 #include <cppassist/cmdline/CommandLineParameter.h>
 
 
+std::string extractInputFormat(const std::string & inFileName) {
+    if (inFileName.find('.') == std::string::npos)
+    {
+        return "";
+    }
+    const auto inFileFormat = inFileName.substr(inFileName.find_last_of('.') + 1);
+    if (inFileFormat != "js" && inFileFormat != "json")
+    {
+        return "";
+    }
+    return inFileFormat;
+}
+
+std::string extractOutputFormat(const std::string & outFileName, const bool shouldConvert) {
+    if (outFileName.find('.') == std::string::npos)
+    {
+        if (shouldConvert)
+        {
+            return "png";
+        }
+        else
+        {
+            return "json";
+        }
+    }
+    else
+    {
+        return outFileName.substr(outFileName.find_last_of('.') + 1);
+    }
+}
+
+std::string extractOutputFile(const std::string & inputFile, const std::string & outputFileFormat) {
+    const auto &inputFileName = inputFile.substr(0, inputFile.find_last_of('.'));
+    return inputFileName + "." + outputFileFormat;
+}
+
 int main(int argc, char* argv[])
 {
     auto program = cppassist::CommandLineProgram{
@@ -56,59 +92,39 @@ int main(int argc, char* argv[])
 
     if (program.selectedAction() && !program.hasErrors())
     {
-        const auto &inFileName = paramInputFile.value();
-
-        if (inFileName.find('.') == std::string::npos)
+        const auto & inputFile = paramInputFile.value();
+        const auto & inputFormat = extractInputFormat(inputFile);
+        if (inputFormat.empty())
         {
             cppassist::error() << "Input file must have .js or .json file format";
             return 1;
         }
-        const auto inFileFormat = inFileName.substr(inFileName.find_last_of('.') + 1);
-        if (inFileFormat != "js" && inFileFormat != "json")
-        {
-            cppassist::error() << "Input file must have .js or .json file format";
-            return 1;
-        }
-        const auto shouldConvert = inFileFormat == "json";
+        const auto shouldConvert = inputFormat == "json";
 
-        auto outFileFormat = optOutputFormat.value();
-        auto outFileName = optOutputFile.value();
+        auto outputFormat = optOutputFormat.value();
+        auto outputFile = optOutputFile.value();
 
-        if (outFileFormat.empty())
+        if (outputFormat.empty())
         {
-            if (outFileName.find('.') == std::string::npos)
-            {
-                if (shouldConvert)
-                {
-                    outFileFormat = "png";
-                }
-                else
-                {
-                    outFileFormat = "json";
-                }
-            }
-            else
-            {
-                outFileFormat = outFileName.substr(outFileName.find_last_of('.') + 1);
-            }
+            outputFormat = extractOutputFormat(outputFile, shouldConvert);
         }
 
-        if (outFileName.empty())
+        if (outputFile.empty())
         {
-            outFileName = inFileName.substr(0, inFileName.find_last_of('.')) + "." + outFileFormat;
+            outputFile = extractOutputFile(inputFile, outputFormat);
         }
 
         if (shouldConvert)
         {
             // Convert kernel to other representation
-            cppassist::info() << "Converting kernel \"" << inFileName << "\" to output file \"" << outFileName
-                              << "\" (format: " << outFileFormat << ")";
+            cppassist::info() << "Converting kernel \"" << inputFile << "\" to output file \"" << outputFile
+                              << "\" (format: " << outputFormat << ")";
         }
         else
         {
             // Generate kernel from description
-            cppassist::info() << "Using kernel description \"" << inFileName << "\" to generate kernel \""
-                              << outFileName << "\" (format: " << outFileFormat << ")";
+            cppassist::info() << "Using kernel description \"" << inputFile << "\" to generate kernel \""
+                              << outputFile << "\" (format: " << outputFormat << ")";
         }
 
         return 0;
