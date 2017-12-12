@@ -19,13 +19,20 @@ void doScripting()
     });
 
     auto script = R"(
-        kernel.uniform(0.0, 1.0);
-        var t = kernel.toArray();
-        t = t.map(function(v) { return Math.log(v + 0.1); });
-        kernel.fromArray(t);
-        kernel.shuffle_random();
-        var s = kernel.toArray();
-        s
+        var Kernel = function(x, y, z) {
+            this.kernel = _glkernel.createKernel1(x, y, z);
+            //this.kernel.print();
+        };
+
+        // inherit from Array
+        //Kernel.prototype = new Array;
+
+        var kernel = new Kernel(10, 1, 1);
+//        kernel.push(1.0);
+//        kernel.push(2.0);
+//        kernel.push(3.0);
+
+//        kernel
     )";
 
     auto variant = scriptContext.evaluate(script);
@@ -33,36 +40,40 @@ void doScripting()
 }
 
 ScriptingObject::ScriptingObject()
-: Object("kernel")
+: Object("_glkernel")
+{
+//    addFunction("uniform", this, &ScriptingObject::uniform);
+//    addFunction("shuffle_random", this, &ScriptingObject::shuffle_random);
+    addFunction("createKernel1", this, &ScriptingObject::createKernel1);
+    //addFunction("toArray", this, &ScriptingObject::toArray);
+    //addFunction("fromArray", this, &ScriptingObject::fromArray);
+}
+
+cppexpose::Object* ScriptingObject::createKernel1(int width, int height, int depth)
+{
+    std::cout << width << " " << height << " " << depth << std::endl;
+    return new KernelObject();
+}
+
+//void ScriptingObject::uniform(float range_min, float range_max)
+//{
+//    glkernel::sequence::uniform(m_kernel, range_min, range_max);
+//}
+
+//void ScriptingObject::shuffle_random()
+//{
+//    glkernel::shuffle::random(m_kernel);
+//}
+
+KernelObject::KernelObject()
+: Object()
 {
     m_kernel = glkernel::kernel1(10, 1, 1);
 
-    addFunction("uniform", this, &ScriptingObject::uniform);
-    addFunction("shuffle_random", this, &ScriptingObject::shuffle_random);
-    addFunction("print", this, &ScriptingObject::print);
-    addFunction("toArray", this, &ScriptingObject::toArray);
-    addFunction("fromArray", this, &ScriptingObject::fromArray);
+    addFunction("print", this, &KernelObject::print);
 }
 
-void ScriptingObject::uniform(float range_min, float range_max)
-{
-    glkernel::sequence::uniform(m_kernel, range_min, range_max);
-}
-
-void ScriptingObject::shuffle_random()
-{
-    glkernel::shuffle::random(m_kernel);
-}
-
-void ScriptingObject::print()
-{
-    for (const auto& val : m_kernel)
-    {
-        std::cout << val << std::endl;
-    }
-}
-
-cppexpose::Variant ScriptingObject::toArray()
+cppexpose::Variant KernelObject::toArray()
 {
     cppexpose::Variant result = cppexpose::Variant::array();
     auto resultArray = result.asArray();
@@ -75,7 +86,7 @@ cppexpose::Variant ScriptingObject::toArray()
     return result;
 }
 
-void ScriptingObject::fromArray(const cppexpose::Variant& array)
+void KernelObject::fromArray(const cppexpose::Variant& array)
 {
     auto values = array.asArray();
 
@@ -86,4 +97,9 @@ void ScriptingObject::fromArray(const cppexpose::Variant& array)
         m_kernel[i] = variant.value<float>();
         i += 1;
     }
+}
+
+void KernelObject::print()
+{
+    std::cout << "I'm a kernel." << std::endl;
 }

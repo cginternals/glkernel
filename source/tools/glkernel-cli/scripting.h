@@ -3,6 +3,8 @@
 
 #include <glkernel/Kernel.h>
 
+class KernelObject;
+
 class ScriptingObject : public cppexpose::Object
 {
 public:
@@ -10,6 +12,14 @@ public:
 
     void uniform(float range_min, float range_max);
     void shuffle_random();
+    cppexpose::Object* createKernel1(int width, int height, int depth);
+};
+
+class KernelObject : public cppexpose::Object
+{
+public:
+    KernelObject();
+
     void print();
     cppexpose::Variant toArray();
     void fromArray(const cppexpose::Variant& array);
