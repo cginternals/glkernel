@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
 
     auto swForce = cppassist::CommandLineSwitch{
         "--force",
-        "",
+        "", // no short name, force should be explicit to avoid accidental overrides
         "Override the output file, if it exists",
         cppassist::CommandLineSwitch::Optional
     };
