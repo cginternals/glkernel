@@ -11,6 +11,10 @@
 #include <cppassist/cmdline/CommandLineOption.h>
 #include <cppassist/cmdline/CommandLineParameter.h>
 
+#include "KernelGenerator.hpp"
+#include "export/KernelExporter.hpp
+#include "export/KernelJsonExporter.hpp
+
 
 std::string extractInputFormat(const std::string & inFileName) {
     if (inFileName.find('.') == std::string::npos)
@@ -125,6 +129,11 @@ int main(int argc, char* argv[])
             // Generate kernel from description
             cppassist::info() << "Using kernel description \"" << inputFile << "\" to generate kernel \""
                               << outputFile << "\" (format: " << outputFormat << ")";
+
+            auto kernelGenerator = KernelGenerator{inputFile};
+            auto kernelVariant = kernelGenerator.generateKernelFromJavascript();
+            auto kernelExporter = KernelJsonExporter{kernelVariant, outputFile, false}; // TODO change when --force flag is added
+            kernelExporter.export();
         }
 
         return 0;
