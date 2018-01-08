@@ -125,8 +125,8 @@ int main(int argc, char* argv[])
         }
 
         const auto shouldOverride = swForce.activated();
-        auto outputFileExists= std::ifstream{outputFile};
-        if (outputFileExists)
+        auto outputExistsStream = std::ifstream{outputFile};
+        if (outputExistsStream)
         {
             if (!shouldOverride)
             {
