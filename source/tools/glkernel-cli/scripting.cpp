@@ -18,22 +18,46 @@ void doScripting()
         std::cerr << msg << std::endl;
     });
 
-    auto script = R"(
-        var Kernel = function(x, y, z) {
-            this.kernel = _glkernel.createKernel1(x, y, z);
-            //this.kernel.print();
+    auto script = R"javascript(
+        var _Kernel = function(x,y,z) {
+
+            this._initialize = function(x,y,z) {
+                var that = this;
+
+                this.kernel = this.generateKernel(x,y,z);
+
+                this.sequence = {
+                    uniform: function(min, max) {
+                        _glkernel.uniform(that.kernel, min, max);
+                    }
+                };
+                this.shuffle = {
+                    random: function() {
+                        _glkernel.shuffle_random(that.kernel);
+                    }
+                };
+            };
         };
 
-        // inherit from Array
-        //Kernel.prototype = new Array;
+        var Kernel1 = function(x,y,z) {
+            this.generateKernel = function(x,y,z) {
+                return _glkernel.createKernel1(x,y,z);
+            }
+            this._initialize(x,y,z);
+        }
 
-        var kernel = new Kernel(10, 1, 1);
+        // inherit from Array
+        Kernel1.prototype = new _Kernel;
+
+        var kernel = new Kernel1(10, 1, 1);
+        kernel.sequence.uniform(0.0, 1.0);
+        kernel.shuffle.random();
 //        kernel.push(1.0);
 //        kernel.push(2.0);
 //        kernel.push(3.0);
 
 //        kernel
-    )";
+    )javascript";
 
     auto variant = scriptContext.evaluate(script);
     std::cout << variant.toString();
@@ -42,64 +66,136 @@ void doScripting()
 ScriptingObject::ScriptingObject()
 : Object("_glkernel")
 {
-//    addFunction("uniform", this, &ScriptingObject::uniform);
-//    addFunction("shuffle_random", this, &ScriptingObject::shuffle_random);
+    addFunction("uniform", this, &ScriptingObject::uniform);
+    addFunction("shuffle_random", this, &ScriptingObject::shuffle_random);
     addFunction("createKernel1", this, &ScriptingObject::createKernel1);
-    //addFunction("toArray", this, &ScriptingObject::toArray);
-    //addFunction("fromArray", this, &ScriptingObject::fromArray);
+    addFunction("print", this, &ScriptingObject::print);
+}
+
+void ScriptingObject::print(std::string s)
+{
+    std::cout << s << std::endl;
 }
 
 cppexpose::Object* ScriptingObject::createKernel1(int width, int height, int depth)
 {
-    std::cout << width << " " << height << " " << depth << std::endl;
-    return new KernelObject();
+    return new Kernel1Object(width, height, depth);
 }
 
-//void ScriptingObject::uniform(float range_min, float range_max)
-//{
-//    glkernel::sequence::uniform(m_kernel, range_min, range_max);
-//}
+cppexpose::Object* ScriptingObject::createKernel2(int width, int height, int depth)
+{
+    return new Kernel2Object(width, height, depth);
+}
 
-//void ScriptingObject::shuffle_random()
-//{
-//    glkernel::shuffle::random(m_kernel);
-//}
+cppexpose::Object* ScriptingObject::createKernel3(int width, int height, int depth)
+{
+    return new Kernel3Object(width, height, depth);
+}
 
-KernelObject::KernelObject()
+cppexpose::Object* ScriptingObject::createKernel4(int width, int height, int depth)
+{
+    return new Kernel4Object(width, height, depth);
+}
+
+void ScriptingObject::uniform(cppexpose::Object* obj, float range_min, float range_max)
+{
+    if (auto kernelObj = dynamic_cast<Kernel1Object*>(obj))
+    {
+        glkernel::sequence::uniform(kernelObj->kernel(), range_min, range_max);
+        return;
+    }
+
+    if (auto kernelObj = dynamic_cast<Kernel2Object*>(obj))
+    {
+        glkernel::sequence::uniform(kernelObj->kernel(), range_min, range_max);
+        return;
+    }
+
+    if (auto kernelObj = dynamic_cast<Kernel3Object*>(obj))
+    {
+        glkernel::sequence::uniform(kernelObj->kernel(), range_min, range_max);
+        return;
+    }
+
+    if (auto kernelObj = dynamic_cast<Kernel4Object*>(obj))
+    {
+        glkernel::sequence::uniform(kernelObj->kernel(), range_min, range_max);
+        return;
+    }
+
+    std::cerr << "Invalid kernel object in uniform()" << std::endl;
+}
+
+void ScriptingObject::shuffle_random(cppexpose::Object* obj)
+{
+    if (auto kernelObj = dynamic_cast<Kernel1Object*>(obj))
+    {
+        glkernel::shuffle::random(kernelObj->kernel());
+        return;
+    }
+
+    if (auto kernelObj = dynamic_cast<Kernel2Object*>(obj))
+    {
+        glkernel::shuffle::random(kernelObj->kernel());
+        return;
+    }
+
+    if (auto kernelObj = dynamic_cast<Kernel3Object*>(obj))
+    {
+        glkernel::shuffle::random(kernelObj->kernel());
+        return;
+    }
+
+    if (auto kernelObj = dynamic_cast<Kernel4Object*>(obj))
+    {
+        glkernel::shuffle::random(kernelObj->kernel());
+        return;
+    }
+
+    std::cerr << "Invalid kernel object in shuffle_random()" << std::endl;
+}
+
+Kernel1Object::Kernel1Object(int width, int height, int depth)
 : Object()
+, m_kernel(width, height, depth)
 {
-    m_kernel = glkernel::kernel1(10, 1, 1);
-
-    addFunction("print", this, &KernelObject::print);
 }
 
-cppexpose::Variant KernelObject::toArray()
+glkernel::kernel1& Kernel1Object::kernel()
 {
-    cppexpose::Variant result = cppexpose::Variant::array();
-    auto resultArray = result.asArray();
-
-    for (const auto& val : m_kernel)
-    {
-        resultArray->push_back(val);
-    }
-
-    return result;
+	return m_kernel;
 }
 
-void KernelObject::fromArray(const cppexpose::Variant& array)
+Kernel2Object::Kernel2Object(int width, int height, int depth)
+: Object()
+, m_kernel(width, height, depth)
 {
-    auto values = array.asArray();
-
-    int i = 0;
-
-    for (const auto& variant : *values)
-    {
-        m_kernel[i] = variant.value<float>();
-        i += 1;
-    }
 }
 
-void KernelObject::print()
+glkernel::kernel2& Kernel2Object::kernel()
 {
-    std::cout << "I'm a kernel." << std::endl;
+	return m_kernel;
 }
+
+Kernel3Object::Kernel3Object(int width, int height, int depth)
+: Object()
+, m_kernel(width, height, depth)
+{
+}
+
+glkernel::kernel3& Kernel3Object::kernel()
+{
+	return m_kernel;
+}
+
+Kernel4Object::Kernel4Object(int width, int height, int depth)
+: Object()
+, m_kernel(width, height, depth)
+{
+}
+
+glkernel::kernel4& Kernel4Object::kernel()
+{
+	return m_kernel;
+}
+

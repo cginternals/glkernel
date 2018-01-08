@@ -14,6 +14,8 @@
 
 namespace
 {
+    using uint = unsigned int;
+
     template <typename T>
     void processPoissonSquare(glkernel::tkernel<T> & kernel, unsigned int num_probes)
     {
