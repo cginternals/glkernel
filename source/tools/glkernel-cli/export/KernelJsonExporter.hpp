@@ -3,8 +3,8 @@
 class KernelJsonExporter : public KernelExporter {
 protected:
 public:
-    KernelJsonExporter(const cppexpose::Variant & kernel, const std::string & outFileName, bool force) :
-        KernelExporter{kernel, outFileName, force} {}
+    KernelJsonExporter(const cppexpose::Variant & kernel, const std::string & outFileName) :
+        KernelExporter{kernel, outFileName} {}
 
     void export() override;
 

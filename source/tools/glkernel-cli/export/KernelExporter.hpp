@@ -5,12 +5,11 @@
 
 class KernelExporter {
 public:
-    KernelExporter(const cppexpose::Variant & kernelVariant, const std::string & outFileName, bool force) :
-    m_kernel{kernelVariant}, m_outFileName{outFileName}, m_force{force} {}
+    KernelExporter(const cppexpose::Variant & kernelVariant, const std::string & outFileName) :
+    m_kernel{kernelVariant}, m_outFileName{outFileName} {}
 
     virtual void export() = 0;
 protected:
     cppexpose::Variant m_kernel;
     std::string m_outFileName;
-    bool m_force;
 };

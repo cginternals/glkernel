@@ -153,7 +153,7 @@ int main(int argc, char* argv[])
 
             auto kernelGenerator = KernelGenerator{inputFile};
             auto kernelVariant = kernelGenerator.generateKernelFromJavascript();
-            auto kernelExporter = KernelJsonExporter{kernelVariant, outputFile, false}; // TODO change when --force flag is added
+            auto kernelExporter = KernelJsonExporter{kernelVariant, outputFile};
             kernelExporter.export();
         }
 
