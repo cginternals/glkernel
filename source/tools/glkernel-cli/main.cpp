@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <fstream>
 
 #include <cppassist/logging/logging.h>
 
@@ -10,6 +11,7 @@
 #include <cppassist/cmdline/CommandLineAction.h>
 #include <cppassist/cmdline/CommandLineOption.h>
 #include <cppassist/cmdline/CommandLineParameter.h>
+#include <cppassist/cmdline/CommandLineSwitch.h>
 
 
 std::string extractInputFormat(const std::string & inFileName) {
@@ -82,9 +84,17 @@ int main(int argc, char* argv[])
         cppassist::CommandLineOption::Optional
     };
 
+    auto swForce = cppassist::CommandLineSwitch{
+        "--force",
+        "",
+        "Override the output file, if it exists",
+        cppassist::CommandLineSwitch::Optional
+    };
+
     actionRun.add(&paramInputFile);
     actionRun.add(&optOutputFile);
     actionRun.add(&optOutputFormat);
+    actionRun.add(&swForce);
 
     program.add(&actionRun);
 
@@ -112,6 +122,17 @@ int main(int argc, char* argv[])
         if (outputFile.empty())
         {
             outputFile = extractOutputFile(inputFile, outputFormat);
+        }
+
+        const auto shouldOverride = swForce.activated();
+        auto outputFileExists= std::ifstream{outputFile};
+        if (outputFileExists)
+        {
+            if (!shouldOverride)
+            {
+                cppassist::error() << "Output file \"" << outputFile << "\" exists! Use --force to override.";
+                return 1;
+            }
         }
 
         if (shouldConvert)
