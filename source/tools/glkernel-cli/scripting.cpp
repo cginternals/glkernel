@@ -4,6 +4,8 @@
 
 #include <glkernel/sequence.h>
 #include <glkernel/shuffle.h>
+#include <glkernel/scale.h>
+#include <glkernel/sort.h>
 
 #include <cppexpose/variant/Variant.h>
 #include <cppexpose/scripting/ScriptContext.h>
@@ -20,7 +22,6 @@ void doScripting()
 
     auto script = R"javascript(
         var _Kernel = function(x,y,z) {
-
             this._initialize = function(x,y,z) {
                 var that = this;
 
@@ -36,6 +37,20 @@ void doScripting()
                         _glkernel.shuffle_random(that.kernel);
                     }
                 };
+                this.scale = {
+                    range: function(toMin, toMax, fromMin, fromMax) {
+                        // Defining default values for some parameters
+                        fromMin = (typeof fromMin !== 'undefined') ? fromMin : 0.0;
+                        fromMax = (typeof fromMax !== 'undefined') ? fromMax : 1.0;
+
+                        _glkernel.scale_range(that.kernel, toMin, toMax, fromMin, fromMax);
+                    }
+                };
+                this.sort = {
+                    distance: function(origin) {
+                        _glkernel.sort_distance(that.kernel, origin);
+                    }
+                };
             };
         };
 
@@ -46,17 +61,51 @@ void doScripting()
             this._initialize(x,y,z);
         }
 
-        // inherit from Array
         Kernel1.prototype = new _Kernel;
 
+        // Done with preparation
+
         var kernel = new Kernel1(10, 1, 1);
+
         kernel.sequence.uniform(0.0, 1.0);
         kernel.shuffle.random();
-//        kernel.push(1.0);
-//        kernel.push(2.0);
-//        kernel.push(3.0);
+        kernel.scale.range(-1,1);
+        kernel.sort.distance(0);
 
-//        kernel
+        f = function(arg) {
+	        if (typeof arg === "number")
+                return "float";
+
+            if (typeof arg === "object") {
+	            var keys = Object.keys(arg);
+                if ("0" in keys && typeof arg[0] === "number") {
+	                if ("1" in keys && typeof arg[1] === "number") {
+		                if ("2" in keys && typeof arg[2] === "number") {
+			                if ("3" in keys && typeof arg[3] === "number")
+                                return "vec4";
+                            else
+                                return "vec3";
+                        }
+                        else
+                            return "vec2";
+                    }
+                    else
+                        return "vec1";
+                }
+            }
+
+            return "unknown";
+        }
+
+        _glkernel.print(f(1));                   // float
+        _glkernel.print(f([1]));                 // vec1
+        _glkernel.print(f([1,2]));               // vec2
+        _glkernel.print(f([1,2,3]));             // vec3
+        _glkernel.print(f([1,2,3,4]));           // vec4
+        _glkernel.print(f(["wrong"]));           // unknown
+        _glkernel.print(f([1,2,"wrong later"])); // vec2
+        _glkernel.print(f("completely wrong"));  // unknown
+
     )javascript";
 
     auto variant = scriptContext.evaluate(script);
@@ -68,6 +117,9 @@ ScriptingObject::ScriptingObject()
 {
     addFunction("uniform", this, &ScriptingObject::uniform);
     addFunction("shuffle_random", this, &ScriptingObject::shuffle_random);
+    addFunction("scale_range", this, &ScriptingObject::scale_range);
+    addFunction("sort_distance", this, &ScriptingObject::sort_distance);
+
     addFunction("createKernel1", this, &ScriptingObject::createKernel1);
     addFunction("print", this, &ScriptingObject::print);
 }
@@ -153,6 +205,64 @@ void ScriptingObject::shuffle_random(cppexpose::Object* obj)
     }
 
     std::cerr << "Invalid kernel object in shuffle_random()" << std::endl;
+}
+
+void ScriptingObject::scale_range(cppexpose::Object* obj, float toMin, float toMax, float fromMin, float fromMax)
+{
+    if (auto kernelObj = dynamic_cast<Kernel1Object*>(obj))
+    {
+        glkernel::scale::range(kernelObj->kernel(), toMin, toMax, fromMin, fromMax);
+        return;
+    }
+
+    if (auto kernelObj = dynamic_cast<Kernel2Object*>(obj))
+    {
+        glkernel::scale::range(kernelObj->kernel(), toMin, toMax, fromMin, fromMax);
+        return;
+    }
+
+    if (auto kernelObj = dynamic_cast<Kernel3Object*>(obj))
+    {
+        glkernel::scale::range(kernelObj->kernel(), toMin, toMax, fromMin, fromMax);
+        return;
+    }
+
+    if (auto kernelObj = dynamic_cast<Kernel4Object*>(obj))
+    {
+        glkernel::scale::range(kernelObj->kernel(), toMin, toMax, fromMin, fromMax);
+        return;
+    }
+
+    std::cerr << "Invalid kernel object in scale_range()" << std::endl;
+}
+
+void ScriptingObject::sort_distance(cppexpose::Object* obj, float origin)
+{
+    if (auto kernelObj = dynamic_cast<Kernel1Object*>(obj))
+    {
+        glkernel::sort::distance(kernelObj->kernel(), origin);
+        return;
+    }
+
+    if (auto kernelObj = dynamic_cast<Kernel2Object*>(obj))
+    {
+        std::cerr << "Invalid origin in sort_distance(): float instead of vec2" << std::endl;
+        return;
+    }
+
+    if (auto kernelObj = dynamic_cast<Kernel3Object*>(obj))
+    {
+        std::cerr << "Invalid origin in sort_distance(): float instead of vec3" << std::endl;
+        return;
+    }
+
+    if (auto kernelObj = dynamic_cast<Kernel4Object*>(obj))
+    {
+        std::cerr << "Invalid origin in sort_distance(): float instead of vec4" << std::endl;
+        return;
+    }
+
+    std::cerr << "Invalid kernel object in scale_range()" << std::endl;
 }
 
 Kernel1Object::Kernel1Object(int width, int height, int depth)

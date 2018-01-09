@@ -10,6 +10,9 @@ public:
 
     void uniform(cppexpose::Object* kernelObj, float range_min, float range_max);
     void shuffle_random(cppexpose::Object* kernelObj);
+    void scale_range(cppexpose::Object* kernelObj, float toMin, float toMax, float fromMin = 0.0f, float fromMax = 1.0f);
+    void sort_distance(cppexpose::Object* kernelObj, float origin);
+
     cppexpose::Object* createKernel1(int width, int height, int depth);
     cppexpose::Object* createKernel2(int width, int height, int depth);
     cppexpose::Object* createKernel3(int width, int height, int depth);
