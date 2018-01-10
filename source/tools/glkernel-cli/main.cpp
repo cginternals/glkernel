@@ -14,8 +14,8 @@
 #include <cppassist/cmdline/CommandLineSwitch.h>
 
 #include "KernelGenerator.hpp"
-#include "export/KernelExporter.hpp
-#include "export/KernelJsonExporter.hpp
+#include "export/KernelExporter.hpp"
+#include "export/KernelJsonExporter.hpp"
 
 
 std::string extractInputFormat(const std::string & inFileName) {
@@ -154,7 +154,7 @@ int main(int argc, char* argv[])
             auto kernelGenerator = KernelGenerator{inputFile};
             auto kernelVariant = kernelGenerator.generateKernelFromJavascript();
             auto kernelExporter = KernelJsonExporter{kernelVariant, outputFile};
-            kernelExporter.export();
+            kernelExporter.exportKernel();
         }
 
         return 0;

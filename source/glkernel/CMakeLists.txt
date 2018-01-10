@@ -16,7 +16,7 @@ set(target glkernel)
 # Exit here if required dependencies are not met
 message(STATUS "Lib ${target}")
 
-# Set API export file and macro
+# Set API exportKernel file and macro
 string(MAKE_C_IDENTIFIER ${target} target_id)
 string(TOUPPER ${target_id} target_id)
 set(feature_file         "include/${target}/${target}_features.h")
@@ -78,7 +78,7 @@ add_library(${META_PROJECT_NAME}::${target} ALIAS ${target})
 # Export library for downstream projects
 export(TARGETS ${target} NAMESPACE ${META_PROJECT_NAME}:: FILE ${PROJECT_BINARY_DIR}/cmake/${target}/${target}-export.cmake)
 
-# Create API export header
+# Create API exportKernel header
 generate_template_export_header(${target}
     ${target_id}
     ${template_export_file}
