@@ -20,28 +20,28 @@ cppexpose::Variant KernelJsonExporter::toJsonArray(const cppexpose::Variant & ke
     {
         auto kernel = kernelVariant.value<glkernel::kernel4>();
         std::for_each(kernel.cbegin(), kernel.cend(), [&kernelArray, this](const glm::vec4 & component) {
-            this->appendFloatValues(kernelArray.asArray(), component.x, component.y, component.z, component.w);
+            this->appendFloatValues(kernelArray.asArray(), { component.x, component.y, component.z, component.w });
         });
     }
     else if (kernelVariant.hasType<glkernel::kernel3>())
     {
         auto kernel = kernelVariant.value<glkernel::kernel3>();
         std::for_each(kernel.cbegin(), kernel.cend(), [&kernelArray, this](const glm::vec3 & component) {
-            this->appendFloatValues(kernelArray.asArray(), component.x, component.y, component.z);
+            this->appendFloatValues(kernelArray.asArray(), { component.x, component.y, component.z });
         });
     }
     else if (kernelVariant.hasType<glkernel::kernel2>())
     {
         auto kernel = kernelVariant.value<glkernel::kernel2>();
         std::for_each(kernel.cbegin(), kernel.cend(), [&kernelArray, this](const glm::vec2 & component) {
-            this->appendFloatValues(kernelArray.asArray(), component.x, component.y);
+            this->appendFloatValues(kernelArray.asArray(), { component.x, component.y });
         });
     }
     else if (kernelVariant.hasType<glkernel::kernel1>())
     {
         auto kernel = kernelVariant.value<glkernel::kernel1>();
         std::for_each(kernel.cbegin(), kernel.cend(), [&kernelArray, this](const float component) {
-            this->appendFloatValues(kernelArray.asArray(), component);
+            this->appendFloatValues(kernelArray.asArray(), { component });
         });
     }
     else
@@ -63,12 +63,12 @@ cppexpose::Variant KernelJsonExporter::toJsonArray(const cppexpose::Variant & ke
     return result;
 }
 
-void KernelJsonExporter::appendFloatValues(cppexpose::VariantArray * kernelArray, const float toAppend, ...) {
-    kernelArray->insert(kernelArray->end(), { toAppend });
-}
+void KernelJsonExporter::appendFloatValues(cppexpose::VariantArray * kernelArray, std::initializer_list<float> component) {
+    auto componentArrayVariant = cppexpose::Variant::array();
+    auto componentArray = componentArrayVariant.asArray();
+    componentArray->insert(componentArray->end(), component.begin(), component.end());
+    kernelArray->push_back(componentArrayVariant);
 
-void KernelJsonExporter::appendDoubleValues(cppexpose::VariantArray * kernelArray, const double toAppend, ...) {
-    kernelArray->insert(kernelArray->end(), { toAppend });
 }
 
 

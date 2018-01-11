@@ -13,6 +13,5 @@ protected:
     void writeToFile(const cppexpose::Variant & jsonArray);
     std::string stringify(const cppexpose::Variant & jsonArray);
 
-    void appendFloatValues(cppexpose::VariantArray *kernelArray, float toAppend, ...);
-    void appendDoubleValues(cppexpose::VariantArray *kernelArray, double toAppend, ...);
+    void appendFloatValues(cppexpose::VariantArray *kernelArray, std::initializer_list<float> component);
 };
