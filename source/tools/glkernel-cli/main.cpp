@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <fstream>
 
 #include "scripting.h"
 
@@ -11,87 +12,159 @@
 #include <cppassist/cmdline/CommandLineProgram.h>
 #include <cppassist/cmdline/CommandLineAction.h>
 #include <cppassist/cmdline/CommandLineOption.h>
+#include <cppassist/cmdline/CommandLineParameter.h>
 #include <cppassist/cmdline/CommandLineSwitch.h>
 
-#include <cppassist/cmdline/ArgumentParser.h>
+#include "KernelGenerator.hpp"
+#include "export/KernelExporter.hpp"
+#include "export/KernelJsonExporter.hpp"
+
+
+std::string extractInputFormat(const std::string & inFileName) {
+    if (inFileName.find('.') == std::string::npos)
+    {
+        return "";
+    }
+    const auto inFileFormat = inFileName.substr(inFileName.find_last_of('.') + 1);
+    if (inFileFormat != "js" && inFileFormat != "json")
+    {
+        return "";
+    }
+    return inFileFormat;
+}
+
+std::string extractOutputFormat(const std::string & outFileName, const bool shouldConvert) {
+    if (outFileName.find('.') == std::string::npos)
+    {
+        if (shouldConvert)
+        {
+            return "png";
+        }
+        else
+        {
+            return "json";
+        }
+    }
+    else
+    {
+        return outFileName.substr(outFileName.find_last_of('.') + 1);
+    }
+}
+
+std::string extractOutputFile(const std::string & inputFile, const std::string & outputFileFormat) {
+    const auto &inputFileName = inputFile.substr(0, inputFile.find_last_of('.'));
+    return inputFileName + "." + outputFileFormat;
+}
 
 int main(int argc, char* argv[])
 {
     auto program = cppassist::CommandLineProgram{
         "glkernel-cli",
         "glkernel-cli " GLKERNEL_VERSION,
-        "A command line interface for generating and converting kernels."};
+        "A command line interface for generating and converting kernels."
+    };
 
+    auto actionRun = cppassist::CommandLineAction{
+        "run",
+        "Generate a kernel from a kernel description (.js file), or convert an existing kernel (.json file) into another representation"
+    };
 
-    auto actionRun = cppassist::CommandLineAction{"run",
-        "Generate a kernel from a kernel description or convert an existing kernel into another representation"};
-
-    auto optInputFile = cppassist::CommandLineOption{
-        "--input",
-        "-i",
-        "inFileName",
-        "Kernel description or generated kernel",
-        cppassist::CommandLineOption::NonOptional};
+    auto paramInputFile = cppassist::CommandLineParameter{
+        "inputFileName",
+        cppassist::CommandLineParameter::NonOptional
+    };
 
     auto optOutputFile = cppassist::CommandLineOption{
         "--output",
         "-o",
-        "outFileName",
-        "File that the generated / converted kernel will be written to",
-        cppassist::CommandLineOption::NonOptional};
+        "outputFileName",
+        "File that the generated / converted kernel will be written to (defaults: <inputFileName>.json for generation, <inputFileName>.png for conversion)",
+        cppassist::CommandLineOption::Optional
+    };
 
     auto optOutputFormat = cppassist::CommandLineOption{
         "--format",
         "-f",
-        "outFileFormat",
-        "File format for the generated / converted kernel (e.g. json, png)",
-        cppassist::CommandLineOption::Optional};
+        "outputFileFormat",
+        "File format for the generated / converted kernel (e.g. .json, .png, .h)",
+        cppassist::CommandLineOption::Optional
+    };
 
-    auto swConvert = cppassist::CommandLineSwitch{
-        "--convert",
-        "-c",
-        "Convert an existing kernel into another representation instead of generating a new one",
-        cppassist::CommandLineSwitch::Optional};
+    auto swForce = cppassist::CommandLineSwitch{
+        "--force",
+        "", // no short name, force should be explicit to avoid accidental overrides
+        "Override the output file, if it exists",
+        cppassist::CommandLineSwitch::Optional
+    };
 
-
-    actionRun.add(&optInputFile);
+    actionRun.add(&paramInputFile);
     actionRun.add(&optOutputFile);
     actionRun.add(&optOutputFormat);
-    actionRun.add(&swConvert);
+    actionRun.add(&swForce);
 
     program.add(&actionRun);
 
     program.parse(argc, argv);
 
-    if (program.selectedAction() && !program.hasErrors()) {
+    if (program.selectedAction() && !program.hasErrors())
+    {
+        const auto & inputFile = paramInputFile.value();
+        const auto & inputFormat = extractInputFormat(inputFile);
+        if (inputFormat.empty())
+        {
+            cppassist::error() << "Input file must have .js or .json file format";
+            return 1;
+        }
+        const auto shouldConvert = inputFormat == "json";
 
-        // Generate kernel from description
-        const auto &inFileName = optInputFile.value();
-        const auto &outFileName = optOutputFile.value();
-        auto outFileFormat = optOutputFormat.value();
-        if (outFileFormat.empty()) {
-            if (outFileName.find('.') == std::string::npos) {
-                outFileFormat = "json";
-            } else {
-                outFileFormat = outFileName.substr(outFileName.find_last_of('.') + 1);
+        auto outputFormat = optOutputFormat.value();
+        auto outputFile = optOutputFile.value();
+
+        if (outputFormat.empty())
+        {
+            outputFormat = extractOutputFormat(outputFile, shouldConvert);
+        }
+
+        if (outputFile.empty())
+        {
+            outputFile = extractOutputFile(inputFile, outputFormat);
+        }
+
+        const auto shouldOverride = swForce.activated();
+        auto outputExistsStream = std::ifstream{outputFile};
+        if (outputExistsStream)
+        {
+            if (!shouldOverride)
+            {
+                cppassist::error() << "Output file \"" << outputFile << "\" exists! Use --force to override.";
+                return 1;
             }
         }
 
-        if (swConvert.activated()) {
+        if (shouldConvert)
+        {
             // Convert kernel to other representation
-            cppassist::info() << "Converting kernel \"" << inFileName << "\" to output file \"" << outFileName
-                              << "\" (format: " << outFileFormat << ")";
-        } else {
+            cppassist::info() << "Converting kernel \"" << inputFile << "\" to output file \"" << outputFile
+                              << "\" (format: " << outputFormat << ")";
+        }
+        else
+        {
             // Generate kernel from description
-            cppassist::info() << "Using kernel description \"" << inFileName << "\" to generate kernel \""
-                              << outFileName << "\" (format: " << outFileFormat << ")";
+            cppassist::info() << "Using kernel description \"" << inputFile << "\" to generate kernel \""
+                              << outputFile << "\" (format: " << outputFormat << ")";
+
+            auto kernelGenerator = KernelGenerator{inputFile};
+            auto kernelVariant = kernelGenerator.generateKernelFromJavascript();
+            auto kernelExporter = KernelJsonExporter{kernelVariant, outputFile};
+            kernelExporter.exportKernel();
         }
 
         return 0;
         // Success
     }
 
-    else {
+    else
+    {
         // Print help
         program.print(program.help(program.selectedAction()));
 

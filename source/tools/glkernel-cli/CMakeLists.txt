@@ -20,11 +20,16 @@ set(target glkernel-cli)
 
 set(headers
     scripting.h
+    export/KernelExporter.hpp
+    export/KernelJsonExporter.hpp
+    KernelGenerator.hpp
     )
 
 set(sources
     main.cpp
     scripting.cpp
+    export/KernelJsonExporter.cpp
+    KernelGenerator.cpp
     )
 
 set(header_group "Header Files (API)")
