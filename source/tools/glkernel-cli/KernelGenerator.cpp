@@ -3,7 +3,6 @@
 
 #include <glkernel/Kernel.h>
 #include <glkernel/noise.h>
-
 #include <glkernel/sort.h>
 
 #include <string>
@@ -111,7 +110,5 @@ cppexpose::Variant KernelGenerator::generateKernelFromJavascript()
 
     )javascript";
 
-
-    auto generatedKernel = executeScript(script);
-    return generatedKernel;
+    return executeScript(script);
 }

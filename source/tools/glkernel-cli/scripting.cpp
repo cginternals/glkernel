@@ -20,8 +20,6 @@ cppexpose::Variant executeScript(const std::string & script)
         std::cerr << msg << std::endl;
     });
 
-
-
     auto variant = scriptContext.evaluate(script);
     std::cout << variant.type().name() << std::endl;
     if (variant.hasType<cppexpose::Object*>())
@@ -42,6 +40,10 @@ ScriptingObject::ScriptingObject()
     addFunction("sort_distance", this, &ScriptingObject::sort_distance);
 
     addFunction("createKernel1", this, &ScriptingObject::createKernel1);
+    addFunction("createKernel2", this, &ScriptingObject::createKernel2);
+    addFunction("createKernel3", this, &ScriptingObject::createKernel3);
+    addFunction("createKernel4", this, &ScriptingObject::createKernel4);
+
     addFunction("print", this, &ScriptingObject::print);
 }
 
@@ -229,4 +231,3 @@ glkernel::kernel4& Kernel4Object::kernel()
 {
 	return m_kernel;
 }
-
