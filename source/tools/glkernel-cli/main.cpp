@@ -178,7 +178,5 @@ int main(int argc, char* argv[])
         }
     }
 
-    doScripting();
-
     return 0;
 }

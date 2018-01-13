@@ -61,4 +61,4 @@ protected:
     glkernel::kernel4 m_kernel;
 };
 
-void doScripting();
+cppexpose::Variant executeScript(const std::string & script);
