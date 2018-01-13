@@ -14,4 +14,4 @@ static void BM_scale_quad(benchmark::State& state) {
     state.SetComplexityN(state.range(0));
 }
 
-BENCHMARK(BM_scale_quad)->RangeMultiplier(2)->Range(2, 64)->Complexity();
+BENCHMARK(BM_scale_quad)->RangeMultiplier(2)->Range(8, 256)->Iterations(1)->Complexity();

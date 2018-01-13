@@ -103,13 +103,13 @@ static void BM_golden_point_set_quad(benchmark::State& state) {
     state.SetComplexityN(state.range(0));
 }
 
-BENCHMARK(BM_poisson_quad)->RangeMultiplier(2)->Range(2, 64)->Complexity();
-BENCHMARK(BM_jittered_quad)->RangeMultiplier(2)->Range(2, 64)->Complexity();
-BENCHMARK(BM_rooks_quad)->RangeMultiplier(2)->Range(2, 64)->Complexity();
-BENCHMARK(BM_stratified_quad)->RangeMultiplier(2)->Range(2, 64)->Complexity();
-BENCHMARK(BM_hammersley_quad)->RangeMultiplier(2)->Range(2, 64)->Complexity();
-BENCHMARK(BM_hammersley_sphere_quad)->RangeMultiplier(2)->Range(2, 64)->Complexity();
-BENCHMARK(BM_halton_quad)->RangeMultiplier(2)->Range(2, 64)->Complexity();
-BENCHMARK(BM_halton_sphere_quad)->RangeMultiplier(2)->Range(2, 64)->Complexity();
-BENCHMARK(BM_best_candidate_quad)->RangeMultiplier(2)->Range(2, 64)->Complexity();
-BENCHMARK(BM_golden_point_set_quad)->RangeMultiplier(2)->Range(2, 64)->Complexity();
+BENCHMARK(BM_poisson_quad)->RangeMultiplier(2)->Range(8, 256)->Iterations(1)->Complexity();
+BENCHMARK(BM_jittered_quad)->RangeMultiplier(2)->Range(8, 256)->Iterations(1)->Complexity();
+BENCHMARK(BM_rooks_quad)->RangeMultiplier(2)->Range(8, 256)->Iterations(1)->Complexity();
+BENCHMARK(BM_stratified_quad)->RangeMultiplier(2)->Range(8, 256)->Iterations(1)->Complexity();
+BENCHMARK(BM_hammersley_quad)->RangeMultiplier(2)->Range(8, 256)->Iterations(1)->Complexity();
+BENCHMARK(BM_hammersley_sphere_quad)->RangeMultiplier(2)->Range(8, 256)->Iterations(1)->Complexity();
+BENCHMARK(BM_halton_quad)->RangeMultiplier(2)->Range(8, 256)->Iterations(1)->Complexity();
+BENCHMARK(BM_halton_sphere_quad)->RangeMultiplier(2)->Range(8, 256)->Iterations(1)->Complexity();
+BENCHMARK(BM_best_candidate_quad)->RangeMultiplier(2)->Range(8, 256)->Iterations(1)->Complexity();
+BENCHMARK(BM_golden_point_set_quad)->RangeMultiplier(2)->Range(8, 256)->Iterations(1)->Complexity();

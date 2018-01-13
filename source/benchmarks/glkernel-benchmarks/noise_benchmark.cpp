@@ -40,8 +40,7 @@ static void BM_gradientNoise_cube(benchmark::State& state) {
     state.SetComplexityN(state.range(0));
 
 }
-BENCHMARK(BM_gradientNoise_linear)->RangeMultiplier(2)->Range(2, 64)->Complexity();
-BENCHMARK(BM_gradientNoise_quadratic)->RangeMultiplier(2)->Range(2, 64)->Complexity();
-BENCHMARK(BM_gradientNoise_cube)->RangeMultiplier(2)->Range(2, 64)->Complexity();
+
+BENCHMARK(BM_gradientNoise_quadratic)->RangeMultiplier(4)->Range(64, 4096)->Complexity();
 
 BENCHMARK_MAIN();

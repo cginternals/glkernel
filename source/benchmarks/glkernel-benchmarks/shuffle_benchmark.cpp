@@ -52,7 +52,5 @@ static void BM_random_quad(benchmark::State& state) {
     state.SetComplexityN(state.range(0));
 }
 
-BENCHMARK(BM_permutation_linear)->RangeMultiplier(2)->Range(2, 64)->Complexity();
-BENCHMARK(BM_permutation_quad)->RangeMultiplier(2)->Range(2, 64)->Complexity();
-BENCHMARK(BM_bayer_quad)->RangeMultiplier(2)->Range(2, 64)->Complexity();
-BENCHMARK(BM_permutation_quad)->RangeMultiplier(2)->Range(2, 64)->Complexity();
+BENCHMARK(BM_permutation_quad)->RangeMultiplier(2)->Range(8, 256)->Iterations(1)->Complexity();
+BENCHMARK(BM_bayer_quad)->RangeMultiplier(2)->Range(8, 256)->Iterations(1)->Complexity();
