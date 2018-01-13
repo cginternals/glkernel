@@ -17,6 +17,8 @@ message(STATUS "Benchmark ${target}")
 
 if (NOT OPENMP_FOUND)
     message("Loop parallelization in ${target} skipped: OpenMP not found")
+else ()
+    set(USE_OPENMP TRUE CACHE BOOL "Whether to use OpenMP or not")
 endif()
 
 
