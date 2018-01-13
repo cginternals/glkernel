@@ -25,8 +25,18 @@ cppexpose::Variant executeScript(const std::string & script)
     if (variant.hasType<cppexpose::Object*>())
     {
         auto kernelObject = variant.value<cppexpose::Object*>();
+
         auto kernel1Object = dynamic_cast<Kernel1Object*>(kernelObject);
-        return cppexpose::Variant::fromValue(kernel1Object->kernel());
+        if (kernel1Object)
+        {
+            cppexpose::Variant::fromValue(kernel1Object->kernel());
+        }
+
+        auto kernel2Object = dynamic_cast<Kernel2Object*>(kernelObject);
+        if (kernel2Object)
+        {
+            cppexpose::Variant::fromValue(kernel2Object->kernel());
+        }
     }
     return variant;
 }

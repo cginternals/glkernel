@@ -63,9 +63,18 @@ cppexpose::Variant KernelGenerator::generateKernelFromJavascript()
 
         Kernel1.prototype = new _Kernel;
 
+        var Kernel2 = function(x,y,z) {
+            this.generateKernel = function(x,y,z) {
+                return _glkernel.createKernel2(x,y,z);
+            }
+            this._initialize(x,y,z);
+        }
+
+        Kernel2.prototype = new _Kernel;
+
         // Done with preparation
 
-        var kernel = new Kernel1(10, 1, 1);
+        var kernel = new Kernel2(10, 5, 2);
 
         kernel.sequence.uniform(0.0, 1.0);
         kernel.shuffle.random();
