@@ -6,6 +6,41 @@
 #include <fstream>
 #include <algorithm>
 
+void appendCell(cppexpose::VariantArray *kernelArray, std::initializer_list<float> cell) {
+    auto componentArrayVariant = cppexpose::Variant::array();
+    auto componentArray = componentArrayVariant.asArray();
+    componentArray->insert(componentArray->end(), cell.begin(), cell.end());
+    kernelArray->push_back(componentArrayVariant);
+}
+
+template <typename T>
+void appendCell(cppexpose::VariantArray * widthArray, const T & cell);
+
+template <>
+void appendCell<glm::vec4>(cppexpose::VariantArray * widthArray, const glm::vec4 & cell)
+{
+    appendCell(widthArray, {cell.x, cell.y, cell.z, cell.w});
+}
+
+template <>
+void appendCell<glm::vec3>(cppexpose::VariantArray * widthArray, const glm::vec3 & cell)
+{
+    appendCell(widthArray, {cell.x, cell.y, cell.z});
+}
+
+template <>
+void appendCell<glm::vec2>(cppexpose::VariantArray * widthArray, const glm::vec2 & cell)
+{
+    appendCell(widthArray, {cell.x, cell.y});
+}
+
+template <>
+void appendCell<float>(cppexpose::VariantArray * widthArray, const float & cell)
+{
+    widthArray->push_back(cell);
+}
+
+
 void KernelJsonExporter::exportKernel() {
     const auto jsonArray = toJsonArray(m_kernel);
 
@@ -14,61 +49,73 @@ void KernelJsonExporter::exportKernel() {
 
 cppexpose::Variant KernelJsonExporter::toJsonArray(const cppexpose::Variant & kernelVariant) {
 
-    auto kernelArray = cppexpose::Variant::array();
-
     if (kernelVariant.hasType<glkernel::kernel4>())
     {
-        auto kernel = kernelVariant.value<glkernel::kernel4>();
-        std::for_each(kernel.cbegin(), kernel.cend(), [&kernelArray, this](const glm::vec4 & component) {
-            this->appendFloatValues(kernelArray.asArray(), { component.x, component.y, component.z, component.w });
-        });
+        return toJsonArray(kernelVariant.value<glkernel::kernel4>());
     }
     else if (kernelVariant.hasType<glkernel::kernel3>())
     {
-        auto kernel = kernelVariant.value<glkernel::kernel3>();
-        std::for_each(kernel.cbegin(), kernel.cend(), [&kernelArray, this](const glm::vec3 & component) {
-            this->appendFloatValues(kernelArray.asArray(), { component.x, component.y, component.z });
-        });
+        return toJsonArray(kernelVariant.value<glkernel::kernel3>());
     }
     else if (kernelVariant.hasType<glkernel::kernel2>())
     {
-        auto kernel = kernelVariant.value<glkernel::kernel2>();
-        std::for_each(kernel.cbegin(), kernel.cend(), [&kernelArray, this](const glm::vec2 & component) {
-            this->appendFloatValues(kernelArray.asArray(), { component.x, component.y });
-        });
+        return toJsonArray(kernelVariant.value<glkernel::kernel2>());
     }
     else if (kernelVariant.hasType<glkernel::kernel1>())
     {
-        auto kernel = kernelVariant.value<glkernel::kernel1>();
-        std::for_each(kernel.cbegin(), kernel.cend(), [&kernelArray, this](const float component) {
-            this->appendFloatValues(kernelArray.asArray(), { component });
-        });
+        return toJsonArray(kernelVariant.value<glkernel::kernel1>());
     }
     else
     {
         cppassist::error() << "Unknown kernel type found. Aborting...";
         return cppexpose::Variant::fromValue(glkernel::kernel1{ });
     }
+}
 
-    cppexpose::Variant result = cppexpose::Variant::map();
-    cppexpose::Variant size = cppexpose::Variant::map();
+template <typename T>
+cppexpose::Variant KernelJsonExporter::toJsonArray(const glkernel::tkernel<T> & kernel)
+{
+    auto kernelArray = cppexpose::Variant::array();
 
-    size.asMap()->emplace("height", 1); // TODO actual values
-    size.asMap()->emplace("width", 1);
-    size.asMap()->emplace("depth", 1);
+    for (auto z = 0; z < kernel.depth(); ++z)
+    {
+        auto heightArray = cppexpose::Variant::array();
 
-    result.asMap()->emplace("size", size);
+        for (auto y = 0; y < kernel.height(); ++y)
+        {
+            auto widthArray = cppexpose::Variant::array();
+
+            for (auto x = 0; x < kernel.width(); ++x)
+            {
+                const T& cell = kernel.value(x, y, z);
+                appendCell(widthArray.asArray(), cell);
+            }
+            heightArray.asArray()->push_back(widthArray);
+        }
+        kernelArray.asArray()->push_back(heightArray);
+    }
+
+
+    auto result = prepareResult(kernel);
     result.asMap()->emplace("kernel", kernelArray);
 
     return result;
 }
 
-void KernelJsonExporter::appendFloatValues(cppexpose::VariantArray * kernelArray, std::initializer_list<float> component) {
-    auto componentArrayVariant = cppexpose::Variant::array();
-    auto componentArray = componentArrayVariant.asArray();
-    componentArray->insert(componentArray->end(), component.begin(), component.end());
-    kernelArray->push_back(componentArrayVariant);
 
+template <typename T>
+cppexpose::Variant KernelJsonExporter::prepareResult(const glkernel::tkernel<T> & kernel)
+{
+    cppexpose::Variant result = cppexpose::Variant::map();
+    cppexpose::Variant size = cppexpose::Variant::map();
+
+    size.asMap()->emplace("width", kernel.width());
+    size.asMap()->emplace("height", kernel.height());
+    size.asMap()->emplace("depth", kernel.depth());
+
+    result.asMap()->emplace("size", size);
+
+    return result;
 }
 
 
@@ -83,6 +130,7 @@ void KernelJsonExporter::writeToFile(const cppexpose::Variant & jsonArray) {
 
     outStream << stringify(jsonArray) << std::endl;
 }
+
 
 std::string KernelJsonExporter::stringify(const cppexpose::Variant &array) {
     return cppexpose::JSON::stringify(array, cppexpose::JSON::OutputMode::Beautify);
