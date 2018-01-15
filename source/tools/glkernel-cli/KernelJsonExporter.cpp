@@ -1,4 +1,4 @@
-#include "KernelJsonExporter.hpp"
+#include "KernelJsonExporter.h"
 
 #include <cppassist/logging/logging.h>
 

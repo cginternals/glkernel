@@ -1,4 +1,4 @@
-#include "KernelGenerator.hpp"
+#include "KernelGenerator.h"
 
 #include <glkernel/Kernel.h>
 #include <glkernel/noise.h>

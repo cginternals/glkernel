@@ -13,9 +13,9 @@
 #include <cppassist/cmdline/CommandLineParameter.h>
 #include <cppassist/cmdline/CommandLineSwitch.h>
 
-#include "KernelGenerator.hpp"
-#include "export/KernelExporter.hpp"
-#include "export/KernelJsonExporter.hpp"
+#include "KernelGenerator.h"
+#include "AbstractKernelExporter.h"
+#include "KernelJsonExporter.h"
 
 
 std::string extractInputFormat(const std::string & inFileName) {
@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
         "--format",
         "-f",
         "outputFileFormat",
-        "File format for the generated / converted kernel (e.g. .json, .png, .h)",
+        "File format for the generated / converted kernel (e.g., json, png, h)",
         cppassist::CommandLineOption::Optional
     };
 
