@@ -19,8 +19,8 @@ KernelGenerator::KernelGenerator(const std::string& inputFileName)
 
 cppexpose::Variant KernelGenerator::generateKernelFromJavascript()
 {
-    // TODO use m_scriptCode
-    auto script = R"javascript(
+    // TODO: replace API string with pregenerated API JS file
+    auto api = R"javascript(
         var _Kernel = function(x,y,z) {
             this._initialize = function(x,y,z) {
                 var that = this;
@@ -71,53 +71,7 @@ cppexpose::Variant KernelGenerator::generateKernelFromJavascript()
         }
 
         Kernel2.prototype = new _Kernel;
-
-        // Done with preparation
-
-        var kernel = new Kernel2(10, 5, 2);
-
-        kernel.sequence.uniform(0.0, 1.0);
-        kernel.shuffle.random();
-        kernel.scale.range(-1,1);
-        kernel.sort.distance(0);
-
-        f = function(arg) {
-            if (typeof arg === "number")
-                return "float";
-
-            if (typeof arg === "object") {
-                var keys = Object.keys(arg);
-                if ("0" in keys && typeof arg[0] === "number") {
-                    if ("1" in keys && typeof arg[1] === "number") {
-                        if ("2" in keys && typeof arg[2] === "number") {
-                            if ("3" in keys && typeof arg[3] === "number")
-                                return "vec4";
-                            else
-                                return "vec3";
-                        }
-                        else
-                            return "vec2";
-                    }
-                    else
-                        return "vec1";
-                }
-            }
-
-            return "unknown";
-        }
-
-        _glkernel.print(f(1));                   // float
-        _glkernel.print(f([1]));                 // vec1
-        _glkernel.print(f([1,2]));               // vec2
-        _glkernel.print(f([1,2,3]));             // vec3
-        _glkernel.print(f([1,2,3,4]));           // vec4
-        _glkernel.print(f(["wrong"]));           // unknown
-        _glkernel.print(f([1,2,"wrong later"])); // vec2
-        _glkernel.print(f("completely wrong"));  // unknown
-
-        kernel.kernel;
-
     )javascript";
 
-    return executeScript(script);
+    return executeScript(api + m_scriptCode);
 }
