@@ -12,6 +12,8 @@ import matplotlib.figure
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import itertools
+import seaborn as sns
+import pandas as pd
 
 #%%
 
@@ -45,7 +47,7 @@ def process_lines(raw):
         
         split_name = name.split('_')
         if(len(split_name) == 3):
-            size = name.split('/')[1]
+            size = name.split('/')[1] + ('²')
             label = name.split('/')[0].split('_')[1]
             processed_elements.append((label,size,cpu_time))
     
@@ -61,57 +63,75 @@ def load_processed(filepath):
     values = []
     for k, g in itertools.groupby(processed, lambda el: (el[0],el[1])):
         if k[0] == 'stratified':
-            values.append([float(el[2]) for el in g])
-            labels.append(k[1])
+            for el in g:    
+                values.append(float(el[2]))
+                labels.append(k[1])
             
     return values, labels
 
 #%%
 
-def draw_boxplots(fig, values, labels, even=True):
-    positions = range(1, (2*len(labels)+1), 2)
-    if(even):
-        positions = [pos+.6 for pos in positions]
+def draw_boxplots(fig, df):
         
     ax = fig.axes[0]
         
-    ax.boxplot(values,
-               labels=labels,
-               positions=positions)    
+    ax = sns.boxplot(x="size", y="values", hue="omp", data=df, ax=ax, linewidth=1.0, fliersize=2.0)
+
+    ax.get_yaxis().set_label_text("Time (ns)")    
+
+    # ax.set_ylim(0, 3000000)
+    ax.set_yscale('log')
     
-    ax.set_xticklabels( labels, rotation=45 )
-    ax.set_xlim(left=-1, right = 2*len(labels)+2+1, auto=False)
-    ax.set_ylim(0, 3000000)
     
-    
-def create_fig(N):
+def create_fig():
     fig = matplotlib.figure.Figure()
     FigureCanvas(fig)
     
     ax = fig.add_subplot(111)
-    ax.set_title('Benchmarking times (n_rooks)')    
     #ax.set_yscale('log')
+    ax.set_title('Benchmarking times (stratified sampling)') 
+    sns.despine(ax=ax)
     
-    
-    ax.set_xlim(left=-1, right = 2*N+2+1, auto=False)
+
     
     return fig
     
 def save_fig(fig, filename):
     fig.savefig(filename)
+   
+    #%%
     
+def flatten(list_of_lists):
+    return [item for sublist in list_of_lists for item in sublist]
 #%%
     
 if __name__ == '__main__':
     pass
     
-no_omp_proc = load_processed("/home/florian/Uni/ACPP_Dev/glkernel/benchmarking/no_omp_result.csv")
-omp_proc = load_processed("/home/florian/Uni/ACPP_Dev/glkernel/benchmarking/omp_result.csv")
+no_omp_proc = load_processed("./no_omp_result.csv")
+omp_proc = load_processed("./omp_result.csv")
 
-fig = create_fig(len(no_omp_proc[0]))        
+sns.set(context="talk", style="white")
+
+fig = create_fig()
+
+data = {"size": no_omp_proc[1] + omp_proc[1], 
+        "values": no_omp_proc[0] + omp_proc[0],
+        "omp": ["No"]*len(no_omp_proc[0]) + ["Yes"] * len(omp_proc[0])}
+
+data2 = {"size": flatten(zip(no_omp_proc[1], omp_proc[1])), 
+        "values": flatten(zip(no_omp_proc[0], omp_proc[0])),
+        "omp": ["No"]*len(no_omp_proc[0])*2}
+
+df = pd.DataFrame(data=data)     
+
+#%%
+
+values = flatten(zip(no_omp_proc[0], omp_proc[0]))
+labels = flatten(zip(no_omp_proc[1], omp_proc[1]))
+
         
-draw_boxplots(fig, no_omp_proc[0], [el + "no_omp" for el in no_omp_proc[1]], even=False)
-draw_boxplots(fig, omp_proc[0], omp_proc[1], even=True)
+draw_boxplots(fig, df)
 
 save_fig(fig, "bench.png")
 
