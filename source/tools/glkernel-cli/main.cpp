@@ -15,7 +15,8 @@
 
 #include "KernelGenerator.h"
 #include "AbstractKernelExporter.h"
-#include "KernelJsonExporter.h"
+#include "JsonExporter.h"
+#include "PngExporter.h"
 
 
 std::string extractInputFormat(const std::string & inFileName) {
@@ -153,8 +154,17 @@ int main(int argc, char* argv[])
 
             auto kernelGenerator = KernelGenerator{inputFile};
             auto kernelVariant = kernelGenerator.generateKernelFromJavascript();
-            auto kernelExporter = KernelJsonExporter{kernelVariant, outputFile};
-            kernelExporter.exportKernel();
+
+            if (outputFormat == "png")
+            {
+                auto kernelExporter = PngExporter(kernelVariant, outputFile);
+                kernelExporter.exportKernel();
+            }
+            else // json
+            {
+                auto kernelExporter = JsonExporter{kernelVariant, outputFile};
+                kernelExporter.exportKernel();
+            }
         }
 
         return 0;

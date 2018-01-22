@@ -5,6 +5,7 @@
 
 find_package(cppassist REQUIRED)
 find_package(cppexpose REQUIRED)
+find_package(PNG REQUIRED)
 
 #
 # Executable name and options
@@ -20,14 +21,16 @@ set(target glkernel-cli)
 
 set(headers
     AbstractKernelExporter.h
-    KernelJsonExporter.h
+    JsonExporter.h
     KernelGenerator.h
+    PngExporter.h
     )
 
 set(sources
     main.cpp
-    KernelJsonExporter.cpp
+    JsonExporter.cpp
     KernelGenerator.cpp
+    PngExporter.cpp
     )
 
 set(header_group "Header Files (API)")
@@ -73,6 +76,7 @@ target_include_directories(${target}
     ${DEFAULT_INCLUDE_DIRECTORIES}
     ${CMAKE_CURRENT_BINARY_DIR}
     ${PROJECT_BINARY_DIR}/source/include
+    ${PNG_INCLUDE_DIR}
     )
 
 
@@ -85,6 +89,7 @@ target_link_libraries(${target}
     ${DEFAULT_LIBRARIES}
     cppassist::cppassist
     cppexpose::cppexpose
+    ${PNG_LIBRARY}
     ${META_PROJECT_NAME}::glkernel
     )
 

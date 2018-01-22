@@ -1,9 +1,8 @@
 #include "AbstractKernelExporter.h"
 
-class KernelJsonExporter : public AbstractKernelExporter {
-protected:
+class JsonExporter : public AbstractKernelExporter {
 public:
-    KernelJsonExporter(const cppexpose::Variant & kernel, const std::string & outFileName) :
+    JsonExporter(const cppexpose::Variant & kernel, const std::string & outFileName) :
         AbstractKernelExporter{kernel, outFileName} {}
 
     void exportKernel() override;
