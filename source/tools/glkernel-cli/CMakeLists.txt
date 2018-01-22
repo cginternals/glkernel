@@ -20,15 +20,15 @@ set(target glkernel-cli)
 
 set(headers
     scripting.h
-    export/KernelExporter.hpp
-    export/KernelJsonExporter.hpp
-    KernelGenerator.hpp
+    AbstractKernelExporter.h
+    KernelJsonExporter.h
+    KernelGenerator.h
     )
 
 set(sources
     main.cpp
     scripting.cpp
-    export/KernelJsonExporter.cpp
+    KernelJsonExporter.cpp
     KernelGenerator.cpp
     )
 

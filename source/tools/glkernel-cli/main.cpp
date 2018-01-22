@@ -15,9 +15,9 @@
 #include <cppassist/cmdline/CommandLineParameter.h>
 #include <cppassist/cmdline/CommandLineSwitch.h>
 
-#include "KernelGenerator.hpp"
-#include "export/KernelExporter.hpp"
-#include "export/KernelJsonExporter.hpp"
+#include "KernelGenerator.h"
+#include "AbstractKernelExporter.h"
+#include "KernelJsonExporter.h"
 
 
 std::string extractInputFormat(const std::string & inFileName) {
@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
         "--format",
         "-f",
         "outputFileFormat",
-        "File format for the generated / converted kernel (e.g. .json, .png, .h)",
+        "File format for the generated / converted kernel (e.g., json, png, h)",
         cppassist::CommandLineOption::Optional
     };
 
@@ -97,10 +97,18 @@ int main(int argc, char* argv[])
         cppassist::CommandLineSwitch::Optional
     };
 
+    auto swBeautify = cppassist::CommandLineSwitch{
+        "--beautify",
+        "-b",
+        "Beautify the output (only applies to json output format)",
+        cppassist::CommandLineSwitch::Optional
+    };
+
     actionRun.add(&paramInputFile);
     actionRun.add(&optOutputFile);
     actionRun.add(&optOutputFormat);
     actionRun.add(&swForce);
+    actionRun.add(&swBeautify);
 
     program.add(&actionRun);
 
@@ -155,7 +163,7 @@ int main(int argc, char* argv[])
 
             auto kernelGenerator = KernelGenerator{inputFile};
             auto kernelVariant = kernelGenerator.generateKernelFromJavascript();
-            auto kernelExporter = KernelJsonExporter{kernelVariant, outputFile};
+            auto kernelExporter = KernelJsonExporter{kernelVariant, outputFile, swBeautify.activated()};
             kernelExporter.exportKernel();
         }
 

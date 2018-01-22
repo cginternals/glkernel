@@ -5,10 +5,10 @@
 
 #include <glkernel/Kernel.h>
 
-class KernelExporter
+class AbstractKernelExporter
 {
 public:
-    KernelExporter(const cppexpose::Variant & kernelVariant, const std::string & outFileName) :
+    AbstractKernelExporter(const cppexpose::Variant & kernelVariant, const std::string & outFileName) :
     m_kernel{kernelVariant}, m_outFileName{outFileName} {}
 
     virtual void exportKernel() = 0;

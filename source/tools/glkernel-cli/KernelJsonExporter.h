@@ -1,10 +1,10 @@
-#include "KernelExporter.hpp"
+#include "AbstractKernelExporter.h"
 
-class KernelJsonExporter : public KernelExporter {
+class KernelJsonExporter : public AbstractKernelExporter {
 protected:
 public:
-    KernelJsonExporter(const cppexpose::Variant & kernel, const std::string & outFileName) :
-        KernelExporter{kernel, outFileName} {}
+    KernelJsonExporter(const cppexpose::Variant & kernel, const std::string & outFileName, const bool beautify) :
+        AbstractKernelExporter{kernel, outFileName}, m_beautify{beautify} {}
 
     void exportKernel() override;
 
@@ -20,4 +20,6 @@ protected:
     void writeToFile(const cppexpose::Variant & jsonArray);
 
     std::string stringify(const cppexpose::Variant & jsonArray);
+
+    bool m_beautify;
 };
