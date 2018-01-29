@@ -1,4 +1,4 @@
-#include "KernelJsonExporter.hpp"
+#include "KernelJsonExporter.h"
 
 #include <cppassist/logging/logging.h>
 
@@ -133,5 +133,8 @@ void KernelJsonExporter::writeToFile(const cppexpose::Variant & jsonArray) {
 
 
 std::string KernelJsonExporter::stringify(const cppexpose::Variant &array) {
-    return cppexpose::JSON::stringify(array, cppexpose::JSON::OutputMode::Beautify);
+    auto outputMode = m_beautify
+                      ? cppexpose::JSON::OutputMode::Beautify
+                      : cppexpose::JSON::OutputMode::Compact;
+    return cppexpose::JSON::stringify(array, outputMode);
 }

@@ -1,4 +1,5 @@
-#include "KernelGenerator.hpp"
+#include "KernelGenerator.h"
+
 #include "scripting.h"
 
 #include <glkernel/Kernel.h>
