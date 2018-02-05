@@ -16,6 +16,7 @@
 #include "KernelGenerator.h"
 #include "AbstractKernelExporter.h"
 #include "KernelJsonExporter.h"
+#include "KernelJsonImporter.h"
 
 
 std::string extractInputFormat(const std::string & inFileName) {
@@ -152,6 +153,12 @@ int main(int argc, char* argv[])
             // Convert kernel to other representation
             cppassist::info() << "Converting kernel \"" << inputFile << "\" to output file \"" << outputFile
                               << "\" (format: " << outputFormat << ")";
+            auto importer = KernelJsonImporter{inputFile};
+            auto kernelVariant = importer.getKernel();
+
+            // TODO: add support for png
+            auto kernelExporter = KernelJsonExporter{kernelVariant, outputFile, swBeautify.activated()};
+            kernelExporter.exportKernel();
         }
         else
         {
