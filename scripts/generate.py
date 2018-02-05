@@ -419,7 +419,7 @@ def dedupeFuncs(funcs):
 # ------------
 # main
 
-def main():
+def main(args):
     glkernelIncludeDir = Path("../source/glkernel/include/glkernel")
     sourceFiles = [str(p) for p in glkernelIncludeDir.glob("*.h") if p.name not in ["Kernel.h", "glm_compatability.h"]]
 
@@ -459,23 +459,35 @@ def main():
     funcsJSCode = buildJSNamespaces(allFunctions, allEnums)
     enumJSCode = buildJSEnums(allEnums)
 
-    with open("glkernel.js.template", "r") as templateFile:
-        with open("glkernel.js", "w") as outFile:
+    templateDir = args.templates
+    destDir = args.destination
+
+    with open(templateDir + "/glkernel.js.template", "r") as templateFile:
+        with open(destDir + "/glkernel.js", "w") as outFile:
             outFile.write(templateFile.read().format(enums=enumJSCode, functions=funcsJSCode))
 
     forwardDecls = buildCPPFunctionForwardDecls(allFunctions, allEnums)
 
-    with open("JSInterface.h.template", "r") as templateFile:
-        with open("JSInterface.h", "w") as outFile:
+    with open(templateDir + "/JSInterface.h.template", "r") as templateFile:
+        with open(destDir + "/JSInterface.h", "w") as outFile:
             outFile.write(templateFile.read().format(functionForwardDecls=forwardDecls))
 
     includes = buildCPPIncludes(sourceFiles)
     funcAdds = buildCPPFunctionAdds(allFunctions)
     funcImpl = buildCPPImplementations(allFunctions, allEnums)
 
-    with open("JSInterface.cpp.template", "r") as templateFile:
-        with open("JSInterface.cpp", "w") as outFile:
+    with open(templateDir + "/JSInterface.cpp.template", "r") as templateFile:
+        with open(destDir + "/JSInterface.cpp", "w") as outFile:
             outFile.write(templateFile.read().format(includes=includes, addFunctionCalls=funcAdds, generatedFunctions=funcImpl))
 
 if __name__ == "__main__":
-    main()
+    import argparse
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--templates", "-t", metavar="<dir>", type=str, default=".", help="directory containing template files")
+    parser.add_argument("--destination", "-d", metavar="<dir>", type=str, default=".", help="directory where results are written to")
+
+    args = parser.parse_args()
+
+    main(args)
