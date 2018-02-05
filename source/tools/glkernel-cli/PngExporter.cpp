@@ -1,41 +1,8 @@
 #include "PngExporter.h"
 
+#include "helper.h"
+
 #include <cppassist/logging/logging.h>
-
-// http://www.labbookpages.co.uk/software/imgProc/libPNG.html
-
-template <typename T>
-void writeData(T cellValue, png_doublep outputRow, int x);
-
-template <>
-void writeData(float cellValue, png_doublep outputRow, int x)
-{
-    outputRow[x] = static_cast<double>(cellValue);
-}
-
-template <>
-void writeData(glm::vec2 cellValue, png_doublep outputRow, int x)
-{
-    outputRow[2 * x] = static_cast<double>(cellValue.x);
-    outputRow[2 * x + 1] = static_cast<double>(cellValue.y);
-}
-
-template <>
-void writeData(glm::vec3 cellValue, png_doublep outputRow, int x)
-{
-    outputRow[3 * x] = static_cast<double>(cellValue.x);
-    outputRow[3 * x + 1] = static_cast<double>(cellValue.y);
-    outputRow[3 * x + 2] = static_cast<double>(cellValue.z);
-}
-
-template <>
-void writeData(glm::vec4 cellValue, png_doublep outputRow, int x)
-{
-    outputRow[4 * x] = static_cast<double>(cellValue.x);
-    outputRow[4 * x + 1] = static_cast<double>(cellValue.y);
-    outputRow[4 * x + 2] = static_cast<double>(cellValue.z);
-    outputRow[4 * x + 3] = static_cast<double>(cellValue.w);
-}
 
 void PngExporter::exportKernel() {
     png_doublep * pngData;
@@ -89,6 +56,8 @@ void PngExporter::exportKernel() {
 template <typename T>
 png_doublep * PngExporter::toPng(const glkernel::tkernel<T> & kernel, const int channels)
 {
+    const auto minMaxElements = findMinMaxElements(kernel);
+    cppassist::info() << minMaxElements.first << ", " << minMaxElements.second;
     // memory for all rows:
     auto rows = (png_doublep *) malloc(kernel.height() * sizeof(png_doublep));
     // memory for one row: amount of channes * amount of pixels * png byte size
@@ -107,6 +76,8 @@ png_doublep * PngExporter::toPng(const glkernel::tkernel<T> & kernel, const int 
     return rows;
 }
 
+
+// http://www.labbookpages.co.uk/software/imgProc/libPNG.html
 // TODO free up pointers upon failure
 void PngExporter::writeToFile(png_doublep * data, const int colorType, const png_uint_32 height, const png_uint_32 width) {
     /* create file */

@@ -24,6 +24,7 @@ set(headers
     JsonExporter.h
     KernelGenerator.h
     PngExporter.h
+    helper.h
     )
 
 set(sources
