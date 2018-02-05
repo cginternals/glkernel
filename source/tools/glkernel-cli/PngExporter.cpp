@@ -60,6 +60,8 @@ png_bytepp PngExporter::toPng(const glkernel::tkernel<T> & kernel, const int cha
     const auto min = minmax.first;
     const auto max = minmax.second;
 
+    // TODO log scaling factor, error rate, variance, stddeviation
+
     // memory for all rows:
     auto rows = (png_bytepp) malloc(kernel.height() * sizeof(png_bytep));
     // memory for one row: amount of channes * amount of pixels * png byte size
