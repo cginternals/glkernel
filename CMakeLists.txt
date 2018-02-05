@@ -1,7 +1,7 @@
 
-# 
+#
 # CMake options
-# 
+#
 
 # CMake version
 cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
@@ -30,9 +30,9 @@ set_policy(CMP0042 NEW) # ENABLE CMP0042: MACOSX_RPATH is enabled by default.
 set_policy(CMP0063 NEW) # ENABLE CMP0063: Honor visibility properties for all target types.
 
 
-# 
+#
 # Project description and (meta) information
-# 
+#
 
 # Get git revision
 get_git_head_revision(GIT_REFSPEC GIT_SHA1)
@@ -56,9 +56,9 @@ set(META_NAME_VERSION        "${META_PROJECT_NAME} v${META_VERSION} (${META_VERS
 set(META_CMAKE_INIT_SHA      "6a6f30b38a1cee31ccac3f091816f28e0f6bce4b")
 
 
-# 
+#
 # Project configuration options
-# 
+#
 
 # Project options
 option(OPTION_SELF_CONTAINED "Create a self-contained install with all dependencies." OFF)
@@ -68,16 +68,18 @@ option(OPTION_BUILD_EXAMPLES "Build examples."                                  
 option(OPTION_BUILD_TOOLS    "Build tools."                                           ON)
 
 
-# 
+#
 # Declare project
-# 
+#
 
 # Generate folders for IDE targets (e.g., VisualStudio solutions)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set(IDE_FOLDER "")  
+set(IDE_FOLDER "")
 
 # Declare project
 project(${META_PROJECT_NAME} C CXX)
+
+include(CTest)
 
 # Set output directories
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
@@ -88,9 +90,9 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 file(WRITE "${PROJECT_BINARY_DIR}/VERSION" "${META_NAME_VERSION}")
 
 
-# 
+#
 # Compiler settings and options
-# 
+#
 
 include(cmake/CompileOptions.cmake)
 
@@ -107,9 +109,9 @@ enable_cppcheck(On)
 enable_clang_tidy(On)
 
 
-# 
+#
 # Deployment/installation setup
-# 
+#
 
 # Get project name
 set(project ${META_PROJECT_NAME})
@@ -161,23 +163,23 @@ if(NOT SYSTEM_DIR_INSTALL)
     if(APPLE)
         set(CMAKE_INSTALL_RPATH "@loader_path/../../../${INSTALL_LIB}")
     else()
-        set(CMAKE_INSTALL_RPATH "$ORIGIN/${INSTALL_LIB}")       
+        set(CMAKE_INSTALL_RPATH "$ORIGIN/${INSTALL_LIB}")
     endif()
 endif()
 
 
-# 
+#
 # Project modules
-# 
+#
 
 add_subdirectory(source)
 add_subdirectory(docs)
 add_subdirectory(deploy)
 
 
-# 
+#
 # Deployment (global project files)
-# 
+#
 
 # Install version file
 install(FILES "${PROJECT_BINARY_DIR}/VERSION" DESTINATION ${INSTALL_ROOT} COMPONENT runtime)

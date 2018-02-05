@@ -1,14 +1,14 @@
 
-# 
+#
 # External dependencies
-# 
+#
 
 find_package(GLM REQUIRED)
 
 
-# 
+#
 # Library name and options
-# 
+#
 
 # Target name
 set(target glkernel)
@@ -25,11 +25,12 @@ set(template_export_file "include/${target}/${target}_api.h")
 set(export_macro         "${target_id}_API")
 
 
-# 
+#
 # Sources
-# 
+#
 
 set(include_path "${CMAKE_CURRENT_SOURCE_DIR}/include/${target}")
+set(include_generalizations_path "${CMAKE_CURRENT_SOURCE_DIR}/include/${target}-generalizations")
 set(source_path  "${CMAKE_CURRENT_SOURCE_DIR}/source")
 
 set(headers
@@ -52,20 +53,26 @@ set(headers
     ${include_path}/shuffle.hpp
     ${include_path}/sort.h
     ${include_path}/sort.hpp
+    ${include_generalizations_path}/glkernel_generalizations.cpp
+    ${include_generalizations_path}/glkernel_generalizations.h
+    ${include_generalizations_path}/AssertionMacros.h
+    ${include_generalizations_path}/ConstExpressions.cpp
+    ${include_generalizations_path}/StringMacros.h
+    ${include_generalizations_path}/TypeTraits.cpp
 )
 
 # Group source files
 set(header_group "Header Files (API)")
 set(source_group "Source Files")
-source_group_by_path(${include_path} "\\\\.h$|\\\\.hpp$" 
+source_group_by_path(${include_path} "\\\\.h$|\\\\.hpp$"
     ${header_group} ${headers})
-source_group_by_path(${source_path}  "\\\\.cpp$|\\\\.c$|\\\\.h$|\\\\.hpp$" 
+source_group_by_path(${source_path}  "\\\\.cpp$|\\\\.c$|\\\\.h$|\\\\.hpp$"
     ${source_group} ${sources})
 
 
-# 
+#
 # Create library
-# 
+#
 
 add_custom_target(${target}-sources SOURCES ${headers})
 
@@ -85,16 +92,16 @@ generate_template_export_header(${target}
 )
 
 
-# 
+#
 # Project options
-# 
+#
 
 # none allowed, since interface library (header-only)
 
 
-# 
+#
 # Include directories
-# 
+#
 
 target_include_directories(${target}
 
@@ -107,27 +114,27 @@ target_include_directories(${target}
 )
 
 
-# 
+#
 # Libraries
-# 
+#
 
 # none required, since interface library (header-only)
 
-# 
+#
 # Compile definitions
-# 
+#
 
 # none required, since interface library (header-only)
 
-# 
+#
 # Compile options
-# 
+#
 
 # none required, since interface library (header-only)
 
-# 
+#
 # Linker options
-# 
+#
 
 # none required, since interface library (header-only)
 
@@ -142,9 +149,9 @@ target_include_directories(${target}
 #)
 
 
-# 
+#
 # Deployment
-# 
+#
 
 # Library
 install(TARGETS ${target}
