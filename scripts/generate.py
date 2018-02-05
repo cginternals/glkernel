@@ -102,23 +102,22 @@ def getParamDefaults(params):
     return [(p[1], p[2]) for p in params if p[2]]
 
 def possibleTypes(argType, templateList):
-    # currently unused
-    if re.match("^\w+$", argType):
+    if re.match("^\w+$", argType): # argType is just single word, e.g. 'T'
         if "std::enable_if<std::is_floating_point<"+argType+">::value>::type" in templateList:
             return {"float"}
         else:
             return {"float", "vec2", "vec3", "vec4"}
 
-    genVecMatch = re.match("(\w+)\s*<\s*\w+\s*,\s*\w+\s*>", argType)
+    genVecMatch = re.match("(\w+)\s*<\s*\w+\s*,\s*\w+\s*>", argType) # general glm vector, e.g. 'V<T, P>'
     if genVecMatch:
         if re.search("template\s*<\s*(?:typename|class)\s*,\s*glm::precision\s*>\s*(?:typename|class)\s*" + genVecMatch[1], templateList):
             return {"vec2", "vec3", "vec4"}
 
-    specVecMatch = re.match("glm::tvec(\d)<.*?>", argType)
+    specVecMatch = re.match("glm::tvec(\d)<.*?>", argType) # specific glm vector, e.g. 'glm::tcev4<T, P>'
     if specVecMatch:
         return {"vec"+specVecMatch[1]}
 
-    return argType
+    return {argType}
 
 def paramTypeFromKernelTypes(kernelTypeString, paramTypeString, templateList, enums):
     if possibleTypes(paramTypeString, templateList) == {'float'}:
@@ -174,7 +173,6 @@ def enumForJS(value, enums):
         # TODO: Warning?
         return value
 
-    # TODO: Prefix of enum object
     return enumName + "." + valueName
 
 def jsFuncName(func):
@@ -186,25 +184,20 @@ def jsFunction(func, enums):
     namespaceStack = func["namespace"].split("::")
     namespaceStack.pop(0) # ignore outmost namespace glkernel
 
-#    argCleans = '\n'.join(["            {name} = cleanArg({name});".format(name=name) for name in getParamNames(func["params"])])
-#    if argCleans:
-#        argCleans = "\n            // Clean arguments\n" + argCleans + "\n"
-
     defaultChecks = '\n'.join(["                {name} = (typeof {name} !== 'undefined') ? {name} : {default};".format(name=name, default=enumForJS(default, enums)) for name, default in getParamDefaults(func["params"])])
     if defaultChecks:
         defaultChecks = "\n                // Defaults\n" + defaultChecks + "\n"
 
-    jsCode = """            {name}: function({params}) {{{defaultChecks}
-                _glkernel.{generatedName}(that.kernel{paramsWithKomma});
+    paramString = ', '.join(getParamNames(func["params"]))
+    paramStringKomma = "" if not paramString else ', ' + paramString
+
+    firstLine = "            {name}: function({params}) {{".format(name = func["name"], params = paramString)
+    finalCall = "                _glkernel.{generatedName}(that.kernel{paramsWithKomma});".format(generatedName = jsFuncName(func), paramsWithKomma = paramStringKomma)
+
+    jsCode = """{firstLine}{defaultChecks}
+{finalCall}
                 return that;
-            }}""".format(
-        name = func["name"],
-        params = ', '.join(getParamNames(func["params"])),
-        paramsWithKomma = ''.join([', ' + p for p in getParamNames(func["params"])]),
-        generatedName = jsFuncName(func),
-#        argCleans = argCleans,
-        defaultChecks = defaultChecks
-    )
+            }}""".format(firstLine = firstLine, defaultChecks = defaultChecks, finalCall = finalCall)
 
     return jsCode
 
@@ -222,26 +215,25 @@ def buildJSNamespaces(funcs, enums):
     for ns, codes in namespaces.items():
         name = ns[len("glkernel::"):]
 
-        nsCodes.append(
-        """        this.{name} = {{
-{funcCodes}
-        }};""".format(
-                name = name,
-                funcCodes = ",\n".join(codes)
-            )
-        )
+        functionsCode = ",\n".join(codes)
+        nsCode = "        this.{name} = {{\n{funcCodes}\n        }};".format(name = name, funcCodes = functionsCode)
+
+        nsCodes.append(nsCode)
 
     return "\n".join(nsCodes)
 
 def buildJSEnums(enums):
-    return "\n".join([
-        """{name} = {{
-{members}
-}};""".format(
-            name = enum["name"],
-            members = ",\n".join(["    {name}: {value}".format(name=name, value=value) for name, value in enum["values"]])
-        ) for enum in enums
-    ])
+    enumCodes = []
+    for enum in enums:
+        valueLines = []
+        for name, value in enum["values"]:
+            valueLines.append("    " + name + ": " + str(value))
+
+        valuesCode = ',\n'.join(valueLines)
+        enumCode = "{name} = {{\n{members}\n}};".format(name = enum["name"], members = valuesCode)
+        enumCodes.append(enumCode)
+
+    return "\n\n".join(enumCodes)
 
 def buildCPPFunctionAdds(funcs):
     return '\n'.join(['    addFunction("{name}", this, &JSInterface::{name});'.format(name = jsFuncName(func)) for func in funcs])
@@ -261,6 +253,8 @@ def buildCPPFunctionForwardDecl(func, enums):
             altKernelTypes = possibleTypes(alt["kernelType"], alt["template"])
             altParamTypes = [paramTypeFromKernelTypes(alt["kernelType"], param[0], alt["template"], enums) for param in alt["params"]]
             cases += [(kernelType, [kernelType if param == "same" else param for param in altParamTypes]) for kernelType in altKernelTypes]
+
+    cases.sort()
 
     typesPerParam = [{case[1][i] for case in cases} for i in range(len(cases[0][1]))]
     variantNeeded = [len(types) > 1 for types in typesPerParam]
@@ -299,6 +293,8 @@ def buildCPPImplementation(func, enums):
             altParamTypes = [paramTypeFromKernelTypes(alt["kernelType"], param[0], alt["template"], enums) for param in alt["params"]]
             cases += [(kernelType, [kernelType if param == "same" else param for param in altParamTypes]) for kernelType in altKernelTypes]
 
+    cases.sort()
+
     typesPerParam = [{case[1][i] for case in cases} for i in range(len(cases[0][1]))]
     variantNeeded = [len(types) > 1 for types in typesPerParam]
     enumParam = [list(types)[0] in enumNames for types in typesPerParam]
@@ -308,10 +304,14 @@ def buildCPPImplementation(func, enums):
     paramList = ", ".join(type + " " + name for type,name in zip(paramTypes, paramNames))
 
     # Parameters with only one possible type may be handled before branching into kernel types
-    earlyConversions = ""
+    earlyConv = []
     for param, enumType in [(name, list(types)[0]) for name, types, isEnum in zip(paramNames[1:], typesPerParam, enumParam) if isEnum]:
         enum = [e for e in enums if e["name"] == enumType][0]
-        earlyConversions += "    const auto {name}_enum = static_cast<{namespace}::{type}>({name});\n".format(name=param, type=enum["name"], namespace = enum["namespace"])
+        earlyConv.append("    const auto {name}_enum = static_cast<{namespace}::{type}>({name});".format(name=param, type=enum["name"], namespace = enum["namespace"]))
+
+    earlyConversions = '\n'.join(earlyConv)
+    if earlyConversions:
+        earlyConversions += '\n\n'
 
     # Split cases by kernel type
     casesByKernelType = dict()
@@ -321,14 +321,14 @@ def buildCPPImplementation(func, enums):
         casesByKernelType[kernel].append(params)
 
     # Build code for different kernel types
-    mainCode = ""
+    kernelCases = []
     for kernelType, cases in casesByKernelType.items():
         kernelDim = 1 if kernelType == "float" else int(kernelType[-1])
-        firstLine = "    if (auto kernelObj = dynamic_cast<Kernel" + str(kernelDim) + "Object*>(obj))\n"
+        firstLine = "    if (auto kernelObj = dynamic_cast<Kernel" + str(kernelDim) + "Object*>(obj))"
         neededVariantChecks = False
 
         # Build code for specific parameter type constellations
-        casesCode = ""
+        paramCases = []
         for case in cases:
             # Check if variants contain acceptable values
             variantChecks = []
@@ -341,49 +341,52 @@ def buildCPPImplementation(func, enums):
                 neededVariantChecks = True
 
             # Unpack variants to usable values
-            variantUnpackingCode = ""
+            variantUnpackers = []
             for name, type, needsVariant in zip(paramNames[1:], case, variantNeeded):
                 if not needsVariant:
                     continue
                 convFunction = "variantTo" + type[0].upper() + type[1:]
-                variantUnpackingCode += "        const auto {name}_conv = {func}({name});\n".format(name=name, func=convFunction)
+                variantUnpackers.append("        const auto {name}_conv = {func}({name});".format(name = name, func = convFunction))
+
+            variantUnpackingCode = '\n'.join(variantUnpackers)
+            if variantUnpackingCode:
+                variantUnpackingCode += '\n\n'
 
             finalCallParams = ["kernelObj->kernel()"] + [name + ("_enum" if isEnum else "_conv" if needsVariant else "") for name, isEnum, needsVariant in zip(paramNames[1:], enumParam, variantNeeded)]
+            finalCallParamString = ', '.join(finalCallParams)
+            finalCallString = "        {namespace}::{name}({params});".format(namespace = func["namespace"], name = func["name"], params = finalCallParamString)
 
-            innerCode  = variantUnpackingCode + "\n" if variantUnpackingCode else ""
-            innerCode += "        " + func["namespace"] + "::" + func["name"] + "(" + ", ".join(finalCallParams) + ");\n"
-            innerCode += "        return;\n"
+            innerCode = "{variants}{finalCall}\n        return;".format(variants = variantUnpackingCode, finalCall = finalCallString)
 
             caseCode = innerCode
             if variantChecks:
-                caseCode  = "        if (" + " && ".join(variantChecks) + ")\n"
-                caseCode += "        {\n"
-                caseCode += "\n".join([("    " + line).rstrip(' ') for line in innerCode.split('\n')])
-                caseCode += "        }\n\n"
+                variantCheckCode = ' && '.join(variantChecks)
+                indentedInnerCode = '\n'.join([("    " + line).rstrip() for line in innerCode.split('\n')])
+                caseCode = "        if ({varChecks})\n        {{\n{innerCode}\n        }}".format(varChecks = variantCheckCode, innerCode = indentedInnerCode)
 
-            casesCode += caseCode
-
-        mainCode += firstLine
-        mainCode += "    {\n"
-        mainCode += casesCode
+            paramCases.append(caseCode)
 
         if neededVariantChecks:
-            mainCode += "        std::cerr << \"Invalid parameters for " + funcName + "\" << std::endl;\n"
-            mainCode += "        return;\n"
+            paramCases.append("        std::cerr << \"Invalid parameters for " + funcName + "\" << std::endl;\n        return;")
 
-        mainCode += "    }\n"
+        paramCasesCode = '\n\n'.join(paramCases)
 
-    fullCode  = "void JSInterface::" + funcName + "(" + paramList + ")\n"
-    fullCode += "{\n"
-    fullCode += earlyConversions + "\n" if earlyConversions else ""
-    fullCode += mainCode
-    fullCode += "\n    std::cerr << \"Invalid kernel object for " + funcName + "\" << std::endl;\n"
-    fullCode += "}\n"
+        kernelCaseCode = "{firstLine}\n    {{\n{cases}\n    }}".format(firstLine = firstLine, cases = paramCasesCode)
+        kernelCases.append(kernelCaseCode)
+
+    kernelCasesCode = '\n\n'.join(kernelCases)
+
+    fullCode = """void JSInterface::{funcName}({paramList})
+{{
+{earlyConv}{cases}
+
+    std::cerr << "Invalid kernel object for {funcName}" << std::endl;
+}}""".format(funcName = funcName, paramList = paramList, earlyConv = earlyConversions, cases = kernelCasesCode)
 
     return fullCode
 
 def buildCPPImplementations(funcs, enums):
-    return '\n\n'.join([buildCPPImplementation(func, enums) for func in funcs])
+    return '\n\n\n'.join([buildCPPImplementation(func, enums) for func in funcs])
 
 # ------------
 # misc
