@@ -12,7 +12,7 @@ public:
 
 protected:
     template <typename T>
-    png_doublep * toPng(const glkernel::tkernel<T> & kernel, const int channels);
+    png_bytepp toPng(const glkernel::tkernel<T> & kernel, const int channels);
 
-    void writeToFile(png_doublep * data, const int colorType, const png_uint_32 height, const png_uint_32 width);
+    void writeToFile(png_bytepp data, const int colorType, const png_uint_32 height, const png_uint_32 width);
 };

@@ -6,36 +6,37 @@
  */
 
 template <typename T>
-void writeData(T cellValue, png_doublep outputRow, int x);
+void writeData(T cellValue, png_bytep outputRow, int x);
 
 template <>
-void writeData(float cellValue, png_doublep outputRow, int x)
+void writeData(float cellValue, png_bytep outputRow, int x)
 {
-  outputRow[x] = static_cast<double>(cellValue);
+  // remember, bit depth 16
+  png_save_uint_16(outputRow + 2 * x, static_cast<uint16_t>(cellValue));
 }
 
 template <>
-void writeData(glm::vec2 cellValue, png_doublep outputRow, int x)
+void writeData(glm::vec2 cellValue, png_bytep outputRow, int x)
 {
-  outputRow[2 * x] = static_cast<double>(cellValue.x);
-  outputRow[2 * x + 1] = static_cast<double>(cellValue.y);
+  png_save_uint_16(outputRow + 4 * x, static_cast<uint16_t>(cellValue.x));
+  png_save_uint_16(outputRow + 4 * x + 2, static_cast<uint16_t>(cellValue.y));
 }
 
 template <>
-void writeData(glm::vec3 cellValue, png_doublep outputRow, int x)
+void writeData(glm::vec3 cellValue, png_bytep outputRow, int x)
 {
-  outputRow[3 * x] = static_cast<double>(cellValue.x);
-  outputRow[3 * x + 1] = static_cast<double>(cellValue.y);
-  outputRow[3 * x + 2] = static_cast<double>(cellValue.z);
+  png_save_uint_16(outputRow + 6 * x, static_cast<uint16_t>(cellValue.x));
+  png_save_uint_16(outputRow + 6 * x + 2, static_cast<uint16_t>(cellValue.y));
+  png_save_uint_16(outputRow + 6 * x + 4, static_cast<uint16_t>(cellValue.z));
 }
 
 template <>
-void writeData(glm::vec4 cellValue, png_doublep outputRow, int x)
+void writeData(glm::vec4 cellValue, png_bytep outputRow, int x)
 {
-  outputRow[4 * x] = static_cast<double>(cellValue.x);
-  outputRow[4 * x + 1] = static_cast<double>(cellValue.y);
-  outputRow[4 * x + 2] = static_cast<double>(cellValue.z);
-  outputRow[4 * x + 3] = static_cast<double>(cellValue.w);
+  png_save_uint_16(outputRow + 8 * x, static_cast<uint16_t>(cellValue.x));
+  png_save_uint_16(outputRow + 8 * x + 2, static_cast<uint16_t>(cellValue.y));
+  png_save_uint_16(outputRow + 8 * x + 4, static_cast<uint16_t>(cellValue.z));
+  png_save_uint_16(outputRow + 8 * x + 6, static_cast<uint16_t>(cellValue.w));
 }
 
 /*

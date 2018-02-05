@@ -5,7 +5,7 @@
 #include <cppassist/logging/logging.h>
 
 void PngExporter::exportKernel() {
-    png_doublep * pngData;
+    png_bytepp pngData;
     int colorType;
     png_uint_32 width;
     png_uint_32 height;
@@ -54,22 +54,30 @@ void PngExporter::exportKernel() {
 
 // TODO 3D kernels (with depth)
 template <typename T>
-png_doublep * PngExporter::toPng(const glkernel::tkernel<T> & kernel, const int channels)
+png_bytepp PngExporter::toPng(const glkernel::tkernel<T> & kernel, const int channels)
 {
-    const auto minMaxElements = findMinMaxElements(kernel);
-    cppassist::info() << minMaxElements.first << ", " << minMaxElements.second;
+    const auto minmax = findMinMaxElements(kernel);
+    const auto min = minmax.first;
+    const auto max = minmax.second;
+
     // memory for all rows:
-    auto rows = (png_doublep *) malloc(kernel.height() * sizeof(png_doublep));
+    auto rows = (png_bytepp) malloc(kernel.height() * sizeof(png_bytep));
     // memory for one row: amount of channes * amount of pixels * png byte size
     for(int y = 0; y < kernel.height(); ++y) {
-        rows[y] = (png_doublep) malloc(channels * kernel.width() * sizeof(double));
+        // we are using 16 bit depth, so we need 2 bytes per channel
+        rows[y] = (png_bytep) malloc(channels * kernel.width() * 2 * sizeof(png_byte));
     }
 
     for (auto y = 0; y < kernel.height(); ++y)
     {
         for (auto x = 0; x < kernel.width(); ++x)
         {
-            writeData<T>(kernel.value(x, y, 0), rows[y], x);
+            auto value = kernel.value(x, y, 0);
+            auto normalizedValue = (value - min) / (max - min);
+            auto scaledValue = normalizedValue * static_cast<float>(std::numeric_limits<uint16_t>::max());
+            auto roundedValue = glm::round(scaledValue);
+
+            writeData<T>(roundedValue, rows[y], x);
         }
     }
 
@@ -79,7 +87,7 @@ png_doublep * PngExporter::toPng(const glkernel::tkernel<T> & kernel, const int 
 
 // http://www.labbookpages.co.uk/software/imgProc/libPNG.html
 // TODO free up pointers upon failure
-void PngExporter::writeToFile(png_doublep * data, const int colorType, const png_uint_32 height, const png_uint_32 width) {
+void PngExporter::writeToFile(png_bytepp data, const int colorType, const png_uint_32 height, const png_uint_32 width) {
     /* create file */
     FILE *fp = fopen(m_outFileName.c_str(), "wb");
     if (!fp)
