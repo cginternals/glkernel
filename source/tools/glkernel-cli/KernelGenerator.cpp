@@ -1,10 +1,14 @@
 #include "KernelGenerator.h"
+#include "KernelObject.h"
 
-#include "scripting.h"
+#include "generated/JSInterface.h"
 
 #include <glkernel/Kernel.h>
 #include <glkernel/noise.h>
 #include <glkernel/sort.h>
+
+#include <cppexpose/scripting/ScriptContext.h>
+#include <cppassist/logging/logging.h>
 
 #include <string>
 #include <fstream>
@@ -12,67 +16,52 @@
 
 KernelGenerator::KernelGenerator(const std::string& inputFileName)
 {
-    auto inputStream = std::ifstream{inputFileName};
-    auto inputStringStream = std::stringstream{};
-    inputStringStream << inputStream.rdbuf();
-    m_scriptCode = inputStringStream.str();
+    auto apiStream = std::ifstream{"generated/glkernel.js"};
+    auto scriptStream = std::ifstream{inputFileName};
+    auto combinedStringStream = std::stringstream{};
+    combinedStringStream << apiStream.rdbuf() << scriptStream.rdbuf();
+    m_scriptCode = combinedStringStream.str();
 }
 
 cppexpose::Variant KernelGenerator::generateKernelFromJavascript()
 {
-    // TODO: replace API string with pregenerated API JS file
-    auto api = R"javascript(
-        var _Kernel = function(x,y,z) {
-            this._initialize = function(x,y,z) {
-                var that = this;
+    JSInterface jsInterface;
 
-                this.kernel = this.generateKernel(x,y,z);
+    cppexpose::ScriptContext scriptContext;
+    scriptContext.addGlobalObject(&jsInterface);
+    scriptContext.scriptException.connect([](const std::string & msg) {
+        cppassist::error() << msg;
+    });
 
-                this.sequence = {
-                    uniform: function(min, max) {
-                        _glkernel.uniform(that.kernel, min, max);
-                    }
-                };
-                this.shuffle = {
-                    random: function() {
-                        _glkernel.shuffle_random(that.kernel);
-                    }
-                };
-                this.scale = {
-                    range: function(toMin, toMax, fromMin, fromMax) {
-                        // Defining default values for some parameters
-                        fromMin = (typeof fromMin !== 'undefined') ? fromMin : 0.0;
-                        fromMax = (typeof fromMax !== 'undefined') ? fromMax : 1.0;
+    auto variant = scriptContext.evaluate(m_scriptCode);
 
-                        _glkernel.scale_range(that.kernel, toMin, toMax, fromMin, fromMax);
-                    }
-                };
-                this.sort = {
-                    distance: function(origin) {
-                        _glkernel.sort_distance(that.kernel, origin);
-                    }
-                };
-            };
-        };
+    if (variant.hasType<cppexpose::Object*>())
+    {
+        auto kernelObject = variant.value<cppexpose::Object*>();
 
-        var Kernel1 = function(x,y,z) {
-            this.generateKernel = function(x,y,z) {
-                return _glkernel.createKernel1(x,y,z);
-            }
-            this._initialize(x,y,z);
+        auto kernel1Object = dynamic_cast<Kernel1Object*>(kernelObject);
+        if (kernel1Object)
+        {
+            return cppexpose::Variant::fromValue(kernel1Object->kernel());
         }
 
-        Kernel1.prototype = new _Kernel;
-
-        var Kernel2 = function(x,y,z) {
-            this.generateKernel = function(x,y,z) {
-                return _glkernel.createKernel2(x,y,z);
-            }
-            this._initialize(x,y,z);
+        auto kernel2Object = dynamic_cast<Kernel2Object*>(kernelObject);
+        if (kernel2Object)
+        {
+            return cppexpose::Variant::fromValue(kernel2Object->kernel());
         }
 
-        Kernel2.prototype = new _Kernel;
-    )javascript";
+        auto kernel3Object = dynamic_cast<Kernel3Object*>(kernelObject);
+        if (kernel3Object)
+        {
+            return cppexpose::Variant::fromValue(kernel3Object->kernel());
+        }
 
-    return executeScript(api + m_scriptCode);
+        auto kernel4Object = dynamic_cast<Kernel4Object*>(kernelObject);
+        if (kernel4Object)
+        {
+            return cppexpose::Variant::fromValue(kernel4Object->kernel());
+        }
+    }
+    return variant;
 }

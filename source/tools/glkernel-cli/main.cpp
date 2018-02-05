@@ -2,8 +2,6 @@
 #include <string>
 #include <fstream>
 
-#include "scripting.h"
-
 #include <cppassist/logging/logging.h>
 
 #include <glkernel/glkernel-version.h>
