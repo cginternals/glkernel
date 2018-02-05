@@ -11,10 +11,8 @@ public:
     void exportKernel() override;
 
 protected:
-    png_doublep * toPng(const cppexpose::Variant & kernelVariant);
-
     template <typename T>
-    png_doublep * toPng(const glkernel::tkernel<T> & kernel, int channels, int colorType);
+    png_doublep * toPng(const glkernel::tkernel<T> & kernel, const int channels);
 
-    void writeToFile(png_doublep * data);
+    void writeToFile(png_doublep * data, const int colorType, const png_uint_32 height, const png_uint_32 width);
 };

@@ -5,101 +5,110 @@
 // http://www.labbookpages.co.uk/software/imgProc/libPNG.html
 
 template <typename T>
-void writeData(T cellValue, png_doublep outputRow, int x, int channels);
+void writeData(T cellValue, png_doublep outputRow, int x);
 
 template <>
-void writeData(float cellValue, png_doublep outputRow, int x, int channels)
+void writeData(float cellValue, png_doublep outputRow, int x)
 {
-    outputRow[x * channels] = static_cast<double>(cellValue);
+    outputRow[x] = static_cast<double>(cellValue);
 }
 
 template <>
-void writeData(glm::vec2 cellValue, png_doublep outputRow, int x, int channels)
+void writeData(glm::vec2 cellValue, png_doublep outputRow, int x)
 {
-    outputRow[x * channels] = static_cast<double>(cellValue.x);
-    outputRow[x * channels + 1] = static_cast<double>(cellValue.y);
+    outputRow[2 * x] = static_cast<double>(cellValue.x);
+    outputRow[2 * x + 1] = static_cast<double>(cellValue.y);
 }
 
 template <>
-void writeData(glm::vec3 cellValue, png_doublep outputRow, int x, int channels)
+void writeData(glm::vec3 cellValue, png_doublep outputRow, int x)
 {
-    outputRow[x * channels] = static_cast<double>(cellValue.x);
-    outputRow[x * channels + 1] = static_cast<double>(cellValue.y);
-    outputRow[x * channels + 2] = static_cast<double>(cellValue.z);
+    outputRow[3 * x] = static_cast<double>(cellValue.x);
+    outputRow[3 * x + 1] = static_cast<double>(cellValue.y);
+    outputRow[3 * x + 2] = static_cast<double>(cellValue.z);
 }
 
 template <>
-void writeData(glm::vec4 cellValue, png_doublep outputRow, int x, int channels)
+void writeData(glm::vec4 cellValue, png_doublep outputRow, int x)
 {
-    outputRow[x * channels] = static_cast<double>(cellValue.x);
-    outputRow[x * channels + 1] = static_cast<double>(cellValue.y);
-    outputRow[x * channels + 2] = static_cast<double>(cellValue.z);
-    outputRow[x * channels + 3] = static_cast<double>(cellValue.w);
+    outputRow[4 * x] = static_cast<double>(cellValue.x);
+    outputRow[4 * x + 1] = static_cast<double>(cellValue.y);
+    outputRow[4 * x + 2] = static_cast<double>(cellValue.z);
+    outputRow[4 * x + 3] = static_cast<double>(cellValue.w);
 }
 
 void PngExporter::exportKernel() {
-    auto pngData = toPng(m_kernel);
-
-    writeToFile(pngData);
-}
-
-png_doublep * PngExporter::toPng(const cppexpose::Variant & kernelVariant) {
-
-    if (kernelVariant.hasType<glkernel::kernel4>())
+    png_doublep * pngData;
+    int colorType;
+    png_uint_32 width;
+    png_uint_32 height;
+    if (m_kernel.hasType<glkernel::kernel4>())
     {
-        return toPng(kernelVariant.value<glkernel::kernel4>(), 4, PNG_COLOR_TYPE_RGBA);
+        colorType = PNG_COLOR_TYPE_RGBA;
+        const auto kernel = m_kernel.value<glkernel::kernel4>();
+        width = kernel.width();
+        height = kernel.height();
+        pngData = toPng(kernel, 4);
     }
-    else if (kernelVariant.hasType<glkernel::kernel3>())
+    else if (m_kernel.hasType<glkernel::kernel3>())
     {
-        return toPng(kernelVariant.value<glkernel::kernel3>(), 3, PNG_COLOR_TYPE_RGB);
+        colorType = PNG_COLOR_TYPE_RGB;
+        const auto kernel = m_kernel.value<glkernel::kernel3>();
+        width = kernel.width();
+        height = kernel.height();
+        pngData = toPng(kernel, 3);
     }
-    else if (kernelVariant.hasType<glkernel::kernel2>())
+    else if (m_kernel.hasType<glkernel::kernel2>())
     {
-        return toPng(kernelVariant.value<glkernel::kernel2>(), 2, PNG_COLOR_TYPE_GA);
+        colorType = PNG_COLOR_TYPE_GA;
+        const auto kernel = m_kernel.value<glkernel::kernel2>();
+        width = kernel.width();
+        height = kernel.height();
+        pngData = toPng(kernel, 2);
     }
-    else if (kernelVariant.hasType<glkernel::kernel1>())
+    else if (m_kernel.hasType<glkernel::kernel1>())
     {
-        return toPng(kernelVariant.value<glkernel::kernel1>(), 1, PNG_COLOR_TYPE_GRAY);
+        colorType = PNG_COLOR_TYPE_GRAY;
+        const auto kernel = m_kernel.value<glkernel::kernel1>();
+        width = kernel.width();
+        height = kernel.height();
+        pngData = toPng(kernel, 1);
     }
     else
     {
         cppassist::error() << "Unknown kernel type found. Aborting...";
-        return (png_doublep *) malloc(0); // TODO review
+        return;
     }
+
+    // TODO multiply height and width widh depth for 3D kernels
+    writeToFile(pngData, colorType, height, width);
 }
+
 
 // TODO 3D kernels (with depth)
 template <typename T>
-png_doublep * PngExporter::toPng(const glkernel::tkernel<T> & kernel, int channels, int colorType)
+png_doublep * PngExporter::toPng(const glkernel::tkernel<T> & kernel, const int channels)
 {
     // memory for all rows:
-    auto data = (png_doublep *) malloc(kernel.height() * sizeof(png_doublep));
+    auto rows = (png_doublep *) malloc(kernel.height() * sizeof(png_doublep));
     // memory for one row: amount of channes * amount of pixels * png byte size
     for(int y = 0; y < kernel.height(); ++y) {
-        data[y] = (png_doublep) malloc(channels * kernel.width() * sizeof(double));
+        rows[y] = (png_doublep) malloc(channels * kernel.width() * sizeof(double));
     }
 
     for (auto y = 0; y < kernel.height(); ++y)
     {
         for (auto x = 0; x < kernel.width(); ++x)
         {
-//            for (auto c = 0; c < channels; ++c)
-//            {
-//                data[y][x * channels + c] = ;
-//            }
-            writeData<T>(kernel.value(x, y, 0), data[y], x, channels);
-//            auto val = kernel.value(x, y, 0);
-//            data[y][x * channels] = val.x;
-//            data[y][x * channels + 1] = val.y;
-//            data[y][x * channels + 2] = val.z;
+            writeData<T>(kernel.value(x, y, 0), rows[y], x);
         }
     }
 
-    return data;
+    return rows;
 }
 
 // TODO free up pointers upon failure
-void PngExporter::writeToFile(png_doublep * data) {
+void PngExporter::writeToFile(png_doublep * data, const int colorType, const png_uint_32 height, const png_uint_32 width) {
     /* create file */
     FILE *fp = fopen(m_outFileName.c_str(), "wb");
     if (!fp)
@@ -143,10 +152,10 @@ void PngExporter::writeToFile(png_doublep * data) {
 
     png_set_IHDR(png_ptr,
                  info_ptr,
-                 100, // TODO kernel width
-                 100, // TODO kernel height
-                 16, // TODO bit depth
-                 PNG_COLOR_TYPE_RGB, // TODO colorType
+                 width,
+                 height,
+                 16, // bit depth
+                 colorType,
                  PNG_INTERLACE_NONE,
                  PNG_COMPRESSION_TYPE_DEFAULT,
                  PNG_FILTER_TYPE_DEFAULT);
@@ -174,8 +183,7 @@ void PngExporter::writeToFile(png_doublep * data) {
     png_write_end(png_ptr, nullptr);
 
     /* cleanup heap allocation */
-    // TODO kernel height
-    for (size_t y = 0; y < 100; ++y)
+    for (size_t y = 0; y < height; ++y)
         free(data[y]);
     free(data);
 
