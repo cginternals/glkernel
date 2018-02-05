@@ -13,7 +13,7 @@ if(PYTHON)
         TARGET              ${generate_target}
         PRE_BUILD
         WORKING_DIRECTORY   ${CMAKE_SOURCE_DIR}/scripts
-        COMMAND             ${PYTHON} generate.py -t templates -d results
+        COMMAND             ${PYTHON} generate.py -t templates -d ${CMAKE_SOURCE_DIR}/source/tools/glkernel-cli
         COMMENT             "Generating glkernel JavaScript interface code."
     )
 

@@ -1,7 +1,7 @@
 #include "KernelGenerator.h"
 #include "KernelObject.h"
 
-#include "generated/JSInterface.h"
+#include "JSInterface.h"
 
 #include <glkernel/Kernel.h>
 #include <glkernel/noise.h>
@@ -16,7 +16,7 @@
 
 KernelGenerator::KernelGenerator(const std::string& inputFileName)
 {
-    auto apiStream = std::ifstream{"generated/glkernel.js"};
+    auto apiStream = std::ifstream{"glkernel.js"};
     auto scriptStream = std::ifstream{inputFileName};
     auto combinedStringStream = std::stringstream{};
     combinedStringStream << apiStream.rdbuf() << scriptStream.rdbuf();

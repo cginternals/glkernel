@@ -23,7 +23,7 @@ set(headers
     KernelJsonExporter.h
     KernelGenerator.h
     KernelJsonImporter.h
-    generated/JSInterface.h
+    JSInterface.h
     )
 
 set(sources
@@ -31,7 +31,7 @@ set(sources
     KernelJsonExporter.cpp
     KernelGenerator.cpp
     KernelJsonImporter.cpp
-    generated/JSInterface.cpp
+    JSInterface.cpp
     )
 
 set(header_group "Header Files (API)")
