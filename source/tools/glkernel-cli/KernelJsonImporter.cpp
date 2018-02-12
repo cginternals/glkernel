@@ -4,30 +4,27 @@
 
 #include <cppassist/logging/logging.h>
 
+void assert_msg(bool condition, const std::string& msg)
+{
+    if (!condition)
+    {
+        throw std::logic_error(msg);
+    }
+}
+
 void forEachCell(cppexpose::VariantArray * depthArray, std::function<void(const cppexpose::Variant&)> lambda)
 {
-    if (!depthArray)
-    {
-        cppassist::error() << "Malformed kernel input.";
-    }
+    assert_msg(depthArray, "Malformed kernel input.");
 
     for (const auto& heightVariant : *depthArray)
     {
         auto heightArray = heightVariant.asArray();
-
-        if (!heightArray)
-        {
-            cppassist::error() << "Malformed kernel input.";
-        }
+        assert_msg(heightArray, "Malformed kernel input.");
 
         for (const auto& widthVariant : *heightArray)
         {
             auto widthArray = widthVariant.asArray();
-
-            if (!widthArray)
-            {
-                cppassist::error() << "Malformed kernel input.";
-            }
+            assert_msg(widthArray, "Malformed kernel input.");
 
             for (const auto& elementVariant : *widthArray)
             {
@@ -80,16 +77,11 @@ KernelJsonImporter::KernelJsonImporter(const std::string& inputFileName)
 {
     cppexpose::Variant root;
 
-    if (!cppexpose::JSON::load(root, inputFileName))
-    {
-        cppassist::error() << "Input JSON file could not be loaded.";
-    }
+    bool success = cppexpose::JSON::load(root, inputFileName);
+    assert_msg(success, "JSON could not be loaded.");
 
     auto rootMap = root.asMap();
-    if (!rootMap)
-    {
-        cppassist::error() << "Input JSON is malformed.";
-    }
+    assert_msg(rootMap, "Input JSON is malformed.");
 
     auto depthArray = rootMap->at("kernel").asArray();
     auto sizeMap = rootMap->at("size").asMap();
@@ -97,32 +89,26 @@ KernelJsonImporter::KernelJsonImporter(const std::string& inputFileName)
     int depth = sizeMap->at("depth").value<int>();
     int height = sizeMap->at("height").value<int>();
     int width = sizeMap->at("width").value<int>();
-    size_t numCells = 0;
     int numComponents = -1;
 
-    forEachCell(depthArray, [&numCells, &numComponents](const cppexpose::Variant& elementVariant) {
+    // assert that all cells have the same cell type
+    forEachCell(depthArray, [&numComponents](const cppexpose::Variant& elementVariant) {
         if (elementVariant.isFloatingPoint())
         {
-            if (numComponents != -1 && numComponents != 1) {
-                cppassist::error() << "All cells must have the same cell type (float, vec2, vec3 or vec4).";
-            }
+            assert_msg(numComponents == -1 || numComponents == 1,
+                       "All cells must have the same cell type (float, vec2, vec3 or vec4).");
 
             numComponents = 1;
         }
         else
         {
-            if (!elementVariant.isArray()) {
-                cppassist::error() << "Cell is not floating point or array.";
-            }
+            assert_msg(elementVariant.isArray(), "Cell is not floating point or array.");
 
-            if (numComponents != -1 && elementVariant.asArray()->size() != numComponents) {
-                cppassist::error() << "All cells must have the same cell type (float, vec2, vec3 or vec4).";
-            }
+            assert_msg(numComponents == -1 || elementVariant.asArray()->size() == numComponents,
+                    "All cells must have the same cell type (float, vec2, vec3 or vec4).");
 
             numComponents = elementVariant.asArray()->size();
         }
-
-        numCells++;
     });
 
     int i = 0;
