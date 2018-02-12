@@ -47,12 +47,12 @@ void PngExporter::exportKernel() {
         return;
     }
 
-    // TODO multiply height and width widh depth for 3D kernels
+    // TODO multiply height and width with depth for 3D kernels
     writeToFile(pngData, colorType, height, width);
 }
 
 
-// TODO 3D kernels (with depth)
+// TODO support 3D kernels with depth
 template <typename T>
 png_bytepp PngExporter::toPng(const glkernel::tkernel<T> & kernel, const int channels)
 {
@@ -61,6 +61,8 @@ png_bytepp PngExporter::toPng(const glkernel::tkernel<T> & kernel, const int cha
     const auto max = minmax.second;
 
     // TODO log scaling factor, error rate, variance, stddeviation
+    cppassist::info() << "Scaling range of [" << min << ", " << max << "] to range [0, 1]";
+
 
     // memory for all rows:
     auto rows = (png_bytepp) malloc(kernel.height() * sizeof(png_bytep));

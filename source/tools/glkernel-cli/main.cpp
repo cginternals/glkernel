@@ -157,7 +157,7 @@ int main(int argc, char* argv[])
 
             if (outputFormat == "png")
             {
-                auto kernelExporter = PngExporter(kernelVariant, outputFile);
+                auto kernelExporter = PngExporter{kernelVariant, outputFile};
                 kernelExporter.exportKernel();
             }
             else // json

@@ -4,14 +4,15 @@
 /*
  * write cell value to png
  */
-
 template <typename T>
 void writeData(T cellValue, png_bytep outputRow, int x);
 
+/*
+ * bit depth 16: we need 2 bytes per cell value
+ */
 template <>
 void writeData(float cellValue, png_bytep outputRow, int x)
 {
-  // remember, bit depth 16
   png_save_uint_16(outputRow + 2 * x, static_cast<uint16_t>(cellValue));
 }
 
@@ -42,7 +43,7 @@ void writeData(glm::vec4 cellValue, png_bytep outputRow, int x)
 /*
  * find min and max element in glkernel
  */
-// TODO double vs float
+// TODO also support double
 template <typename T>
 std::pair<float, float> findMinMaxElements(const glkernel::tkernel<T> & kernel);
 
