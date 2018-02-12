@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cppexpose/variant/Variant.h>
 
 class KernelGenerator

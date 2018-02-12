@@ -1,30 +1,24 @@
-#include "KernelJsonImporter.h"
+#include "JsonImporter.h"
+
+#include "helper.h"
 
 #include <glkernel/Kernel.h>
 
 #include <cppassist/logging/logging.h>
 
-void assert_msg(bool condition, const std::string& msg)
-{
-    if (!condition)
-    {
-        throw std::logic_error(msg);
-    }
-}
-
 void forEachCell(cppexpose::VariantArray * depthArray, std::function<void(const cppexpose::Variant&)> lambda)
 {
-    assert_msg(depthArray, "Malformed kernel input.");
+    throwIfNot(depthArray, "Malformed kernel input.");
 
     for (const auto& heightVariant : *depthArray)
     {
         auto heightArray = heightVariant.asArray();
-        assert_msg(heightArray, "Malformed kernel input.");
+        throwIfNot(heightArray, "Malformed kernel input.");
 
         for (const auto& widthVariant : *heightArray)
         {
             auto widthArray = widthVariant.asArray();
-            assert_msg(widthArray, "Malformed kernel input.");
+            throwIfNot(widthArray, "Malformed kernel input.");
 
             for (const auto& elementVariant : *widthArray)
             {
@@ -73,15 +67,15 @@ glm::vec4 variantToVec4(const cppexpose::Variant & v)
     return glm::vec4(x,y,z,w);
 }
 
-KernelJsonImporter::KernelJsonImporter(const std::string& inputFileName)
+JsonImporter::JsonImporter(const std::string& inputFileName)
 {
     cppexpose::Variant root;
 
     bool success = cppexpose::JSON::load(root, inputFileName);
-    assert_msg(success, "JSON could not be loaded.");
+    throwIfNot(success, "JSON could not be loaded.");
 
     auto rootMap = root.asMap();
-    assert_msg(rootMap, "Input JSON is malformed.");
+    throwIfNot(rootMap, "Input JSON is malformed.");
 
     auto depthArray = rootMap->at("kernel").asArray();
     auto sizeMap = rootMap->at("size").asMap();
@@ -95,16 +89,16 @@ KernelJsonImporter::KernelJsonImporter(const std::string& inputFileName)
     forEachCell(depthArray, [&numComponents](const cppexpose::Variant& elementVariant) {
         if (elementVariant.isFloatingPoint())
         {
-            assert_msg(numComponents == -1 || numComponents == 1,
+            throwIfNot(numComponents == -1 || numComponents == 1,
                        "All cells must have the same cell type (float, vec2, vec3 or vec4).");
 
             numComponents = 1;
         }
         else
         {
-            assert_msg(elementVariant.isArray(), "Cell is not floating point or array.");
+            throwIfNot(elementVariant.isVariantArray(), "Cell is not floating point or array.");
 
-            assert_msg(numComponents == -1 || elementVariant.asArray()->size() == numComponents,
+            throwIfNot(numComponents == -1 || elementVariant.asArray()->size() == numComponents,
                     "All cells must have the same cell type (float, vec2, vec3 or vec4).");
 
             numComponents = elementVariant.asArray()->size();
@@ -163,7 +157,7 @@ KernelJsonImporter::KernelJsonImporter(const std::string& inputFileName)
     }
 }
 
-cppexpose::Variant KernelJsonImporter::getKernel()
+cppexpose::Variant JsonImporter::getKernel()
 {
     return m_kernelVariant;
 }

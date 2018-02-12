@@ -1,30 +1,48 @@
+#pragma once
+
 #include <algorithm>
 #include <vector>
+
+#include <png.h>
+#include <glm/glm.hpp>
+#include <glkernel/Kernel.h>
+
+/*
+ * Assert a condition and throw otherwise, outputting the user supplied message.
+ * Throws for both release and debug builds.
+ */
+inline void throwIfNot(bool condition, const std::string& msg)
+{
+    if (!condition)
+    {
+        throw std::logic_error(msg);
+    }
+}
 
 /*
  * write cell value to png
  */
 template <typename T>
-void writeData(T cellValue, png_bytep outputRow, int x);
+inline void writeData(T cellValue, png_bytep outputRow, int x);
 
 /*
  * bit depth 16: we need 2 bytes per cell value
  */
 template <>
-void writeData(float cellValue, png_bytep outputRow, int x)
+inline void writeData(float cellValue, png_bytep outputRow, int x)
 {
   png_save_uint_16(outputRow + 2 * x, static_cast<uint16_t>(cellValue));
 }
 
 template <>
-void writeData(glm::vec2 cellValue, png_bytep outputRow, int x)
+inline void writeData(glm::vec2 cellValue, png_bytep outputRow, int x)
 {
   png_save_uint_16(outputRow + 4 * x, static_cast<uint16_t>(cellValue.x));
   png_save_uint_16(outputRow + 4 * x + 2, static_cast<uint16_t>(cellValue.y));
 }
 
 template <>
-void writeData(glm::vec3 cellValue, png_bytep outputRow, int x)
+inline void writeData(glm::vec3 cellValue, png_bytep outputRow, int x)
 {
   png_save_uint_16(outputRow + 6 * x, static_cast<uint16_t>(cellValue.x));
   png_save_uint_16(outputRow + 6 * x + 2, static_cast<uint16_t>(cellValue.y));
@@ -32,7 +50,7 @@ void writeData(glm::vec3 cellValue, png_bytep outputRow, int x)
 }
 
 template <>
-void writeData(glm::vec4 cellValue, png_bytep outputRow, int x)
+inline void writeData(glm::vec4 cellValue, png_bytep outputRow, int x)
 {
   png_save_uint_16(outputRow + 8 * x, static_cast<uint16_t>(cellValue.x));
   png_save_uint_16(outputRow + 8 * x + 2, static_cast<uint16_t>(cellValue.y));
@@ -45,17 +63,17 @@ void writeData(glm::vec4 cellValue, png_bytep outputRow, int x)
  */
 // TODO also support double
 template <typename T>
-std::pair<float, float> findMinMaxElements(const glkernel::tkernel<T> & kernel);
+inline std::pair<float, float> findMinMaxElements(const glkernel::tkernel<T> & kernel);
 
 template <>
-std::pair<float, float> findMinMaxElements(const glkernel::tkernel<float> & kernel)
+inline std::pair<float, float> findMinMaxElements(const glkernel::tkernel<float> & kernel)
 {
   const auto minmax = std::minmax_element(kernel.cbegin(), kernel.cend());
   return std::make_pair(*minmax.first, *minmax.second);
 }
 
 template <>
-std::pair<float, float> findMinMaxElements(const glkernel::tkernel<glm::vec2> & kernel)
+inline std::pair<float, float> findMinMaxElements(const glkernel::tkernel<glm::vec2> & kernel)
 {
   float min = std::numeric_limits<float>::max();
   float max = std::numeric_limits<float>::min();
@@ -76,7 +94,7 @@ std::pair<float, float> findMinMaxElements(const glkernel::tkernel<glm::vec2> & 
 }
 
 template <>
-std::pair<float, float> findMinMaxElements(const glkernel::tkernel<glm::vec3> & kernel)
+inline std::pair<float, float> findMinMaxElements(const glkernel::tkernel<glm::vec3> & kernel)
 {
   float min = std::numeric_limits<float>::max();
   float max = std::numeric_limits<float>::min();
@@ -100,7 +118,7 @@ std::pair<float, float> findMinMaxElements(const glkernel::tkernel<glm::vec3> & 
 }
 
 template <>
-std::pair<float, float> findMinMaxElements(const glkernel::tkernel<glm::vec4> & kernel)
+inline std::pair<float, float> findMinMaxElements(const glkernel::tkernel<glm::vec4> & kernel)
 {
   float min = std::numeric_limits<float>::max();
   float max = std::numeric_limits<float>::min();

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "AbstractKernelExporter.h"
 
 class JsonExporter : public AbstractKernelExporter {
