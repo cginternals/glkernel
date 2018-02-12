@@ -78,11 +78,6 @@ glm::vec4 variantToVec4(const cppexpose::Variant & v)
 
 KernelJsonImporter::KernelJsonImporter(const std::string& inputFileName)
 {
-    glkernel::kernel1 kernel1;
-    glkernel::kernel2 kernel2;
-    glkernel::kernel3 kernel3;
-    glkernel::kernel4 kernel4;
-
     cppexpose::Variant root;
 
     if (!cppexpose::JSON::load(root, inputFileName))
@@ -112,6 +107,7 @@ KernelJsonImporter::KernelJsonImporter(const std::string& inputFileName)
             if (numComponents != -1 && numComponents != 1) {
                 cppassist::error() << "All cells must have the same cell type (float, vec2, vec3 or vec4).";
             }
+
             numComponents = 1;
         }
         else
@@ -119,6 +115,11 @@ KernelJsonImporter::KernelJsonImporter(const std::string& inputFileName)
             if (!elementVariant.isArray()) {
                 cppassist::error() << "Cell is not floating point or array.";
             }
+
+            if (numComponents != -1 && elementVariant.asArray()->size() != numComponents) {
+                cppassist::error() << "All cells must have the same cell type (float, vec2, vec3 or vec4).";
+            }
+
             numComponents = elementVariant.asArray()->size();
         }
 
