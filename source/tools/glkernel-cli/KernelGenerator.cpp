@@ -3,6 +3,8 @@
 #include <glkernel/Kernel.h>
 #include <glkernel/noise.h>
 #include <glkernel/sort.h>
+#include <glkernel/sequence.h>
+#include <glkernel/shuffle.h>
 
 #include <string>
 #include <fstream>
@@ -20,9 +22,10 @@ cppexpose::Variant KernelGenerator::generateKernelFromJavascript()
 {
     // TODO generate from js scriptCode
 
-    auto generatedKernel = glkernel::kernel2{ 3, 4, 5 };
-    glkernel::noise::uniform(generatedKernel, 0.f, 1.f);
-    glkernel::sort::distance(generatedKernel, {0.0f, 0.0f});
+    auto generatedKernel = glkernel::kernel3{ 100, 100, 1 };
+    glkernel::sequence::uniform(generatedKernel, 0.f, 1.f);
+    glkernel::shuffle::bayer(generatedKernel);
+//    glkernel::sort::distance(generatedKernel, 0.0f);
 
     return cppexpose::Variant::fromValue(generatedKernel);
 }
