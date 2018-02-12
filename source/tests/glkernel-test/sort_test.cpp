@@ -16,7 +16,7 @@ public:
 TEST_F(sort_test, distance_compile)
 {
     auto fkernel2 = glkernel::kernel2{ 8, 8, 8 };
-    glkernel::sort::distance(fkernel2, {0, 0});
+    glkernel::sort::distance(fkernel2, glm::vec2{0, 0});
 }
 
 TEST_F(sort_test, distance_sorted)
