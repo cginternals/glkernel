@@ -295,11 +295,9 @@ void n_rooks(tkernel<glm::tvec2<T, P>> & kernel)
     std::uniform_real_distribution<> jitter_dist(0.0, stratum_size);
 
     // create pool of column indices and shuffle it
-    std::vector<int> columnIndices;
-    for (int k = 0; k < static_cast<int>(kernel.size()); ++k)
-    {
-        columnIndices.push_back(k);
-    }
+    std::vector<int> columnIndices = std::vector<int>(kernel.size());
+    std::iota(columnIndices.begin(), columnIndices.end(), 0);
+
     std::random_shuffle(columnIndices.begin(), columnIndices.end());
 
     // use columnIndices to shuffle samples in y-direction
