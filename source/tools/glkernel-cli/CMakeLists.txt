@@ -22,12 +22,14 @@ set(headers
     AbstractKernelExporter.h
     KernelJsonExporter.h
     KernelGenerator.h
+    KernelJsonImporter.h
     )
 
 set(sources
     main.cpp
     KernelJsonExporter.cpp
     KernelGenerator.cpp
+    KernelJsonImporter.cpp
     )
 
 set(header_group "Header Files (API)")
