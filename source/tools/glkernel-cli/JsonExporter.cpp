@@ -1,4 +1,4 @@
-#include "KernelJsonExporter.h"
+#include "JsonExporter.h"
 
 #include <cppassist/logging/logging.h>
 
@@ -41,13 +41,13 @@ void appendCell<float>(cppexpose::VariantArray * widthArray, const float & cell)
 }
 
 
-void KernelJsonExporter::exportKernel() {
+void JsonExporter::exportKernel() {
     const auto jsonArray = toJsonArray(m_kernel);
 
     writeToFile(jsonArray);
 }
 
-cppexpose::Variant KernelJsonExporter::toJsonArray(const cppexpose::Variant & kernelVariant) {
+cppexpose::Variant JsonExporter::toJsonArray(const cppexpose::Variant & kernelVariant) {
 
     if (kernelVariant.hasType<glkernel::kernel4>())
     {
@@ -73,7 +73,7 @@ cppexpose::Variant KernelJsonExporter::toJsonArray(const cppexpose::Variant & ke
 }
 
 template <typename T>
-cppexpose::Variant KernelJsonExporter::toJsonArray(const glkernel::tkernel<T> & kernel)
+cppexpose::Variant JsonExporter::toJsonArray(const glkernel::tkernel<T> & kernel)
 {
     auto kernelArray = cppexpose::Variant::array();
 
@@ -104,7 +104,7 @@ cppexpose::Variant KernelJsonExporter::toJsonArray(const glkernel::tkernel<T> & 
 
 
 template <typename T>
-cppexpose::Variant KernelJsonExporter::prepareResult(const glkernel::tkernel<T> & kernel)
+cppexpose::Variant JsonExporter::prepareResult(const glkernel::tkernel<T> & kernel)
 {
     cppexpose::Variant result = cppexpose::Variant::map();
     cppexpose::Variant size = cppexpose::Variant::map();
@@ -119,12 +119,12 @@ cppexpose::Variant KernelJsonExporter::prepareResult(const glkernel::tkernel<T> 
 }
 
 
-void KernelJsonExporter::writeToFile(const cppexpose::Variant & jsonArray) {
+void JsonExporter::writeToFile(const cppexpose::Variant & jsonArray) {
     std::ofstream outStream(m_outFileName);
 
     if (!outStream.is_open())
     {
-        std::cerr << "ERROR: Output file could not be created. Aborting..." << std::endl;
+        cppassist::error() << "Output file could not be created. Aborting...";
         return;
     }
 
@@ -132,7 +132,7 @@ void KernelJsonExporter::writeToFile(const cppexpose::Variant & jsonArray) {
 }
 
 
-std::string KernelJsonExporter::stringify(const cppexpose::Variant &array) {
+std::string JsonExporter::stringify(const cppexpose::Variant &array) {
     auto outputMode = m_beautify
                       ? cppexpose::JSON::OutputMode::Beautify
                       : cppexpose::JSON::OutputMode::Compact;

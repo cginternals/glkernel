@@ -6,6 +6,8 @@
 #include <glkernel/Kernel.h>
 #include <glkernel/noise.h>
 #include <glkernel/sort.h>
+#include <glkernel/sequence.h>
+#include <glkernel/shuffle.h>
 
 #include <cppexpose/scripting/ScriptContext.h>
 #include <cppassist/logging/logging.h>
