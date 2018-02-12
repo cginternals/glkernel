@@ -181,7 +181,7 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, const T min_dist, cons
         }
         
         // pick nearest probe from sample set
-        glm::vec2 nearest_probe;
+        glm::tvec2<T, P> nearest_probe;
         auto nearest_dist = 4 * min_dist * min_dist;
         auto nearest_found = false;
 
