@@ -39,9 +39,9 @@ void forEachCell(cppexpose::VariantArray * depthArray, std::function<void(const 
 
 // TODO: this is duplicated in the generated code, remove this duplication
 float variantToFloat(const cppexpose::Variant & v)
-{{
+{
     return v.value<float>();
-}}
+}
 
 glm::vec2 variantToVec2(const cppexpose::Variant & v)
 {
@@ -109,11 +109,16 @@ KernelJsonImporter::KernelJsonImporter(const std::string& inputFileName)
     forEachCell(depthArray, [&numCells, &numComponents](const cppexpose::Variant& elementVariant) {
         if (elementVariant.isFloatingPoint())
         {
+            if (numComponents != -1 && numComponents != 1) {
+                cppassist::error() << "All cells must have the same cell type (float, vec2, vec3 or vec4).";
+            }
             numComponents = 1;
         }
         else
         {
-            // TODO: check if variant is an array
+            if (!elementVariant.isArray()) {
+                cppassist::error() << "Cell is not floating point or array.";
+            }
             numComponents = elementVariant.asArray()->size();
         }
 
