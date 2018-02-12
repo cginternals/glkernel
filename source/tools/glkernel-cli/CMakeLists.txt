@@ -23,6 +23,7 @@ set(headers
     KernelJsonExporter.h
     KernelGenerator.h
     KernelJsonImporter.h
+    KernelObject.h
     JSInterface.h
     )
 
@@ -31,6 +32,7 @@ set(sources
     KernelJsonExporter.cpp
     KernelGenerator.cpp
     KernelJsonImporter.cpp
+    KernelObject.cpp
     JSInterface.cpp
     )
 

@@ -1,4 +1,4 @@
-#ifdef __BULLSHIT__
+
 #include "KernelObject.h"
 
 
@@ -45,4 +45,3 @@ glkernel::kernel4& Kernel4Object::kernel()
 {
 	return m_kernel;
 }
-#endif
