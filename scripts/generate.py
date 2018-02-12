@@ -176,7 +176,11 @@ def enumForJS(value, enums):
     return enumName + "." + valueName
 
 def jsFuncName(func):
-    return "_".join(func["namespace"].split('::')[1:] + [func["name"]])
+    name = func["name"]
+    if "alternativeNumber" in func:
+        name += str(func["alternativeNumber"])
+
+    return "_".join(func["namespace"].split('::')[1:] + [name])
 
 def jsFunction(func, enums):
     assert func["namespace"].startswith("glkernel::"), "function \""+func["name"]+"\" from outside glkernel namespace: " + func["namespace"]
@@ -412,7 +416,13 @@ def dedupeFuncs(funcs):
 
                 break
 
-            print("Warning: Method \"" + currentFunc["namespace"] + "::" + currentFunc["name"] + "\" has overloads that can not be trivially resolved!")
+            if "renamedAlternatives" not in otherFunc:
+                otherFunc["renamedAlternatives"] = 0
+
+            otherFunc["renamedAlternatives"] += 1
+            currentFunc["alternativeNumber"] = otherFunc["renamedAlternatives"]
+
+            break
 
         i += 1
 
