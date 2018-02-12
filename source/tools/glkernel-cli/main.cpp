@@ -96,10 +96,18 @@ int main(int argc, char* argv[])
         cppassist::CommandLineSwitch::Optional
     };
 
+    auto swBeautify = cppassist::CommandLineSwitch{
+        "--beautify",
+        "-b",
+        "Beautify the output (only applies to json output format)",
+        cppassist::CommandLineSwitch::Optional
+    };
+
     actionRun.add(&paramInputFile);
     actionRun.add(&optOutputFile);
     actionRun.add(&optOutputFormat);
     actionRun.add(&swForce);
+    actionRun.add(&swBeautify);
 
     program.add(&actionRun);
 
@@ -162,7 +170,7 @@ int main(int argc, char* argv[])
             }
             else // json
             {
-                auto kernelExporter = JsonExporter{kernelVariant, outputFile};
+                auto kernelExporter = JsonExporter{kernelVariant, outputFile, swBeautify.activated()};
                 kernelExporter.exportKernel();
             }
         }

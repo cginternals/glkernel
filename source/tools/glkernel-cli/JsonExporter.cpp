@@ -133,5 +133,8 @@ void JsonExporter::writeToFile(const cppexpose::Variant & jsonArray) {
 
 
 std::string JsonExporter::stringify(const cppexpose::Variant &array) {
-    return cppexpose::JSON::stringify(array, cppexpose::JSON::OutputMode::Beautify);
+    auto outputMode = m_beautify
+                      ? cppexpose::JSON::OutputMode::Beautify
+                      : cppexpose::JSON::OutputMode::Compact;
+    return cppexpose::JSON::stringify(array, outputMode);
 }
