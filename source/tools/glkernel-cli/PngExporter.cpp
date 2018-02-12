@@ -89,50 +89,55 @@ png_bytepp PngExporter::toPng(const glkernel::tkernel<T> & kernel, const int cha
 }
 
 
-// http://www.labbookpages.co.uk/software/imgProc/libPNG.html
-// TODO free up pointers upon failure
+// mostly taken from http://www.labbookpages.co.uk/software/imgProc/libPNG.html
 void PngExporter::writeToFile(png_bytepp data, const int colorType, const png_uint_32 height, const png_uint_32 width) {
-    /* create file */
+
+    png_structp png_ptr = nullptr;
+    png_infop info_ptr = nullptr;
+
+    // create file
     FILE *fp = fopen(m_outFileName.c_str(), "wb");
+
     if (!fp)
     {
         cppassist::error() << "File " << m_outFileName << " could not be opened for writing";
-        return;
+        goto cleanup;
     }
 
 
-    /* initialize stuff */
-    auto png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
-
+    // initialize write structure
+    png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
     if (!png_ptr)
     {
         cppassist::error() << "png_create_write_struct failed";
-        return;
+        goto cleanup;
     }
 
-    auto info_ptr = png_create_info_struct(png_ptr);
+    // initialize info structure
+    info_ptr = png_create_info_struct(png_ptr);
     if (!info_ptr)
     {
         cppassist::error() << "png_create_info_struct failed";
-        return;
+        goto cleanup;
     }
 
+    // setjmp sets jump point to jump back to upon exception
+    // this allows to find out where the exception occurred, print a corresponding error message, and clean up
     if (setjmp(png_jmpbuf(png_ptr)))
     {
         cppassist::error() << "Error during init_io";
-        return;
+        goto cleanup;
     }
 
     png_init_io(png_ptr, fp);
 
-
-    /* write header */
     if (setjmp(png_jmpbuf(png_ptr)))
     {
         cppassist::error() << "Error during writing header";
-        return;
+        goto cleanup;
     }
 
+    // write png header
     png_set_IHDR(png_ptr,
                  info_ptr,
                  width,
@@ -145,18 +150,15 @@ void PngExporter::writeToFile(png_bytepp data, const int colorType, const png_ui
 
     png_write_info(png_ptr, info_ptr);
 
-
-    /* write bytes */
     if (setjmp(png_jmpbuf(png_ptr)))
     {
         cppassist::error() << "Error during writing bytes";
         return;
     }
 
+    // write png data
     png_write_image(png_ptr, (png_bytepp) data);
 
-
-    /* end write */
     if (setjmp(png_jmpbuf(png_ptr)))
     {
         cppassist::error() << "Error during writing bytes";
@@ -165,12 +167,13 @@ void PngExporter::writeToFile(png_bytepp data, const int colorType, const png_ui
 
     png_write_end(png_ptr, nullptr);
 
-    /* cleanup heap allocation */
+    cleanup:
+
+    if (fp) fclose(fp);
+    if (info_ptr) png_free_data(png_ptr, info_ptr, PNG_FREE_ALL, -1);
+    if (png_ptr) png_destroy_write_struct(&png_ptr, (png_infopp) nullptr);
+
     for (size_t y = 0; y < height; ++y)
         free(data[y]);
     free(data);
-
-    fclose(fp);
-
-    png_destroy_write_struct(&png_ptr, &info_ptr);
 }
