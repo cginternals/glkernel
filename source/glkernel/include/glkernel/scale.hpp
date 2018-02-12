@@ -55,7 +55,7 @@ T range_operator<T>::operator()(const T element)
     return element * m_factor + m_summand;
 }
 
-template <typename T, typename std::enable_if<std::is_floating_point<T>::value>::type * = nullptr>
+template <typename T, typename std::enable_if<std::is_floating_point<T>::value>::type *>
 void range(tkernel<T> & kernel, T rangeToLower, T rangeToUpper, T rangeFromLower, T rangeFromUpper)
 {
     kernel.template for_each_element<range_operator<T>>(rangeToLower, rangeToUpper, rangeFromLower, rangeFromUpper);
