@@ -67,6 +67,17 @@ void normal(tkernel<V1<T1, P>> &, const V2<T2, P> &, const V3<T3, P> &)
 }
 
 
+template <typename T, glm::precision P, template<typename, glm::precision> class V>
+void gradient(tkernel<V<T, P>> &
+    , const GradientNoiseType
+    , const OctaveType
+    , const unsigned int
+    , const unsigned int)
+{
+    FAIL_KERNEL_CELLTYPE_SCALAR(V);
+}
+
+
 } // namespace noise
 
 
@@ -75,6 +86,55 @@ void normal(tkernel<V1<T1, P>> &, const V2<T2, P> &, const V3<T3, P> &)
 namespace sample
 {
 
+
+template <typename T>
+void poisson_square(tkernel<T> &, const unsigned int)
+{
+    FAIL_KERNEL_CELLTYPE_VEC2(T);
+}
+
+template <typename T,
+          glm::precision P, template<typename, glm::precision> class V>
+void poisson_square(tkernel<V<T, P>> &, const unsigned int)
+{
+    CHECK_KERNEL_CELLTYPE_VEC2(V);
+}
+
+
+template <typename T1, typename T2>
+void poisson_square(tkernel<T1> &, const T2, const unsigned int)
+{
+    FAIL_KERNEL_CELLTYPE_VEC2(T1);
+    CHECK_TYPE_EQUALITY(T1, T2);
+}
+
+template <typename T1, typename T2,
+          glm::precision P, template<typename, glm::precision> class V>
+void poisson_square(tkernel<V<T1, P>> &, const T2, const unsigned int)
+{
+    CHECK_KERNEL_CELLTYPE_VEC2(V);
+    CHECK_TYPE_EQUALITY(T1, T2);
+}
+
+
+template <typename T1, typename T2,
+          glm::precision P, template<typename, glm::precision> class V>
+void poisson_square(tkernel<T1> &, const V<T2, P> &, const unsigned int)
+{
+    FAIL_KERNEL_CELLTYPE_VEC2(T1);
+    FAIL_PARAM_TYPE_T(T1, V);
+    CHECK_TYPE_EQUALITY(T1, T2);
+}
+
+template <typename T1, typename T2,
+          glm::precision P,
+          template<typename, glm::precision> class V1, template<typename, glm::precision> class V2>
+void poisson_square(tkernel<V1<T1, P>> &, const V2<T2, P> &, const unsigned int)
+{
+    CHECK_KERNEL_CELLTYPE_VEC2(V1);
+    FAIL_PARAM_TYPE_T(T1, V2);
+    CHECK_TYPE_EQUALITY(T1, T2);
+}
 
 
 } // namespace sample

@@ -8,10 +8,6 @@
 namespace glkernel
 {
 
-namespace noise
-{
-
-
 
 
 template<typename... T>
@@ -62,6 +58,10 @@ constexpr bool isCelltype() { return is_celltype<V<T, P>>::value; }
 
 
 
+template< typename T >
+struct always_false : std::false_type {};
+
+
 template<typename T>
 struct is_templateTemplate : std::false_type {};
 
@@ -74,9 +74,13 @@ constexpr bool isTemplateTemplate() { return is_templateTemplate<V<T...>>::value
 template<typename... T, template<typename...> class V>
 constexpr bool isPureTemplate() { return !is_templateTemplate<V<T...>>::value; }
 
+template<typename T>
+constexpr bool isTemplateTemplate() { return is_templateTemplate<T>::value; }
+
+template<typename T>
+constexpr bool isPureTemplate() { return !is_templateTemplate<T>::value; }
 
 
 
-} // testEnv
 
 } // glkernel
