@@ -115,6 +115,7 @@ int main(int argc, char* argv[])
 
     if (program.selectedAction() && !program.hasErrors())
     {
+        // TODO replace "if (! precondition) return" pattern with assertions
         const auto & inputFile = paramInputFile.value();
         const auto & inputFormat = extractInputFormat(inputFile);
         if (inputFormat.empty())
@@ -168,10 +169,16 @@ int main(int argc, char* argv[])
                 auto kernelExporter = PngExporter{kernelVariant, outputFile};
                 kernelExporter.exportKernel();
             }
-            else // json
+            else if (outputFormat == "json")
             {
                 auto kernelExporter = JsonExporter{kernelVariant, outputFile, swBeautify.activated()};
                 kernelExporter.exportKernel();
+            }
+            else
+            {
+                cppassist::error() << "Invalid output format '" << outputFormat
+                                   << "'. Output format must be png or json.";
+                return 1;
             }
         }
 
