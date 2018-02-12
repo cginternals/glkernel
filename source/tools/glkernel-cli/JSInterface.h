@@ -1,4 +1,7 @@
 
+// THIS IS A GENERATED FILE!
+// DO NOT EDIT
+
 #include <cppexpose/reflection/Object.h>
 
 #include <glkernel/Kernel.h>

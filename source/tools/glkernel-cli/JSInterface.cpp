@@ -1,4 +1,7 @@
 
+// THIS IS A GENERATED FILE!
+// DO NOT EDIT
+
 #include "JSInterface.h"
 
 #include "KernelObject.h"

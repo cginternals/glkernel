@@ -1,4 +1,7 @@
 
+// THIS IS A GENERATED FILE!
+// DO NOT EDIT
+
 GradientNoiseType = {
     Perlin: 0,
     Simplex: 1
