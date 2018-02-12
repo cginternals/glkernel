@@ -23,6 +23,7 @@ set(headers
     AbstractKernelExporter.h
     JsonExporter.h
     KernelGenerator.h
+    JsonImporter.h
     PngExporter.h
     helper.h
     )
@@ -31,6 +32,7 @@ set(sources
     main.cpp
     JsonExporter.cpp
     KernelGenerator.cpp
+    JsonImporter.cpp
     PngExporter.cpp
     )
 

@@ -15,6 +15,8 @@
 
 #include "KernelGenerator.h"
 #include "AbstractKernelExporter.h"
+
+#include "JsonImporter.h"
 #include "JsonExporter.h"
 #include "PngExporter.h"
 
@@ -154,6 +156,12 @@ int main(int argc, char* argv[])
             // Convert kernel to other representation
             cppassist::info() << "Converting kernel \"" << inputFile << "\" to output file \"" << outputFile
                               << "\" (format: " << outputFormat << ")";
+            auto importer = JsonImporter{inputFile};
+            auto kernelVariant = importer.getKernel();
+
+            // TODO: add support for png
+            auto kernelExporter = JsonExporter{kernelVariant, outputFile, swBeautify.activated()};
+            kernelExporter.exportKernel();
         }
         else
         {

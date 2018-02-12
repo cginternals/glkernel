@@ -1,3 +1,5 @@
+#pragma once
+
 #include "AbstractKernelExporter.h"
 
 #include <png.h>
