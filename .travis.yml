@@ -24,7 +24,7 @@ matrix:
     compiler: gcc
 
 before_install:
-  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get install -qq cmake libglm-dev cppcheck clang-tidy-3.8; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get install -qq cmake libglm-dev cppcheck clang-tidy-3.8 libomp-dev; fi
   - if [ $TRAVIS_OS_NAME == osx ]; then brew update && brew install glm cppcheck; fi
 
 before_script:
