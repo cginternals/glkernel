@@ -53,6 +53,7 @@ void PngExporter::exportKernel() {
 
 
 // TODO support 3D kernels with depth
+// https://github.com/p-otto/glkernel/issues/44
 template <typename T>
 png_bytepp PngExporter::toPng(const glkernel::tkernel<T> & kernel, const int channels)
 {
@@ -60,8 +61,9 @@ png_bytepp PngExporter::toPng(const glkernel::tkernel<T> & kernel, const int cha
     const auto min = minmax.first;
     const auto max = minmax.second;
 
-    // TODO log scaling factor, error rate, variance, stddeviation
-    cppassist::info() << "Scaling range of [" << min << ", " << max << "] to range [0, 1]";
+    // TODO calculate scaling factor, error rate, variance, stddeviation
+    // https://github.com/p-otto/glkernel/issues/47
+    cppassist::info() << "Scaling floating point range [" << min << ", " << max << "] to integer range [0, 65536]";
 
 
     // memory for all rows:
