@@ -100,7 +100,6 @@ KernelJsonImporter::KernelJsonImporter(const std::string& inputFileName)
     size_t numCells = 0;
     int numComponents = -1;
 
-    // TODO: assert that all cells have same number of components
     forEachCell(depthArray, [&numCells, &numComponents](const cppexpose::Variant& elementVariant) {
         if (elementVariant.isFloatingPoint())
         {
