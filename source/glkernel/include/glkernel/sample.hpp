@@ -421,7 +421,7 @@ glm::tvec3<T, P> hemisphere_sample_uniform(const T u, const T v)
     const T phi = v * 2 * glm::pi<T>();
     const T cosTheta = 1 - u;
     const T sinTheta = sqrt(1 - cosTheta * cosTheta);
-    return { cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta };
+    return glm::tvec3<T, P>{ cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta };
 }
 
 template <typename T, glm::precision P>
