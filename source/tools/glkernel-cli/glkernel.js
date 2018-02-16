@@ -7,17 +7,17 @@ GradientNoiseType = {
     Simplex: 1
 };
 
+HemisphereMapping = {
+    Uniform: 0,
+    Cosine: 1
+};
+
 OctaveType = {
     Standard: 0,
     Cloud: 1,
     CloudAbs: 2,
     Wood: 3,
     Paper: 4
-};
-
-HemisphereMapping = {
-    Uniform: 0,
-    Cosine: 1
 };
 
 var _Kernel = function(x,y,z) {

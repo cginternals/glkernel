@@ -1,4 +1,6 @@
-from pathlib import Path
+
+import posixpath # instead of os.path, to always use forward slashes
+import os
 import re
 
 # TODOs:
@@ -52,7 +54,7 @@ def getNamespaces(code):
         nsEnd = findPairedBrace(code[nsStart:]) + nsStart # index of closing brace
 
         subNamespaces = getNamespaces(code[nsStart:nsEnd])
-        namespaces[range(nsStart,nsEnd)] = (match["name"] or "<unnamed>", subNamespaces)
+        namespaces[(nsStart,nsEnd)] = (match.group("name") or "<unnamed>", subNamespaces)
 
         # remember end for skipping inner namespaces
         lastEnd = nsEnd
@@ -61,8 +63,8 @@ def getNamespaces(code):
 
 def namespaceAtPosition(namespaces, pos):
     for span in namespaces:
-        if pos in span:
-            innerNS = namespaceAtPosition(namespaces[span][1], pos - span.start)
+        if pos in range(*span):
+            innerNS = namespaceAtPosition(namespaces[span][1], pos - span[0])
 
             return namespaces[span][0] + ("::" + innerNS if innerNS else "")
 
@@ -110,12 +112,12 @@ def possibleTypes(argType, templateList):
 
     genVecMatch = re.match("(\w+)\s*<\s*\w+\s*,\s*\w+\s*>", argType) # general glm vector, e.g. 'V<T, P>'
     if genVecMatch:
-        if re.search("template\s*<\s*(?:typename|class)\s*,\s*glm::precision\s*>\s*(?:typename|class)\s*" + genVecMatch[1], templateList):
+        if re.search("template\s*<\s*(?:typename|class)\s*,\s*glm::precision\s*>\s*(?:typename|class)\s*" + genVecMatch.group(1), templateList):
             return {"vec2", "vec3", "vec4"}
 
     specVecMatch = re.match("glm::tvec(\d)<.*?>", argType) # specific glm vector, e.g. 'glm::tcev4<T, P>'
     if specVecMatch:
-        return {"vec"+specVecMatch[1]}
+        return {"vec"+specVecMatch.group(1)}
 
     return {argType}
 
@@ -216,7 +218,7 @@ def buildJSNamespaces(funcs, enums):
 
     nsCodes = []
 
-    for ns, codes in namespaces.items():
+    for ns, codes in sorted(namespaces.items()):
         name = ns[len("glkernel::"):]
 
         functionsCode = ",\n".join(codes)
@@ -228,7 +230,7 @@ def buildJSNamespaces(funcs, enums):
 
 def buildJSEnums(enums):
     enumCodes = []
-    for enum in enums:
+    for enum in sorted(enums, key=lambda e: e["name"]):
         valueLines = []
         for name, value in enum["values"]:
             valueLines.append("    " + name + ": " + str(value))
@@ -274,11 +276,11 @@ def buildCPPFunctionForwardDecls(funcs, enums):
     return '\n'.join([buildCPPFunctionForwardDecl(func, enums) for func in funcs])
 
 def buildCPPIncludes(fileNames):
-    includeDir = Path(fileNames[0])
-    while includeDir.name != 'include':
-        includeDir = includeDir.parent
+    includeDir = posixpath.dirname(posixpath.abspath(fileNames[0]))
+    while posixpath.split(includeDir)[1] != 'include':
+        includeDir = posixpath.dirname(includeDir)
 
-    includeFiles = [str(Path(f).relative_to(includeDir).as_posix()) for f in fileNames]
+    includeFiles = [posixpath.relpath(f[3:], includeDir) for f in fileNames]
     return '\n'.join(['#include <' + name + '>' for name in includeFiles])
 
 def buildCPPImplementation(func, enums):
@@ -326,7 +328,7 @@ def buildCPPImplementation(func, enums):
 
     # Build code for different kernel types
     kernelCases = []
-    for kernelType, cases in casesByKernelType.items():
+    for kernelType, cases in sorted(casesByKernelType.items()):
         kernelDim = 1 if kernelType == "float" else int(kernelType[-1])
         firstLine = "    if (auto kernelObj = dynamic_cast<Kernel" + str(kernelDim) + "Object*>(obj))"
         neededVariantChecks = False
@@ -430,8 +432,8 @@ def dedupeFuncs(funcs):
 # main
 
 def main(args):
-    glkernelIncludeDir = Path("../source/glkernel/include/glkernel")
-    sourceFiles = [str(p) for p in glkernelIncludeDir.glob("*.h") if p.name not in ["Kernel.h", "glm_compatability.h"]]
+    glkernelIncludeDir = "../source/glkernel/include/glkernel"
+    sourceFiles = [posixpath.join(glkernelIncludeDir, p) for p in os.listdir(glkernelIncludeDir) if p not in ["Kernel.h", "glm_compatability.h"] and p.endswith(".h")]
 
     funcPattern = re.compile(r"^template\s*<(?P<template>.*?)>$\s*^(?P<return>\w+)\s(?P<name>\w+)\(\s*tkernel<(?P<kernelType>.*?)>\s*&\s*\w+\s*(?P<params>(?:,.*?)*)\);$", re.M | re.S)
     enumPattern = re.compile(r"^enum(?:\s+class)?\s+(?P<name>\w+)\s*(?::.*?\s*)?\{(?P<content>.*?)\};$", re.M | re.S)
@@ -446,18 +448,18 @@ def main(args):
         namespaces = getNamespaces(content)
         functionMatches = [m for m in funcPattern.finditer(content)]
         functions = [{
-                        "name": f["name"],
-                        "kernelType": f["kernelType"],
+                        "name": f.group("name"),
+                        "kernelType": f.group("kernelType"),
                         "namespace": namespaceAtPosition(namespaces, f.start()),
-                        "params": splitParams(f["params"]),
-                        "return": f["return"],
-                        "template": f["template"]
+                        "params": splitParams(f.group("params")),
+                        "return": f.group("return"),
+                        "template": f.group("template")
                     } for f in functionMatches]
 
         enumMatches = [m for m in enumPattern.finditer(content)]
         enums = [{
-                    "name": e["name"],
-                    "values": getEnumValues(e["content"]),
+                    "name": e.group("name"),
+                    "values": getEnumValues(e.group("content")),
                     "namespace": namespaceAtPosition(namespaces, e.start())
                 } for e in enumMatches]
 
