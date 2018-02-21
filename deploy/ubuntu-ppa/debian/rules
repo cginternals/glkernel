@@ -1,0 +1,42 @@
+#!/usr/bin/make -f
+
+BUILDDIR = build
+
+# firstly called by launchpad
+clean:
+	rm -rf $(BUILDDIR)
+
+# secondly called by launchpad
+build: build-arch
+
+build-arch:
+	mkdir $(BUILDDIR)
+	cd $(BUILDDIR);cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DOPTION_BUILD_TESTS=Off -DOPTION_BUILD_EXAMPLES=Off -DOPTION_BUILD_DOCS=On ..
+	make -C $(BUILDDIR)
+
+# thirdly called by launchpad
+binary: binary-arch
+
+binary-arch: libglkernel-dev libglkernel-docs libglkernel-all
+
+libglkernel-dev:
+	cd $(BUILDDIR); DESTDIR=../debian/tmp COMPONENT=dev make component_install
+	mkdir -p debian/tmp/DEBIAN
+	dpkg-gencontrol -plibglkernel-dev
+	dpkg --build debian/tmp ..
+	rm -rf debian/tmp
+
+libglkernel-docs:
+	cd $(BUILDDIR); DESTDIR=../debian/tmp COMPONENT=docs make component_install
+	mkdir -p debian/tmp/DEBIAN
+	dpkg-gencontrol -plibglkernel-docs
+	dpkg --build debian/tmp ..
+	rm -rf debian/tmp
+
+libglkernel-all:
+	mkdir -p debian/tmp/DEBIAN
+	dpkg-gencontrol -plibglkernel-all
+	dpkg --build debian/tmp ..
+	rm -rf debian/tmp
+
+.PHONY: build build-arch binary binary-arch clean libglkernel-dev libglkernel-docs libglkernel-all

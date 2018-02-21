@@ -1,0 +1,23 @@
+Source: libglkernel
+Section: misc
+Priority: optional
+Maintainer: Willy Scheibel <willy.scheibel@cginternals.com>
+Build-Depends: build-essential, cmake, libglm-dev, doxygen, graphviz
+Standards-Version: 3.8.0
+
+Package: libglkernel-dev
+Architecture: any
+Depends: libglm-dev
+Homepage: https://github.com/cginternals/glkernel
+Description: C++ library for pre-computing noise, and random sample-kernels.
+
+Package: libglkernel-docs
+Architecture: any
+Homepage: https://github.com/cginternals/glkernel
+Description: C++ library for pre-computing noise, and random sample-kernels.
+
+Package: libglkernel-all
+Architecture: any
+Depends: libglkernel-dev, libglkernel-docs
+Homepage: https://github.com/cginternals/glkernel
+Description: C++ library for pre-computing noise, and random sample-kernels.
