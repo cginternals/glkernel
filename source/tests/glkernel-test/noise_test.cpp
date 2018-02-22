@@ -58,9 +58,9 @@ TEST_F(noise_test, uniform_compile)
     glkernel::noise::uniform(fkernel3, 0.f, 1.f);
     glkernel::noise::uniform(fkernel4, 0.f, 1.f);
 
-    glkernel::noise::uniform(fkernel2, glm::vec2{ 0.f }, glm::vec2{ 1.f });
-    glkernel::noise::uniform(fkernel3, glm::vec3{ 0.f }, glm::vec3{ 1.f });
-    glkernel::noise::uniform(fkernel4, glm::vec4{ 0.f }, glm::vec4{ 1.f });
+    glkernel::noise::uniform(fkernel2, glm::vec2( 0.f ), glm::vec2( 1.f ));
+    glkernel::noise::uniform(fkernel3, glm::vec3( 0.f ), glm::vec3( 1.f ));
+    glkernel::noise::uniform(fkernel4, glm::vec4( 0.f ), glm::vec4( 1.f ));
 
     auto dkernel1 = glkernel::dkernel1{ 1 };
     auto dkernel2 = glkernel::dkernel2{ 1 };
@@ -72,9 +72,9 @@ TEST_F(noise_test, uniform_compile)
     glkernel::noise::uniform(dkernel3, 0.0, 1.0);
     glkernel::noise::uniform(dkernel4, 0.0, 1.0);
 
-    glkernel::noise::uniform(dkernel2, glm::dvec2{ 0.0 }, glm::dvec2{ 1.0 });
-    glkernel::noise::uniform(dkernel3, glm::dvec3{ 0.0 }, glm::dvec3{ 1.0 });
-    glkernel::noise::uniform(dkernel4, glm::dvec4{ 0.0 }, glm::dvec4{ 1.0 });
+    glkernel::noise::uniform(dkernel2, glm::dvec2( 0.0 ), glm::dvec2( 1.0 ));
+    glkernel::noise::uniform(dkernel3, glm::dvec3( 0.0 ), glm::dvec3( 1.0 ));
+    glkernel::noise::uniform(dkernel4, glm::dvec4( 0.0 ), glm::dvec4( 1.0 ));
 }
 
 TEST_F(noise_test, gradient_compile)
