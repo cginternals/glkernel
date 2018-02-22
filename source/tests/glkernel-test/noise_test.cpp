@@ -23,8 +23,8 @@ TEST_F(noise_test, normal_compile)
     auto fkernel4 = glkernel::kernel4{ 1 };
 
     glkernel::noise::normal(fkernel1, 0.f, 1.f);
-    glkernel::noise::normal(fkernel2, 0.f, 1.f);
     glkernel::noise::normal(fkernel3, 0.f, 1.f);
+    glkernel::noise::normal(fkernel2, 0.f, 1.f);
     glkernel::noise::normal(fkernel4, 0.f, 1.f);
 
     glkernel::noise::normal(fkernel2, glm::vec2{ 0.f }, glm::vec2{ 1.f });
