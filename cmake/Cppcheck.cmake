@@ -8,9 +8,7 @@ function(perform_cppcheck check_target target)
         COMMAND
             ${cppcheck_EXECUTABLE}
                 "$<$<BOOL:${includes}>:-I$<JOIN:${includes},\t-I>>"
-                --check-config
-                --enable=warning,performance,portability,information,missingInclude
-                --quiet
+                --enable=all
                 --std=c++11
                 --verbose
                 --suppress=missingIncludeSystem
