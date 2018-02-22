@@ -28,45 +28,6 @@ void forEachCell(cppexpose::VariantArray * depthArray, std::function<void(const 
     }
 }
 
-// TODO: this is duplicated in the generated code, remove this duplication
-float variantToFloat(const cppexpose::Variant & v)
-{
-    return v.value<float>();
-}
-
-glm::vec2 variantToVec2(const cppexpose::Variant & v)
-{
-    const auto arr = v.asArray();
-
-    const auto x = variantToFloat(arr->at(0));
-    const auto y = variantToFloat(arr->at(1));
-
-    return glm::vec2(x,y);
-}
-
-glm::vec3 variantToVec3(const cppexpose::Variant & v)
-{
-    const auto arr = v.asArray();
-
-    const auto x = variantToFloat(arr->at(0));
-    const auto y = variantToFloat(arr->at(1));
-    const auto z = variantToFloat(arr->at(2));
-
-    return glm::vec3(x,y,z);
-}
-
-glm::vec4 variantToVec4(const cppexpose::Variant & v)
-{
-    const auto arr = v.asArray();
-
-    const auto x = variantToFloat(arr->at(0));
-    const auto y = variantToFloat(arr->at(1));
-    const auto z = variantToFloat(arr->at(2));
-    const auto w = variantToFloat(arr->at(3));
-
-    return glm::vec4(x,y,z,w);
-}
-
 JsonImporter::JsonImporter(const std::string& inputFileName)
 {
     cppexpose::Variant root;
