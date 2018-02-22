@@ -4,6 +4,35 @@
 
 #include <cppassist/logging/logging.h>
 
+/*
+ * bit depth 16: we need 2 bytes per cell value
+ */
+void writeData(float cellValue, png_bytep outputRow, int x)
+{
+  png_save_uint_16(outputRow + 2 * x, static_cast<uint16_t>(cellValue));
+}
+
+void writeData(glm::vec2 cellValue, png_bytep outputRow, int x)
+{
+  png_save_uint_16(outputRow + 4 * x, static_cast<uint16_t>(cellValue.x));
+  png_save_uint_16(outputRow + 4 * x + 2, static_cast<uint16_t>(cellValue.y));
+}
+
+void writeData(glm::vec3 cellValue, png_bytep outputRow, int x)
+{
+  png_save_uint_16(outputRow + 6 * x, static_cast<uint16_t>(cellValue.x));
+  png_save_uint_16(outputRow + 6 * x + 2, static_cast<uint16_t>(cellValue.y));
+  png_save_uint_16(outputRow + 6 * x + 4, static_cast<uint16_t>(cellValue.z));
+}
+
+void writeData(glm::vec4 cellValue, png_bytep outputRow, int x)
+{
+  png_save_uint_16(outputRow + 8 * x, static_cast<uint16_t>(cellValue.x));
+  png_save_uint_16(outputRow + 8 * x + 2, static_cast<uint16_t>(cellValue.y));
+  png_save_uint_16(outputRow + 8 * x + 4, static_cast<uint16_t>(cellValue.z));
+  png_save_uint_16(outputRow + 8 * x + 6, static_cast<uint16_t>(cellValue.w));
+}
+
 void PngExporter::exportKernel() {
     png_bytepp pngData;
     int colorType;
@@ -83,7 +112,7 @@ png_bytepp PngExporter::toPng(const glkernel::tkernel<T> & kernel, const int cha
             auto scaledValue = normalizedValue * static_cast<float>(std::numeric_limits<uint16_t>::max());
             auto roundedValue = glm::round(scaledValue);
 
-            writeData<T>(roundedValue, rows[y], x);
+            writeData(roundedValue, rows[y], x);
         }
     }
 
