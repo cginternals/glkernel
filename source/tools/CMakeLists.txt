@@ -5,4 +5,3 @@ if(NOT OPTION_BUILD_TOOLS)
 endif()
 
 # Example applications
-add_subdirectory(glkernel-cmd)
