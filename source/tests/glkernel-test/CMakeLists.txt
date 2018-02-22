@@ -4,8 +4,9 @@
 # 
 
 find_package(${META_PROJECT_NAME} REQUIRED HINTS "${CMAKE_CURRENT_SOURCE_DIR}/../../../")
-find_package(GLM 0.9.6 REQUIRED)
-find_package(OpenMP)
+
+find_package(glm REQUIRED)
+find_package(OpenMP QUIET)
 
 # 
 # Executable name and options
