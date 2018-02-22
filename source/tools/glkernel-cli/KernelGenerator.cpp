@@ -19,7 +19,7 @@
 
 KernelGenerator::KernelGenerator(const std::string& inputFileName)
 {
-    auto apiStream = std::ifstream{"glkernel.js"};
+    auto apiStream = std::ifstream{"data/glkernel.js"};
     throwIfNot(apiStream.is_open(), "glkernel.js could not found.");
 
     auto scriptStream = std::ifstream{inputFileName};
