@@ -18,8 +18,8 @@ class noise_test: public testing::Test
 TEST_F(noise_test, normal_compile)
 {
     auto fkernel1 = glkernel::kernel1{ 1 };
-    // auto fkernel2 = glkernel::kernel2{ 1 };
     auto fkernel3 = glkernel::kernel3{ 1 };
+    auto fkernel2 = glkernel::kernel2{ 1 };
     auto fkernel4 = glkernel::kernel4{ 1 };
 
     glkernel::noise::normal(fkernel1, 0.f, 1.f);
