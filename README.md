@@ -39,7 +39,7 @@ ToDo
 The glkernel-cli tool provides a convenient way to generate and manipulate kernels using the command line.  
 The usage is as follows:
 
-```sh
+```
 glkernel-cli [--force] [--beautify] [--output <outputFileName>] [--format <outputFileFormat>] <inputFileName>
 
 Options:
@@ -59,12 +59,12 @@ Options:
 Kernels can be generated from JavaScript by simply passing a `.js` file as input to the command line tool.
 Examples:
 
-```sh
-glkernel-cli kernel.js
+```
+$ glkernel-cli kernel.js
 
-glkernel-cli kernel.js -o random_noise_kernel.json --force --beautify
+$ glkernel-cli kernel.js -o random_noise_kernel.json --force --beautify
 
-glkernel-cli kernel.js -o sorted_kernel -f png
+$ glkernel-cli kernel.js -o sorted_kernel -f png
 ```
 
 A JavaScript interface (`JSInterface.h`, `JSInterface.cpp`, `glkernel.js`) allows calling glkernel functionality from user scripts.
@@ -102,10 +102,10 @@ After generating a kernel in JSON format, that kernel can be read by the tool to
 This is achieved by simply passing a `.json` file as input to the command line tool.
 Examples:
 
-```sh
-glkernel-cli kernel.json
+```
+$ glkernel-cli kernel.json
 
-glkernel-cli kernel.json -o sorted_kernel -f png --force
+$ glkernel-cli kernel.json -o sorted_kernel -f png --force
 ```
 
 If no output file or format is given, the default output format is PNG.
@@ -114,16 +114,16 @@ If no output file or format is given, the default output format is PNG.
 
 The JavaScript interface files can simply be re-generated using the CMake `generate` target, either from your IDE, or from the project's root folder using the following CMake command:
 
-```sh
-cmake --build ./build --target generate
+```
+$ cmake --build ./build --target generate
 ```
 
 This requires Python 2 or 3 to be installed on the system.
 Alternatively, the Python script can be executed manually (also from the root folder):
 
-TODO: update this if the destination of JS and C++ files are different
-```sh
-python scripts/generate.py -t scripts/templates -d source/tools/glkernel-cli
+__TODO__: update this if the destination of JS and C++ files are different
+```
+$ python scripts/generate.py -t scripts/templates -d source/tools/glkernel-cli
 ```
 
 ##### glkernel-cmd
