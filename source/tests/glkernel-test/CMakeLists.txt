@@ -19,7 +19,11 @@ if (NOT OPENMP_FOUND AND NOT OpenMP_FOUND)
     message("Loop parallelization in ${target} skipped: OpenMP not found")
     set(OpenMP_SUPPORTED FALSE)
 else()
-    set(OpenMP_SUPPORTED TRUE)
+    if(USE_OPENMP)
+        set(OpenMP_SUPPORTED TRUE)
+    else()
+        set(OpenMP_SUPPORTED FALSE)
+    endif()
 endif()
 
 

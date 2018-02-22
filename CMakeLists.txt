@@ -66,6 +66,7 @@ option(OPTION_BUILD_TESTS    "Build tests."                                     
 option(OPTION_BUILD_DOCS     "Build documentation."                                   OFF)
 option(OPTION_BUILD_EXAMPLES "Build examples."                                        OFF)
 option(OPTION_BUILD_TOOLS    "Build tools."                                           OFF)
+option(OPTION_USE_OMP        "Whether or not to compile against OMP"                  ON)
 
 
 # 
