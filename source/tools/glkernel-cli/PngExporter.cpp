@@ -5,37 +5,27 @@
 #include <cppassist/logging/logging.h>
 
 /*
- * write cell value to png
- */
-template <typename T>
-inline void writeData(T cellValue, png_bytep outputRow, int x);
-
-/*
  * bit depth 16: we need 2 bytes per cell value
  */
-template <>
-inline void writeData(float cellValue, png_bytep outputRow, int x)
+void writeData(float cellValue, png_bytep outputRow, int x)
 {
   png_save_uint_16(outputRow + 2 * x, static_cast<uint16_t>(cellValue));
 }
 
-template <>
-inline void writeData(glm::vec2 cellValue, png_bytep outputRow, int x)
+void writeData(glm::vec2 cellValue, png_bytep outputRow, int x)
 {
   png_save_uint_16(outputRow + 4 * x, static_cast<uint16_t>(cellValue.x));
   png_save_uint_16(outputRow + 4 * x + 2, static_cast<uint16_t>(cellValue.y));
 }
 
-template <>
-inline void writeData(glm::vec3 cellValue, png_bytep outputRow, int x)
+void writeData(glm::vec3 cellValue, png_bytep outputRow, int x)
 {
   png_save_uint_16(outputRow + 6 * x, static_cast<uint16_t>(cellValue.x));
   png_save_uint_16(outputRow + 6 * x + 2, static_cast<uint16_t>(cellValue.y));
   png_save_uint_16(outputRow + 6 * x + 4, static_cast<uint16_t>(cellValue.z));
 }
 
-template <>
-inline void writeData(glm::vec4 cellValue, png_bytep outputRow, int x)
+void writeData(glm::vec4 cellValue, png_bytep outputRow, int x)
 {
   png_save_uint_16(outputRow + 8 * x, static_cast<uint16_t>(cellValue.x));
   png_save_uint_16(outputRow + 8 * x + 2, static_cast<uint16_t>(cellValue.y));
@@ -122,7 +112,7 @@ png_bytepp PngExporter::toPng(const glkernel::tkernel<T> & kernel, const int cha
             auto scaledValue = normalizedValue * static_cast<float>(std::numeric_limits<uint16_t>::max());
             auto roundedValue = glm::round(scaledValue);
 
-            writeData<T>(roundedValue, rows[y], x);
+            writeData(roundedValue, rows[y], x);
         }
     }
 
