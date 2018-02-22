@@ -56,7 +56,7 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, T min_dist, unsigned i
 *    of strata. Note: the value type should match the kernels extent,
 *    e.g., a vec2 kernel should not be used for a kernel of 3d extent.
 */
-template <typename T>
+template <typename T, typename std::enable_if<std::is_floating_point<T>::value>::type * = nullptr>
 void stratified(tkernel<T> & kernel);
 
 template <typename T, glm::precision P>
@@ -184,7 +184,6 @@ void n_rooks(tkernel<glm::tvec2<T, P>> & kernel);
 template <typename T, glm::precision P>
 void multi_jittered(tkernel<glm::tvec2<T, P>> & kernel, const bool correlated = false);
 
-//@}
 /**
 *  @brief
 *  Generates a golden point set as described in "Golden Ratio Sequences For Low-Discrepancy Sampling"

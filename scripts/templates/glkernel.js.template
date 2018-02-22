@@ -1,0 +1,48 @@
+
+// THIS IS A GENERATED FILE!
+// DO NOT EDIT
+
+{enums}
+
+var _Kernel = function(x,y,z) {{
+    this._initialize = function(x,y,z) {{
+        var that = this;
+
+        this.kernel = this.generateKernel(x,y,z);
+
+{functions}
+    }};
+}};
+
+var Kernel1 = function(x,y,z) {{
+    this.generateKernel = function(x,y,z) {{
+        return _glkernel.createKernel1(x,y,z);
+    }}
+    this._initialize(x,y,z);
+}};
+
+var Kernel2 = function(x,y,z) {{
+    this.generateKernel = function(x,y,z) {{
+        return _glkernel.createKernel2(x,y,z);
+    }}
+    this._initialize(x,y,z);
+}};
+
+var Kernel3 = function(x,y,z) {{
+    this.generateKernel = function(x,y,z) {{
+        return _glkernel.createKernel3(x,y,z);
+    }}
+    this._initialize(x,y,z);
+}};
+
+var Kernel4 = function(x,y,z) {{
+    this.generateKernel = function(x,y,z) {{
+        return _glkernel.createKernel4(x,y,z);
+    }}
+    this._initialize(x,y,z);
+}};
+
+Kernel1.prototype = new _Kernel;
+Kernel2.prototype = new _Kernel;
+Kernel3.prototype = new _Kernel;
+Kernel4.prototype = new _Kernel;

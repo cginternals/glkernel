@@ -354,7 +354,7 @@ T stratified_operator<T>::operator()(const glm::u16vec3 & position)
     return position[m_coefficient] * m_extent_inverse + m_distribute(m_generator);
 }
 
-template <typename T>
+template <typename T, typename std::enable_if<std::is_floating_point<T>::value>::type *>
 void stratified(tkernel<T> & kernel)
 {
     // the kernels dimensionality should match its value type,
