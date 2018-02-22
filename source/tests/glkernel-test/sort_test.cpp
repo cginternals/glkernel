@@ -16,7 +16,7 @@ public:
 TEST_F(sort_test, distance_compile)
 {
     auto fkernel2 = glkernel::kernel2{ 8, 8, 8 };
-    glkernel::sort::distance(fkernel2, glm::vec2{0, 0});
+    glkernel::sort::distance(fkernel2, glm::vec2(0, 0));
 }
 
 TEST_F(sort_test, distance_sorted)
@@ -26,7 +26,7 @@ TEST_F(sort_test, distance_sorted)
     fkernel2[1] = {1, 1};
     fkernel2[2] = {2, 0};
     fkernel2[3] = {-4, 0};
-    glkernel::sort::distance(fkernel2, {0, 0});
+    glkernel::sort::distance(fkernel2, glm::vec2(0, 0));
 
     EXPECT_FLOAT_EQ(1.f, fkernel2[0][0]);
     EXPECT_FLOAT_EQ(1.f, fkernel2[0][1]);
