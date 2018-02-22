@@ -38,6 +38,7 @@ set(sources
     JSInterface.cpp
     JsonImporter.cpp
     PngExporter.cpp
+    helper.cpp
     )
 
 set(header_group "Header Files (API)")

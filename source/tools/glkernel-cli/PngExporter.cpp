@@ -4,6 +4,45 @@
 
 #include <cppassist/logging/logging.h>
 
+/*
+ * write cell value to png
+ */
+template <typename T>
+inline void writeData(T cellValue, png_bytep outputRow, int x);
+
+/*
+ * bit depth 16: we need 2 bytes per cell value
+ */
+template <>
+inline void writeData(float cellValue, png_bytep outputRow, int x)
+{
+  png_save_uint_16(outputRow + 2 * x, static_cast<uint16_t>(cellValue));
+}
+
+template <>
+inline void writeData(glm::vec2 cellValue, png_bytep outputRow, int x)
+{
+  png_save_uint_16(outputRow + 4 * x, static_cast<uint16_t>(cellValue.x));
+  png_save_uint_16(outputRow + 4 * x + 2, static_cast<uint16_t>(cellValue.y));
+}
+
+template <>
+inline void writeData(glm::vec3 cellValue, png_bytep outputRow, int x)
+{
+  png_save_uint_16(outputRow + 6 * x, static_cast<uint16_t>(cellValue.x));
+  png_save_uint_16(outputRow + 6 * x + 2, static_cast<uint16_t>(cellValue.y));
+  png_save_uint_16(outputRow + 6 * x + 4, static_cast<uint16_t>(cellValue.z));
+}
+
+template <>
+inline void writeData(glm::vec4 cellValue, png_bytep outputRow, int x)
+{
+  png_save_uint_16(outputRow + 8 * x, static_cast<uint16_t>(cellValue.x));
+  png_save_uint_16(outputRow + 8 * x + 2, static_cast<uint16_t>(cellValue.y));
+  png_save_uint_16(outputRow + 8 * x + 4, static_cast<uint16_t>(cellValue.z));
+  png_save_uint_16(outputRow + 8 * x + 6, static_cast<uint16_t>(cellValue.w));
+}
+
 void PngExporter::exportKernel() {
     png_bytepp pngData;
     int colorType;
