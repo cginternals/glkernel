@@ -29,11 +29,11 @@ var _Kernel = function(x,y,z) {
         this.noise = {
             uniform: function(range_min, range_max) {
                 _glkernel.noise_uniform(that.kernel, range_min, range_max);
-                return that;
+                return that.kernel;
             },
             normal: function(mean, stddev) {
                 _glkernel.noise_normal(that.kernel, mean, stddev);
-                return that;
+                return that.kernel;
             },
             gradient: function(noise_type, octave_type, startFrequency, octaves) {
                 // Defaults
@@ -43,7 +43,7 @@ var _Kernel = function(x,y,z) {
                 octaves = (typeof octaves !== 'undefined') ? octaves : 5;
 
                 _glkernel.noise_gradient(that.kernel, noise_type, octave_type, startFrequency, octaves);
-                return that;
+                return that.kernel;
             }
         };
         this.sample = {
@@ -52,62 +52,62 @@ var _Kernel = function(x,y,z) {
                 num_probes = (typeof num_probes !== 'undefined') ? num_probes : 32;
 
                 _glkernel.sample_poisson_square(that.kernel, num_probes);
-                return that;
+                return that.kernel;
             },
             poisson_square: function(min_dist, num_probes) {
                 // Defaults
                 num_probes = (typeof num_probes !== 'undefined') ? num_probes : 32;
 
                 _glkernel.sample_poisson_square1(that.kernel, min_dist, num_probes);
-                return that;
+                return that.kernel;
             },
             stratified: function() {
                 _glkernel.sample_stratified(that.kernel);
-                return that;
+                return that.kernel;
             },
             hammersley: function() {
                 _glkernel.sample_hammersley(that.kernel);
-                return that;
+                return that.kernel;
             },
             halton: function(base1, base2) {
                 _glkernel.sample_halton(that.kernel, base1, base2);
-                return that;
+                return that.kernel;
             },
             hammersley_sphere: function(type) {
                 // Defaults
                 type = (typeof type !== 'undefined') ? type : HemisphereMapping.Uniform;
 
                 _glkernel.sample_hammersley_sphere(that.kernel, type);
-                return that;
+                return that.kernel;
             },
             halton_sphere: function(base1, base2, type) {
                 // Defaults
                 type = (typeof type !== 'undefined') ? type : HemisphereMapping.Uniform;
 
                 _glkernel.sample_halton_sphere(that.kernel, base1, base2, type);
-                return that;
+                return that.kernel;
             },
             best_candidate: function(num_candidates) {
                 // Defaults
                 num_candidates = (typeof num_candidates !== 'undefined') ? num_candidates : 32;
 
                 _glkernel.sample_best_candidate(that.kernel, num_candidates);
-                return that;
+                return that.kernel;
             },
             n_rooks: function() {
                 _glkernel.sample_n_rooks(that.kernel);
-                return that;
+                return that.kernel;
             },
             multi_jittered: function(correlated) {
                 // Defaults
                 correlated = (typeof correlated !== 'undefined') ? correlated : false;
 
                 _glkernel.sample_multi_jittered(that.kernel, correlated);
-                return that;
+                return that.kernel;
             },
             golden_point_set: function() {
                 _glkernel.sample_golden_point_set(that.kernel);
-                return that;
+                return that.kernel;
             }
         };
         this.scale = {
@@ -117,13 +117,13 @@ var _Kernel = function(x,y,z) {
                 rangeFromUpper = (typeof rangeFromUpper !== 'undefined') ? rangeFromUpper : 1;
 
                 _glkernel.scale_range(that.kernel, rangeToLower, rangeToUpper, rangeFromLower, rangeFromUpper);
-                return that;
+                return that.kernel;
             }
         };
         this.sequence = {
             uniform: function(range_min, range_max) {
                 _glkernel.sequence_uniform(that.kernel, range_min, range_max);
-                return that;
+                return that.kernel;
             }
         };
         this.shuffle = {
@@ -135,24 +135,24 @@ var _Kernel = function(x,y,z) {
                 permutate_per_bucket = (typeof permutate_per_bucket !== 'undefined') ? permutate_per_bucket : false;
 
                 _glkernel.shuffle_bucket_permutate(that.kernel, subkernel_width, subkernel_height, subkernel_depth, permutate_per_bucket);
-                return that;
+                return that.kernel;
             },
             bayer: function() {
                 _glkernel.shuffle_bayer(that.kernel);
-                return that;
+                return that.kernel;
             },
             random: function(start) {
                 // Defaults
                 start = (typeof start !== 'undefined') ? start : 1;
 
                 _glkernel.shuffle_random(that.kernel, start);
-                return that;
+                return that.kernel;
             }
         };
         this.sort = {
             distance: function(origin) {
                 _glkernel.sort_distance(that.kernel, origin);
-                return that;
+                return that.kernel;
             }
         };
     };
