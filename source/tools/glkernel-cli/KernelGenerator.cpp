@@ -1,6 +1,7 @@
 #include "KernelGenerator.h"
 #include "KernelObject.h"
 
+#include "helper.h"
 #include "JSInterface.h"
 
 #include <glkernel/Kernel.h>
@@ -19,7 +20,11 @@
 KernelGenerator::KernelGenerator(const std::string& inputFileName)
 {
     auto apiStream = std::ifstream{"glkernel.js"};
+    throwIfNot(apiStream.is_open(), "glkernel.js could not found.");
+
     auto scriptStream = std::ifstream{inputFileName};
+    throwIfNot(scriptStream.is_open(), "Input file " + inputFileName + " could not be found.");
+
     auto combinedStringStream = std::stringstream{};
     combinedStringStream << apiStream.rdbuf() << scriptStream.rdbuf();
     m_scriptCode = combinedStringStream.str();
