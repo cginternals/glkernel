@@ -20,7 +20,7 @@ template <typename T>
 struct distance_comparator
 {
     distance_comparator(const T & origin)
-    : m_origin {origin}
+    : m_origin(origin)
     {
     }
 

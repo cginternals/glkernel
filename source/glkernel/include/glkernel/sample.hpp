@@ -181,7 +181,7 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, const T min_dist, cons
         }
         
         // pick nearest probe from sample set
-        glm::vec2 nearest_probe;
+        glm::tvec2<T, P> nearest_probe;
         auto nearest_dist = 4 * min_dist * min_dist;
         auto nearest_found = false;
 
@@ -421,7 +421,7 @@ glm::tvec3<T, P> hemisphere_sample_uniform(const T u, const T v)
     const T phi = v * 2 * glm::pi<T>();
     const T cosTheta = 1 - u;
     const T sinTheta = sqrt(1 - cosTheta * cosTheta);
-    return { cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta };
+    return glm::tvec3<T, P>{ cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta };
 }
 
 template <typename T, glm::precision P>
@@ -430,7 +430,7 @@ glm::tvec3<T, P> hemisphere_sample_cos(const T u, const T v)
     const T phi = v * 2 * glm::pi<T>();
     const T cosTheta = sqrt(1 - u);
     const T sinTheta = sqrt(1 - cosTheta * cosTheta);
-    return { cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta };
+    return glm::tvec3<T, P>{ cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta };
 }
 
 } // anonymous namespace

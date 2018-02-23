@@ -26,6 +26,7 @@ matrix:
 before_install:
   - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get install -qq cmake libglm-dev cppcheck clang-tidy-3.8; fi
   - if [ $TRAVIS_OS_NAME == osx ]; then brew update && brew install glm cppcheck; fi
+  - if [ ($TRAVIS_OS_NAME == linux) && ($CXX == "clang++") ]; then CMAKE_OPTIONS=$CMAKE_OPTIONS" -DOPTION_USE_OMP=Off"
 
 before_script:
   - ./configure
@@ -35,4 +36,3 @@ before_script:
 script:
   - cmake --build $BUILD_DIR
   - cmake --build $BUILD_DIR --target test
-  - cmake --build $BUILD_DIR --target check-all
