@@ -42,9 +42,13 @@ cppexpose::Variant KernelGenerator::generateKernelFromJavascript()
 
     auto variant = scriptContext.evaluate(m_scriptCode);
 
-    if (variant.hasType<cppexpose::Object*>())
+    if (variant.hasType<cppexpose::VariantMap>())
     {
-        auto kernelObject = variant.value<cppexpose::Object*>();
+        auto kernelWrapper = variant.value<cppexpose::VariantMap>();
+        if (!kernelWrapper.count("kernel"))
+            return variant;
+
+        auto kernelObject = kernelWrapper["kernel"].value<cppexpose::Object*>();
 
         auto kernel1Object = dynamic_cast<Kernel1Object*>(kernelObject);
         if (kernel1Object)

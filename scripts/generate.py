@@ -202,7 +202,7 @@ def jsFunction(func, enums):
 
     jsCode = """{firstLine}{defaultChecks}
 {finalCall}
-                return that.kernel;
+                return that;
             }}""".format(firstLine = firstLine, defaultChecks = defaultChecks, finalCall = finalCall)
 
     return jsCode
