@@ -15,17 +15,17 @@ void throwIfNot(bool condition, const std::string& msg)
 
 std::pair<float, float> findMinMaxElements(const glkernel::tkernel<float> & kernel)
 {
-  const auto minmax = std::minmax_element(kernel.cbegin(), kernel.cend());
-  return std::make_pair(*minmax.first, *minmax.second);
+    const auto minmax = std::minmax_element(kernel.cbegin(), kernel.cend());
+    return std::make_pair(*minmax.first, *minmax.second);
 }
 
 std::pair<float, float> findMinMaxElements(const glkernel::tkernel<glm::vec2> & kernel)
 {
-  float min = std::numeric_limits<float>::max();
-  float max = std::numeric_limits<float>::min();
-  const auto end = kernel.cend();
-  for (auto it = kernel.cbegin(); it != end; ++it)
-  {
+    float min = std::numeric_limits<float>::max();
+    float max = std::numeric_limits<float>::min();
+    const auto end = kernel.cend();
+    for (auto it = kernel.cbegin(); it != end; ++it)
+    {
     const auto x = it->x;
     const auto y = it->y;
 
@@ -34,18 +34,18 @@ std::pair<float, float> findMinMaxElements(const glkernel::tkernel<glm::vec2> & 
 
     max = x > max ? x : max;
     max = y > max ? y : max;
-  }
+    }
 
-  return std::make_pair(min, max);
+    return std::make_pair(min, max);
 }
 
 std::pair<float, float> findMinMaxElements(const glkernel::tkernel<glm::vec3> & kernel)
 {
-  float min = std::numeric_limits<float>::max();
-  float max = std::numeric_limits<float>::min();
-  const auto end = kernel.cend();
-  for (auto it = kernel.cbegin(); it != end; ++it)
-  {
+    float min = std::numeric_limits<float>::max();
+    float max = std::numeric_limits<float>::min();
+    const auto end = kernel.cend();
+    for (auto it = kernel.cbegin(); it != end; ++it)
+    {
     const auto x = it->x;
     const auto y = it->y;
     const auto z = it->z;
@@ -57,18 +57,18 @@ std::pair<float, float> findMinMaxElements(const glkernel::tkernel<glm::vec3> & 
     max = x > max ? x : max;
     max = y > max ? y : max;
     max = z > max ? z : max;
-  }
+    }
 
-  return std::make_pair(min, max);
+    return std::make_pair(min, max);
 }
 
 std::pair<float, float> findMinMaxElements(const glkernel::tkernel<glm::vec4> & kernel)
 {
-  float min = std::numeric_limits<float>::max();
-  float max = std::numeric_limits<float>::min();
-  const auto end = kernel.cend();
-  for (auto it = kernel.cbegin(); it != end; ++it)
-  {
+    float min = std::numeric_limits<float>::max();
+    float max = std::numeric_limits<float>::min();
+    const auto end = kernel.cend();
+    for (auto it = kernel.cbegin(); it != end; ++it)
+    {
     const auto x = it->x;
     const auto y = it->y;
     const auto z = it->z;
@@ -83,16 +83,18 @@ std::pair<float, float> findMinMaxElements(const glkernel::tkernel<glm::vec4> & 
     max = y > max ? y : max;
     max = z > max ? z : max;
     max = w > max ? z : max;
-  }
+    }
 
-  return std::make_pair(min, max);
+    return std::make_pair(min, max);
 }
 
-bool canBeFloat(const cppexpose::Variant & v) {
+bool canBeFloat(const cppexpose::Variant & v)
+{
     return v.canConvert<float>();
 }
 
-bool canBeVec2(const cppexpose::Variant & v) {
+bool canBeVec2(const cppexpose::Variant & v)
+{
     const auto arr = v.asArray();
 
     if (!arr)
@@ -104,7 +106,8 @@ bool canBeVec2(const cppexpose::Variant & v) {
     return canBeFloat(arr->at(0)) && canBeFloat(arr->at(1));
 }
 
-bool canBeVec3(const cppexpose::Variant & v) {
+bool canBeVec3(const cppexpose::Variant & v)
+{
     const auto arr = v.asArray();
 
     if (!arr)
@@ -116,7 +119,8 @@ bool canBeVec3(const cppexpose::Variant & v) {
     return canBeFloat(arr->at(0)) && canBeFloat(arr->at(1)) && canBeFloat(arr->at(2));
 }
 
-bool canBeVec4(const cppexpose::Variant & v) {
+bool canBeVec4(const cppexpose::Variant & v)
+{
     const auto arr = v.asArray();
 
     if (!arr)
