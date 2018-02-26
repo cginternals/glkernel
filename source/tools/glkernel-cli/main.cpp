@@ -13,6 +13,8 @@
 #include <cppassist/cmdline/CommandLineParameter.h>
 #include <cppassist/cmdline/CommandLineSwitch.h>
 
+#include <cppassist/fs/FilePath.h>
+
 #include "KernelGenerator.h"
 #include "AbstractKernelExporter.h"
 
@@ -21,21 +23,22 @@
 #include "PngExporter.h"
 
 
-std::string extractInputFormat(const std::string & inFileName) {
-    if (inFileName.find('.') == std::string::npos)
+std::string extractInputFormat(const std::string & inFileName)
+{
+    const auto inFileExtension = cppassist::FilePath{inFileName}.extension();
+
+    if (inFileExtension != "js" && inFileExtension != "json")
     {
         return "";
     }
-    const auto inFileFormat = inFileName.substr(inFileName.find_last_of('.') + 1);
-    if (inFileFormat != "js" && inFileFormat != "json")
-    {
-        return "";
-    }
-    return inFileFormat;
+    return inFileExtension;
 }
 
-std::string extractOutputFormat(const std::string & outFileName, const bool shouldConvert) {
-    if (outFileName.find('.') == std::string::npos)
+std::string extractOutputFormat(const std::string & outFileName, const bool shouldConvert)
+{
+    const auto outFileExtension = cppassist::FilePath{outFileName}.extension();
+
+    if (outFileExtension.empty())
     {
         if (shouldConvert)
         {
@@ -48,7 +51,7 @@ std::string extractOutputFormat(const std::string & outFileName, const bool shou
     }
     else
     {
-        return outFileName.substr(outFileName.find_last_of('.') + 1);
+        return outFileExtension;
     }
 }
 
