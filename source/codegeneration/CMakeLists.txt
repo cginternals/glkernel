@@ -5,7 +5,7 @@ set(generate_target generate)
 
 if(PYTHON)
 
-    message(STATUS "Command generate")
+    message(STATUS "Command ${generate_target}")
     
     add_custom_target(${generate_target})
 
@@ -22,5 +22,5 @@ if(PYTHON)
     set_target_properties(${generate_target} PROPERTIES EXCLUDE_FROM_DEFAULT_BUILD 1)
 
 else()
-    message("Command generate skipped: python not found")
+    message("Command ${generate_target} skipped: python not found")
 endif()
