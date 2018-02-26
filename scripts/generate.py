@@ -471,17 +471,18 @@ def main(args):
     funcsJSCode = buildJSNamespaces(allFunctions, allEnums)
     enumJSCode = buildJSEnums(allEnums)
 
-    templateDir = args.templates
-    destDir = args.destination
+    templateDir = args.inDir
+    cppDestDir = args.cppDir
+    jsDestDir = args.jsDir
 
     with open(templateDir + "/glkernel.js.template", "r") as templateFile:
-        with open(destDir + "/glkernel.js", "w") as outFile:
+        with open(jsDestDir + "/glkernel.js", "w") as outFile:
             outFile.write(templateFile.read().format(enums=enumJSCode, functions=funcsJSCode))
 
     forwardDecls = buildCPPFunctionForwardDecls(allFunctions, allEnums)
 
     with open(templateDir + "/JSInterface.h.template", "r") as templateFile:
-        with open(destDir + "/JSInterface.h", "w") as outFile:
+        with open(cppDestDir + "/JSInterface.h", "w") as outFile:
             outFile.write(templateFile.read().format(functionForwardDecls=forwardDecls))
 
     includes = buildCPPIncludes(sourceFiles)
@@ -489,7 +490,7 @@ def main(args):
     funcImpl = buildCPPImplementations(allFunctions, allEnums)
 
     with open(templateDir + "/JSInterface.cpp.template", "r") as templateFile:
-        with open(destDir + "/JSInterface.cpp", "w") as outFile:
+        with open(cppDestDir + "/JSInterface.cpp", "w") as outFile:
             outFile.write(templateFile.read().format(includes=includes, addFunctionCalls=funcAdds, generatedFunctions=funcImpl))
 
 if __name__ == "__main__":
@@ -497,8 +498,9 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--templates", "-t", metavar="<dir>", type=str, default=".", help="directory containing template files")
-    parser.add_argument("--destination", "-d", metavar="<dir>", type=str, default=".", help="directory where results are written to")
+    parser.add_argument("--templates", "-t", metavar="<dir>", type=str, default=".", dest="inDir",  help="directory containing template files")
+    parser.add_argument("--cpp-dest" , "-c", metavar="<dir>", type=str, default=".", dest="cppDir", help="directory where result .h and .cpp files are written to")
+    parser.add_argument("--js-dest"  , "-j", metavar="<dir>", type=str, default=".", dest="jsDir",  help="directory where result .js files are written to")
 
     args = parser.parse_args()
 
