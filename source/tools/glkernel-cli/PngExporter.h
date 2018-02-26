@@ -14,7 +14,7 @@ public:
 
 protected:
     template <typename T>
-    png_bytepp toPng(const glkernel::tkernel<T> & kernel, const int channels);
+    png_bytepp toPng(const glkernel::tkernel<T> & kernel, int channels);
 
-    void writeToFile(png_bytepp data, const int colorType, const png_uint_32 height, const png_uint_32 width);
+    void writeToFile(png_bytepp data, int colorType, png_uint_32 height, png_uint_32 width);
 };

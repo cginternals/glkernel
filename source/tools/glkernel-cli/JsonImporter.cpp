@@ -6,9 +6,11 @@
 
 #include <cppassist/logging/logging.h>
 
-void forEachCell(cppexpose::VariantArray * depthArray, std::function<void(const cppexpose::Variant&)> lambda)
+void forEachCell(cppexpose::VariantArray * depthArray, std::function<void(const cppexpose::Variant&, int)> lambda)
 {
     throwIfNot(depthArray, "Malformed kernel input.");
+
+    int index = 0;
 
     for (const auto& heightVariant : *depthArray)
     {
@@ -22,7 +24,8 @@ void forEachCell(cppexpose::VariantArray * depthArray, std::function<void(const 
 
             for (const auto& elementVariant : *widthArray)
             {
-                lambda(elementVariant);
+                lambda(elementVariant, index);
+                index++;
             }
         }
     }
@@ -47,10 +50,10 @@ JsonImporter::JsonImporter(const std::string& inputFileName)
     auto numComponents = 0u;
 
     // assert that all cells have the same cell type
-    forEachCell(depthArray, [&numComponents](const cppexpose::Variant& elementVariant) {
+    forEachCell(depthArray, [&numComponents](const cppexpose::Variant& elementVariant, int index) {
         if (elementVariant.isFloatingPoint())
         {
-            throwIfNot(numComponents == 0u || numComponents == 1u,
+            throwIf(index > 0 && numComponents != 1u,
                        "All cells must have the same cell type (float, vec2, vec3 or vec4).");
 
             numComponents = 1;
@@ -58,23 +61,19 @@ JsonImporter::JsonImporter(const std::string& inputFileName)
         else
         {
             throwIfNot(elementVariant.isVariantArray(), "Cell is not floating point or array.");
-
-            throwIfNot(numComponents == 0u || numComponents == elementVariant.asArray()->size(),
+            throwIf(numComponents > 0 && numComponents != elementVariant.asArray()->size(),
                     "All cells must have the same cell type (float, vec2, vec3 or vec4).");
 
             numComponents = elementVariant.asArray()->size();
         }
     });
 
-    int i = 0;
-
     if (numComponents == 1)
     {
         glkernel::kernel1 kernel(width, height, depth);
 
-        forEachCell(depthArray, [&i, &kernel](const cppexpose::Variant& elementVariant) {
-            kernel[i] = variantToFloat(elementVariant);
-            i++;
+        forEachCell(depthArray, [&kernel](const cppexpose::Variant& elementVariant, int index) {
+            kernel[index] = variantToFloat(elementVariant);
         });
 
         m_kernelVariant = cppexpose::Variant::fromValue(kernel);
@@ -83,9 +82,8 @@ JsonImporter::JsonImporter(const std::string& inputFileName)
     {
         glkernel::kernel2 kernel(width, height, depth);
 
-        forEachCell(depthArray, [&i, &kernel](const cppexpose::Variant& elementVariant) {
-            kernel[i] = variantToVec2(elementVariant);
-            i++;
+        forEachCell(depthArray, [&kernel](const cppexpose::Variant& elementVariant, int index) {
+            kernel[index] = variantToVec2(elementVariant);
         });
 
         m_kernelVariant = cppexpose::Variant::fromValue(kernel);
@@ -94,9 +92,8 @@ JsonImporter::JsonImporter(const std::string& inputFileName)
     {
         glkernel::kernel3 kernel(width, height, depth);
 
-        forEachCell(depthArray, [&i, &kernel](const cppexpose::Variant& elementVariant) {
-            kernel[i] = variantToVec3(elementVariant);
-            i++;
+        forEachCell(depthArray, [&kernel](const cppexpose::Variant& elementVariant, int index) {
+            kernel[index] = variantToVec3(elementVariant);
         });
 
         m_kernelVariant = cppexpose::Variant::fromValue(kernel);
@@ -105,9 +102,8 @@ JsonImporter::JsonImporter(const std::string& inputFileName)
     {
         glkernel::kernel4 kernel(width, height, depth);
 
-        forEachCell(depthArray, [&i, &kernel](const cppexpose::Variant& elementVariant) {
-            kernel[i] = variantToVec4(elementVariant);
-            i++;
+        forEachCell(depthArray, [&kernel](const cppexpose::Variant& elementVariant, int index) {
+            kernel[index] = variantToVec4(elementVariant);
         });
 
         m_kernelVariant = cppexpose::Variant::fromValue(kernel);

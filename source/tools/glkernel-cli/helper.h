@@ -5,9 +5,10 @@
 #include <cppexpose/variant/Variant.h>
 
 /*
- * Assert a condition and throw otherwise, outputting the user supplied message.
- * Throws for both release and debug builds.
+ * Helpers for asserting condition and throwing if they are (not) satisfied, outputting a user supplied message.
+ * Throw for both release and debug builds.
  */
+void throwIf(bool condition, const std::string& msg);
 void throwIfNot(bool condition, const std::string& msg);
 
 /*

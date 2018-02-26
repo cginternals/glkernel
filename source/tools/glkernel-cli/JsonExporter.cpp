@@ -6,7 +6,8 @@
 #include <fstream>
 #include <algorithm>
 
-void appendCell(cppexpose::VariantArray *kernelArray, std::initializer_list<float> cell) {
+void appendCell(cppexpose::VariantArray *kernelArray, std::initializer_list<float> cell)
+{
     auto componentArrayVariant = cppexpose::Variant::array();
     auto componentArray = componentArrayVariant.asArray();
     componentArray->insert(componentArray->end(), cell.begin(), cell.end());
@@ -47,7 +48,8 @@ void JsonExporter::exportKernel() {
     writeToFile(jsonArray);
 }
 
-cppexpose::Variant JsonExporter::toJsonArray(const cppexpose::Variant & kernelVariant) {
+cppexpose::Variant JsonExporter::toJsonArray(const cppexpose::Variant & kernelVariant)
+{
 
     if (kernelVariant.hasType<glkernel::kernel4>())
     {
@@ -119,7 +121,8 @@ cppexpose::Variant JsonExporter::prepareResult(const glkernel::tkernel<T> & kern
 }
 
 
-void JsonExporter::writeToFile(const cppexpose::Variant & jsonArray) {
+void JsonExporter::writeToFile(const cppexpose::Variant & jsonArray)
+{
     std::ofstream outStream(m_outFileName);
 
     if (!outStream.is_open())
@@ -132,9 +135,11 @@ void JsonExporter::writeToFile(const cppexpose::Variant & jsonArray) {
 }
 
 
-std::string JsonExporter::stringify(const cppexpose::Variant &array) {
-    auto outputMode = m_beautify
-                      ? cppexpose::JSON::OutputMode::Beautify
-                      : cppexpose::JSON::OutputMode::Compact;
+std::string JsonExporter::stringify(const cppexpose::Variant &array)
+{
+    const auto outputMode = m_beautify
+                          ? cppexpose::JSON::OutputMode::Beautify
+                          : cppexpose::JSON::OutputMode::Compact;
+
     return cppexpose::JSON::stringify(array, outputMode);
 }

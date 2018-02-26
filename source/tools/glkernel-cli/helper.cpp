@@ -5,6 +5,14 @@
 
 #include <glkernel/Kernel.h>
 
+void throwIf(bool condition, const std::string& msg)
+{
+    if (condition)
+    {
+        throw std::logic_error(msg);
+    }
+}
+
 void throwIfNot(bool condition, const std::string& msg)
 {
     if (!condition)
@@ -21,8 +29,8 @@ std::pair<float, float> findMinMaxElements(const glkernel::tkernel<float> & kern
 
 std::pair<float, float> findMinMaxElements(const glkernel::tkernel<glm::vec2> & kernel)
 {
-    float min = std::numeric_limits<float>::max();
-    float max = std::numeric_limits<float>::min();
+    auto min = std::numeric_limits<float>::max();
+    auto max = std::numeric_limits<float>::min();
 
     for (const auto & element : kernel)
     {
@@ -41,8 +49,8 @@ std::pair<float, float> findMinMaxElements(const glkernel::tkernel<glm::vec2> & 
 
 std::pair<float, float> findMinMaxElements(const glkernel::tkernel<glm::vec3> & kernel)
 {
-    float min = std::numeric_limits<float>::max();
-    float max = std::numeric_limits<float>::min();
+    auto min = std::numeric_limits<float>::max();
+    auto max = std::numeric_limits<float>::min();
 
     for (const auto & element : kernel)
     {
@@ -64,8 +72,8 @@ std::pair<float, float> findMinMaxElements(const glkernel::tkernel<glm::vec3> & 
 
 std::pair<float, float> findMinMaxElements(const glkernel::tkernel<glm::vec4> & kernel)
 {
-    float min = std::numeric_limits<float>::max();
-    float max = std::numeric_limits<float>::min();
+    auto min = std::numeric_limits<float>::max();
+    auto max = std::numeric_limits<float>::min();
 
     for (const auto & element : kernel)
     {

@@ -9,35 +9,40 @@
  */
 void writeData(float cellValue, png_bytep outputRow, int x)
 {
-  png_save_uint_16(outputRow + 2 * x, static_cast<uint16_t>(cellValue));
+    png_save_uint_16(outputRow + 2 * x, static_cast<uint16_t>(cellValue));
 }
 
 void writeData(glm::vec2 cellValue, png_bytep outputRow, int x)
 {
-  png_save_uint_16(outputRow + 4 * x, static_cast<uint16_t>(cellValue.x));
-  png_save_uint_16(outputRow + 4 * x + 2, static_cast<uint16_t>(cellValue.y));
+    const auto offset = 4 * x;
+    png_save_uint_16(outputRow + offset, static_cast<uint16_t>(cellValue.x));
+    png_save_uint_16(outputRow + offset + 2, static_cast<uint16_t>(cellValue.y));
 }
 
 void writeData(glm::vec3 cellValue, png_bytep outputRow, int x)
 {
-  png_save_uint_16(outputRow + 6 * x, static_cast<uint16_t>(cellValue.x));
-  png_save_uint_16(outputRow + 6 * x + 2, static_cast<uint16_t>(cellValue.y));
-  png_save_uint_16(outputRow + 6 * x + 4, static_cast<uint16_t>(cellValue.z));
+    const auto offset = 6 * x;
+    png_save_uint_16(outputRow + offset, static_cast<uint16_t>(cellValue.x));
+    png_save_uint_16(outputRow + offset + 2, static_cast<uint16_t>(cellValue.y));
+    png_save_uint_16(outputRow + offset + 4, static_cast<uint16_t>(cellValue.z));
 }
 
 void writeData(glm::vec4 cellValue, png_bytep outputRow, int x)
 {
-  png_save_uint_16(outputRow + 8 * x, static_cast<uint16_t>(cellValue.x));
-  png_save_uint_16(outputRow + 8 * x + 2, static_cast<uint16_t>(cellValue.y));
-  png_save_uint_16(outputRow + 8 * x + 4, static_cast<uint16_t>(cellValue.z));
-  png_save_uint_16(outputRow + 8 * x + 6, static_cast<uint16_t>(cellValue.w));
+    const auto offset = 8 * x;
+    png_save_uint_16(outputRow + offset, static_cast<uint16_t>(cellValue.x));
+    png_save_uint_16(outputRow + offset + 2, static_cast<uint16_t>(cellValue.y));
+    png_save_uint_16(outputRow + offset + 4, static_cast<uint16_t>(cellValue.z));
+    png_save_uint_16(outputRow + offset + 6, static_cast<uint16_t>(cellValue.w));
 }
 
-void PngExporter::exportKernel() {
-    png_bytepp pngData;
-    int colorType;
-    png_uint_32 width;
-    png_uint_32 height;
+void PngExporter::exportKernel()
+{
+    png_bytepp pngData = nullptr;
+    int colorType = -1;
+    png_uint_32 width = 0;
+    png_uint_32 height = 0;
+
     if (m_kernel.hasType<glkernel::kernel4>())
     {
         colorType = PNG_COLOR_TYPE_RGBA;
@@ -92,8 +97,7 @@ png_bytepp PngExporter::toPng(const glkernel::tkernel<T> & kernel, const int cha
 
     // TODO calculate scaling factor, error rate, variance, stddeviation
     // https://github.com/p-otto/glkernel/issues/47
-    cppassist::info() << "Scaling floating point range [" << min << ", " << max << "] to integer range [0, 65536]";
-
+    cppassist::info() << "Scaling floating point range [" << min << ", " << max << "] to integer range [0, 65535]";
 
     // memory for all rows:
     auto rows = (png_bytepp) malloc(kernel.height() * sizeof(png_bytep));
@@ -103,12 +107,14 @@ png_bytepp PngExporter::toPng(const glkernel::tkernel<T> & kernel, const int cha
         rows[y] = (png_bytep) malloc(channels * kernel.width() * 2 * sizeof(png_byte));
     }
 
+    const auto range = max - min;
+
     for (auto y = 0; y < kernel.height(); ++y)
     {
         for (auto x = 0; x < kernel.width(); ++x)
         {
             auto value = kernel.value(x, y, 0);
-            auto normalizedValue = (value - min) / (max - min);
+            auto normalizedValue = (value - min) / range;
             auto scaledValue = normalizedValue * static_cast<float>(std::numeric_limits<uint16_t>::max());
             auto roundedValue = glm::round(scaledValue);
 
@@ -121,7 +127,8 @@ png_bytepp PngExporter::toPng(const glkernel::tkernel<T> & kernel, const int cha
 
 
 // mostly taken from http://www.labbookpages.co.uk/software/imgProc/libPNG.html
-void PngExporter::writeToFile(png_bytepp data, const int colorType, const png_uint_32 height, const png_uint_32 width) {
+void PngExporter::writeToFile(png_bytepp data, const int colorType, const png_uint_32 height, const png_uint_32 width)
+{
 
     png_structp pngPtr = nullptr;
     png_infop infoPtr = nullptr;

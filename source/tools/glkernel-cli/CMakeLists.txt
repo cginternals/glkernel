@@ -28,7 +28,7 @@ set(headers
     JsonImporter.h
     PngExporter.h
     helper.h
-    )
+)
 
 set(sources
     main.cpp
@@ -39,7 +39,7 @@ set(sources
     JsonImporter.cpp
     PngExporter.cpp
     helper.cpp
-    )
+)
 
 set(header_group "Header Files (API)")
 set(source_group "Source Files")
