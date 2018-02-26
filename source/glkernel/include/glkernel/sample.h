@@ -204,3 +204,5 @@ void golden_point_set(tkernel<glm::tvec2<T, P>> & kernel);
 
 
 #include <glkernel/sample.hpp>
+
+#include <glkernel-generalizations/sample_generalized.h>

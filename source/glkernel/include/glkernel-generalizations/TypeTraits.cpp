@@ -10,6 +10,7 @@ namespace glkernel
 
 
 
+
 template<typename... T>
 struct are_same_type : std::false_type { };
 
@@ -47,19 +48,31 @@ constexpr bool areSameCelltype() { return are_same_celltype<Vs...>::value; }
 
 
 template<typename T>
-struct is_celltype : std::false_type {};
+struct is_cellType : std::false_type {};
 
 template<typename T, glm::precision P, template<typename, glm::precision> class V>
-struct is_celltype<V<T, P>> : std::true_type {};
+struct is_cellType<V<T, P>> : std::true_type {};
 
 template<typename T, glm::precision P, template<typename, glm::precision> class V>
-constexpr bool isCelltype() { return is_celltype<V<T, P>>::value; }
+constexpr bool isCellType() { return is_cellType<V<T, P>>::value; }
+
+template<typename T>
+constexpr bool isCellType() { return is_cellType<T>::value; }
 
 
+template<typename T>
+struct is_componenType : std::true_type {};
+
+template<typename T, glm::precision P, template<typename, glm::precision> class V>
+struct is_componenType<V<T, P>> : std::false_type {};
+
+template<typename T, glm::precision P, template<typename, glm::precision> class V>
+constexpr bool isComponentType() { return is_componenType<V<T, P>>::value; }
+
+template<typename T>
+constexpr bool isComponentType() { return is_componenType<T>::value; }
 
 
-template< typename T >
-struct always_false : std::false_type {};
 
 
 template<typename T>

@@ -53,10 +53,13 @@ set(headers
     ${include_path}/shuffle.hpp
     ${include_path}/sort.h
     ${include_path}/sort.hpp
-    ${include_generalizations_path}/glkernel_generalizations.cpp
-    ${include_generalizations_path}/glkernel_generalizations.h
+    ${include_generalizations_path}/noise_generalized.hpp
+    ${include_generalizations_path}/noise_generalized.h
+    ${include_generalizations_path}/sample_generalized.hpp
+    ${include_generalizations_path}/sample_generalized.h
+    ${include_generalizations_path}/scale_generalized.hpp
+    ${include_generalizations_path}/scale_generalized.h
     ${include_generalizations_path}/AssertionMacros.h
-    ${include_generalizations_path}/ConstExpressions.cpp
     ${include_generalizations_path}/StringMacros.h
     ${include_generalizations_path}/TypeTraits.cpp
 )
