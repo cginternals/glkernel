@@ -276,11 +276,19 @@ def buildCPPFunctionForwardDecls(funcs, enums):
     return '\n'.join([buildCPPFunctionForwardDecl(func, enums) for func in funcs])
 
 def buildCPPIncludes(fileNames):
-    includeDir = posixpath.dirname(posixpath.abspath(fileNames[0]))
-    while posixpath.split(includeDir)[1] != 'include':
-        includeDir = posixpath.dirname(includeDir)
+    includeFiles = []
 
-    includeFiles = [posixpath.relpath(f[3:], includeDir) for f in fileNames]
+    for f in fileNames:
+        if not "include/" in f:
+            print("Error: " + f + " is outside include directory!")
+            continue
+
+        while not f.startswith("include/"):
+            f = f[1:]
+
+        f = f[len("include/"):]
+        includeFiles.append(f)
+
     return '\n'.join(['#include <' + name + '>' for name in includeFiles])
 
 def buildCPPImplementation(func, enums):
