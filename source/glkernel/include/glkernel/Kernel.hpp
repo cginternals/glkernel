@@ -140,16 +140,27 @@ auto tkernel<T>::begin() -> decltype(s_type_workaround.begin())
 }
 
 template<typename T>
+auto tkernel<T>::begin() const -> decltype(s_type_workaround.cbegin())
+{
+    return m_kernel.cbegin();
+}
+
+template<typename T>
 auto tkernel<T>::cbegin() const -> decltype(s_type_workaround.cbegin())
 {
     return m_kernel.cbegin();
 }
 
-
 template<typename T>
 auto tkernel<T>::end() -> decltype(s_type_workaround.end())
 {
     return m_kernel.end();
+}
+
+template<typename T>
+auto tkernel<T>::end() const -> decltype(s_type_workaround.cend())
+{
+    return m_kernel.cend();
 }
 
 template<typename T>

@@ -23,7 +23,6 @@ std::pair<float, float> findMinMaxElements(const glkernel::tkernel<glm::vec2> & 
 {
     float min = std::numeric_limits<float>::max();
     float max = std::numeric_limits<float>::min();
-    const auto end = kernel.cend();
 
     for (const auto & element : kernel)
     {
@@ -44,7 +43,6 @@ std::pair<float, float> findMinMaxElements(const glkernel::tkernel<glm::vec3> & 
 {
     float min = std::numeric_limits<float>::max();
     float max = std::numeric_limits<float>::min();
-    const auto end = kernel.cend();
 
     for (const auto & element : kernel)
     {
@@ -68,7 +66,6 @@ std::pair<float, float> findMinMaxElements(const glkernel::tkernel<glm::vec4> & 
 {
     float min = std::numeric_limits<float>::max();
     float max = std::numeric_limits<float>::min();
-    const auto end = kernel.cend();
 
     for (const auto & element : kernel)
     {
