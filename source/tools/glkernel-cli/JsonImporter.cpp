@@ -44,13 +44,13 @@ JsonImporter::JsonImporter(const std::string& inputFileName)
     int depth = sizeMap->at("depth").value<int>();
     int height = sizeMap->at("height").value<int>();
     int width = sizeMap->at("width").value<int>();
-    int numComponents = -1;
+    auto numComponents = 0u;
 
     // assert that all cells have the same cell type
     forEachCell(depthArray, [&numComponents](const cppexpose::Variant& elementVariant) {
         if (elementVariant.isFloatingPoint())
         {
-            throwIfNot(numComponents == -1 || numComponents == 1,
+            throwIfNot(numComponents == 0u || numComponents == 1u,
                        "All cells must have the same cell type (float, vec2, vec3 or vec4).");
 
             numComponents = 1;
@@ -59,7 +59,7 @@ JsonImporter::JsonImporter(const std::string& inputFileName)
         {
             throwIfNot(elementVariant.isVariantArray(), "Cell is not floating point or array.");
 
-            throwIfNot(numComponents == -1 || elementVariant.asArray()->size() == numComponents,
+            throwIfNot(numComponents == 0u || numComponents == elementVariant.asArray()->size(),
                     "All cells must have the same cell type (float, vec2, vec3 or vec4).");
 
             numComponents = elementVariant.asArray()->size();
