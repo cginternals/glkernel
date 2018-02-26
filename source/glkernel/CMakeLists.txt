@@ -3,7 +3,7 @@
 # External dependencies
 # 
 
-find_package(GLM REQUIRED)
+find_package(glm REQUIRED)
 
 
 # 
@@ -103,7 +103,6 @@ target_include_directories(${target}
     $<INSTALL_INTERFACE:include>
 
     ${DEFAULT_INCLUDE_DIRECTORIES}
-    $<BUILD_INTERFACE:${GLM_INCLUDE_DIR}>
 )
 
 
@@ -111,13 +110,19 @@ target_include_directories(${target}
 # Libraries
 # 
 
-# none required, since interface library (header-only)
+target_link_libraries(${target}
+    INTERFACE
+    glm
+)
 
 # 
 # Compile definitions
 # 
 
-# none required, since interface library (header-only)
+target_compile_definitions(${target}
+    INTERFACE
+    GLM_FORCE_RADIANS
+)
 
 # 
 # Compile options
