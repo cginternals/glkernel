@@ -24,16 +24,17 @@ std::pair<float, float> findMinMaxElements(const glkernel::tkernel<glm::vec2> & 
     float min = std::numeric_limits<float>::max();
     float max = std::numeric_limits<float>::min();
     const auto end = kernel.cend();
-    for (auto it = kernel.cbegin(); it != end; ++it)
+
+    for (const auto & element : kernel)
     {
-    const auto x = it->x;
-    const auto y = it->y;
+        const auto x = element.x;
+        const auto y = element.y;
 
-    min = x < min ? x : min;
-    min = y < min ? y : min;
+        min = x < min ? x : min;
+        min = y < min ? y : min;
 
-    max = x > max ? x : max;
-    max = y > max ? y : max;
+        max = x > max ? x : max;
+        max = y > max ? y : max;
     }
 
     return std::make_pair(min, max);
@@ -44,19 +45,20 @@ std::pair<float, float> findMinMaxElements(const glkernel::tkernel<glm::vec3> & 
     float min = std::numeric_limits<float>::max();
     float max = std::numeric_limits<float>::min();
     const auto end = kernel.cend();
-    for (auto it = kernel.cbegin(); it != end; ++it)
+
+    for (const auto & element : kernel)
     {
-    const auto x = it->x;
-    const auto y = it->y;
-    const auto z = it->z;
+        const auto x = element.x;
+        const auto y = element.y;
+        const auto z = element.z;
 
-    min = x < min ? x : min;
-    min = y < min ? y : min;
-    min = z < min ? z : min;
+        min = x < min ? x : min;
+        min = y < min ? y : min;
+        min = z < min ? z : min;
 
-    max = x > max ? x : max;
-    max = y > max ? y : max;
-    max = z > max ? z : max;
+        max = x > max ? x : max;
+        max = y > max ? y : max;
+        max = z > max ? z : max;
     }
 
     return std::make_pair(min, max);
@@ -67,22 +69,23 @@ std::pair<float, float> findMinMaxElements(const glkernel::tkernel<glm::vec4> & 
     float min = std::numeric_limits<float>::max();
     float max = std::numeric_limits<float>::min();
     const auto end = kernel.cend();
-    for (auto it = kernel.cbegin(); it != end; ++it)
+
+    for (const auto & element : kernel)
     {
-    const auto x = it->x;
-    const auto y = it->y;
-    const auto z = it->z;
-    const auto w = it->w;
+        const auto x = element.x;
+        const auto y = element.y;
+        const auto z = element.z;
+        const auto w = element.w;
 
-    min = x < min ? x : min;
-    min = y < min ? y : min;
-    min = z < min ? z : min;
-    min = w < min ? z : min;
+        min = x < min ? x : min;
+        min = y < min ? y : min;
+        min = z < min ? z : min;
+        min = w < min ? w : min;
 
-    max = x > max ? x : max;
-    max = y > max ? y : max;
-    max = z > max ? z : max;
-    max = w > max ? z : max;
+        max = x > max ? x : max;
+        max = y > max ? y : max;
+        max = z > max ? z : max;
+        max = w > max ? w : max;
     }
 
     return std::make_pair(min, max);
