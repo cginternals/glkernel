@@ -85,6 +85,10 @@
 
 
 
+#define ASSERT_TYPE_EQUALITY(...)                                       \
+    static_assert(areSameType<__VA_ARGS__>(), ARGUMENTS_MUST_EQUAL)
+
+
 // Checks if all arguments are of the same component type.
 // Implicitly assumes that arguements are parameters of a method including kernel as first argument!
 #define ASSERT_COMPONENTTYPE_EQUALITY(T, ...)                                                       \
@@ -92,7 +96,7 @@
                    (!areSameType<T, float>() && areSameType<T, __VA_ARGS__>()) ||                   \
                    !(areSameType<T, float>() && !areSameType<T, __VA_ARGS__>()) ||                  \
                    (!areSameType<T, float>() && !areSameType<T, __VA_ARGS__>())                     \
-                   , PARAMS_MATCH_FLOAT);                                                            \
+                   , PARAMS_MATCH_FLOAT);                                                           \
     static_assert( (areSameType<T, double>() && areSameType<T, __VA_ARGS__>()) ||                   \
                    (!areSameType<T, double>() && areSameType<T, __VA_ARGS__>()) ||                  \
                    !(areSameType<T, double>() && !areSameType<T, __VA_ARGS__>()) ||                 \
@@ -106,12 +110,12 @@
                    (!areSameCelltype<V, glm::tvec2>() && areSameCelltype<V, __VA_ARGS__>()) ||      \
                    !(areSameCelltype<V, glm::tvec2>() && !areSameCelltype<V, __VA_ARGS__>()) ||     \
                    (!areSameCelltype<V, glm::tvec2>() && !areSameCelltype<V, __VA_ARGS__>())        \
-                   , PARAMS_MATCH_VEC2);                                                             \
+                   , PARAMS_MATCH_VEC2);                                                            \
     static_assert( (areSameCelltype<V, glm::tvec3>() && areSameCelltype<V, __VA_ARGS__>()) ||       \
                    (!areSameCelltype<V, glm::tvec3>() && areSameCelltype<V, __VA_ARGS__>()) ||      \
                    !(areSameCelltype<V, glm::tvec3>() && !areSameCelltype<V, __VA_ARGS__>()) ||     \
                    (!areSameCelltype<V, glm::tvec3>() && !areSameCelltype<V, __VA_ARGS__>())        \
-                   , PARAMS_MATCH_VEC3);                                                             \
+                   , PARAMS_MATCH_VEC3);                                                            \
     static_assert( (areSameCelltype<V, glm::tvec4>() && areSameCelltype<V, __VA_ARGS__>()) ||       \
                    (!areSameCelltype<V, glm::tvec4>() && areSameCelltype<V, __VA_ARGS__>()) ||      \
                    !(areSameCelltype<V, glm::tvec4>() && !areSameCelltype<V, __VA_ARGS__>()) ||     \
@@ -131,19 +135,29 @@
     static_assert( !(areSameType<T, double>() && areSameCelltype<V, glm::tvec4>()), DOUBLE_PARAM_MATCH_VEC4);
 
 
+// Fail, because vectorial parameter is of some scalar celltype
+#define FAIL_ON_PARAM_ASSUMING_CELLTYPE(V, T)    \
+    static_assert( !(areSameCelltype<V, glm::tvec2>() && areSameType<T, float>()), VEC2_PARAM_MATCH_FLOAT);     \
+    static_assert( !(areSameCelltype<V, glm::tvec2>() && areSameType<T, double>()), VEC2_PARAM_MATCH_DOUBLE);   \
+    static_assert( !(areSameCelltype<V, glm::tvec3>() && areSameType<T, float>()), VEC3_PARAM_MATCH_FLOAT);     \
+    static_assert( !(areSameCelltype<V, glm::tvec3>() && areSameType<T, double>()), VEC3_PARAM_MATCH_DOUBLE);   \
+    static_assert( !(areSameCelltype<V, glm::tvec4>() && areSameType<T, float>()), VEC4_PARAM_MATCH_FLOAT);     \
+    static_assert( !(areSameCelltype<V, glm::tvec4>() && areSameType<T, double>()), VEC4_PARAM_MATCH_DOUBLE);
 
 
-#define FAIL_ON_PARAM_HETEROGENEITY_ASSUMING_COMPONENTTYPE(T) \
+
+
+#define FAIL_ON_PARAM_HETEROGENEITY_ASSUMING_COMPONENTTYPE(T)               \
     static_assert( !areSameType<T, float>(),  PARAMS_EQUAL_MATCH_FLOAT);    \
     static_assert( !areSameType<T, double>(), PARAMS_EQUAL_MATCH_DOUBLE);
 
 
-#define FAIL_ON_PARAM_HETEROGENEITY_ASSUMING_COMPONENTTYPE_OR_CELLTYPE(T, V) \
-    static_assert( !(areSameType<T, float>() && areSameCelltype<V, glm::tvec2>()),  PARAMS_EQUAL_MATCH_FLOAT_OR_VEC2);    \
-    static_assert( !(areSameType<T, float>() && areSameCelltype<V, glm::tvec3>()),  PARAMS_EQUAL_MATCH_FLOAT_OR_VEC3);    \
-    static_assert( !(areSameType<T, float>() && areSameCelltype<V, glm::tvec4>()),  PARAMS_EQUAL_MATCH_FLOAT_OR_VEC4);    \
-    static_assert( !(areSameType<T, double>() && areSameCelltype<V, glm::tvec2>()), PARAMS_EQUAL_MATCH_DOUBLE_OR_VEC2);    \
-    static_assert( !(areSameType<T, double>() && areSameCelltype<V, glm::tvec3>()), PARAMS_EQUAL_MATCH_DOUBLE_OR_VEC3);    \
+#define FAIL_ON_PARAM_HETEROGENEITY_ASSUMING_COMPONENTTYPE_OR_CELLTYPE(T, V)                                                \
+    static_assert( !(areSameType<T, float>() && areSameCelltype<V, glm::tvec2>()),  PARAMS_EQUAL_MATCH_FLOAT_OR_VEC2);      \
+    static_assert( !(areSameType<T, float>() && areSameCelltype<V, glm::tvec3>()),  PARAMS_EQUAL_MATCH_FLOAT_OR_VEC3);      \
+    static_assert( !(areSameType<T, float>() && areSameCelltype<V, glm::tvec4>()),  PARAMS_EQUAL_MATCH_FLOAT_OR_VEC4);      \
+    static_assert( !(areSameType<T, double>() && areSameCelltype<V, glm::tvec2>()), PARAMS_EQUAL_MATCH_DOUBLE_OR_VEC2);     \
+    static_assert( !(areSameType<T, double>() && areSameCelltype<V, glm::tvec3>()), PARAMS_EQUAL_MATCH_DOUBLE_OR_VEC3);     \
     static_assert( !(areSameType<T, double>() && areSameCelltype<V, glm::tvec4>()), PARAMS_EQUAL_MATCH_DOUBLE_OR_VEC4);
 
 

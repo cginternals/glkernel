@@ -75,25 +75,4 @@ constexpr bool isComponentType() { return is_componenType<T>::value; }
 
 
 
-template<typename T>
-struct is_templateTemplate : std::false_type {};
-
-template<typename... T, template<typename...> class V>
-struct is_templateTemplate<V<T...>> : std::true_type {};
-
-template<typename... T, template<typename...> class V>
-constexpr bool isTemplateTemplate() { return is_templateTemplate<V<T...>>::value; }
-
-template<typename... T, template<typename...> class V>
-constexpr bool isPureTemplate() { return !is_templateTemplate<V<T...>>::value; }
-
-template<typename T>
-constexpr bool isTemplateTemplate() { return is_templateTemplate<T>::value; }
-
-template<typename T>
-constexpr bool isPureTemplate() { return !is_templateTemplate<T>::value; }
-
-
-
-
 } // glkernel

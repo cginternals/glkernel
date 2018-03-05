@@ -59,6 +59,12 @@ set(headers
     ${include_generalizations_path}/sample_generalized.h
     ${include_generalizations_path}/scale_generalized.hpp
     ${include_generalizations_path}/scale_generalized.h
+    ${include_generalizations_path}/sequence_generalized.h
+    ${include_generalizations_path}/sequence_generalized.hpp
+    ${include_generalizations_path}/shuffle_generalized.h
+    ${include_generalizations_path}/shuffle_generalized.hpp
+    ${include_generalizations_path}/sort_generalized.h
+    ${include_generalizations_path}/sort_generalized.hpp
     ${include_generalizations_path}/AssertionMacros.h
     ${include_generalizations_path}/StringMacros.h
     ${include_generalizations_path}/TypeTraits.cpp
