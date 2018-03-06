@@ -23,6 +23,8 @@ namespace sample
 {
 
 
+
+
 template <typename T>
 void poisson_square(tkernel<T> &, const unsigned int = 32);
 

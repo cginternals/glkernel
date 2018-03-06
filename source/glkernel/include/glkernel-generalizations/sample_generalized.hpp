@@ -6,12 +6,15 @@
 
 
 
+
 namespace glkernel
 {
 
 
 namespace sample
 {
+
+
 
 
 template <typename T>
@@ -197,6 +200,8 @@ void golden_point_set(tkernel<V<T, P>> &)
 {
     ASSERT_KERNEL_CELLTYPE_VEC2(V);
 }
+
+
 
 
 } // namespace sample
