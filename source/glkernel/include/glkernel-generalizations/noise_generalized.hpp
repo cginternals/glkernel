@@ -132,11 +132,7 @@ void normal(tkernel<V1<T1, P>> &, const V2<T2, P> &, const V3<T3, P> &)
 
 
 template <typename T, glm::precision P, template<typename, glm::precision> class V>
-void gradient(tkernel<V<T, P>> &
-    , const GradientNoiseType
-    , const OctaveType
-    , const unsigned int
-    , const unsigned int)
+void gradient(tkernel<V<T, P>> &, const GradientNoiseType, const OctaveType, const unsigned int, const unsigned int)
 {
     FAIL_ON_VECTORIAL_KERNEL_CELLTYPE_ASSUMING_SCALAR(V);
 }

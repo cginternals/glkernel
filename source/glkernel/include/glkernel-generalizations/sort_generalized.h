@@ -5,6 +5,15 @@
 #include <glm/gtc/type_precision.hpp>
 
 
+/*
+*  This file contains further overloaded methods of the namespace glkernel::sort
+*  that exist in parallel to the ones in sort.h.
+*  These methods feature generalized signatures that are intented to match all the
+*  prohibited calls. This way, calling a method with wrong arguments does not result
+*  in a template deduction failure, but instead gives specific and verbose error messages.
+*/
+
+
 namespace glkernel
 {
 
@@ -17,29 +26,6 @@ namespace sort
 
 template <typename T1, typename T2>
 void distance(tkernel<T1> &, const T2 &);
-
-
-
-
-//template <typename T1, typename T2>
-//void distance(tkernel<T1> &, const T2);
-
-
-//template<typename T1, typename T2, glm::precision P,
-//         template<typename, glm::precision> class V>
-//void distance(tkernel<T1> &, const V<T2, P> &);
-
-
-
-
-//template<typename T1, typename T2, glm::precision P,
-//         template<typename, glm::precision> class V1, template<typename, glm::precision> class V2>
-//void distance(tkernel<V1<T1, P>> &, const V2<T2, P> &);
-
-
-//template<typename T1, typename T2, glm::precision P,
-//         template<typename, glm::precision> class V>
-//void distance(tkernel<V<T1, P>> &, const T2);
 
 
 

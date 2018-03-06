@@ -5,6 +5,15 @@
 #include <glm/gtc/type_precision.hpp>
 
 
+/*
+*  This file contains further overloaded methods of the namespace glkernel::noise
+*  that exist in parallel to the ones in noise.h.
+*  These methods feature generalized signatures that are intented to match all the
+*  prohibited calls. This way, calling a method with wrong arguments does not result
+*  in a template deduction failure, but instead gives specific and verbose error messages.
+*/
+
+
 namespace glkernel
 {
 
@@ -89,11 +98,7 @@ void normal(tkernel<V1<T1, P>> &, const V2<T2, P> &, const V3<T3, P> &);
 
 
 template <typename T, glm::precision P, template<typename, glm::precision> class V>
-void gradient(tkernel<V<T, P>> &
-    , const GradientNoiseType = GradientNoiseType::Perlin
-    , const OctaveType = OctaveType::Standard
-    , const unsigned int = 3
-    , const unsigned int = 5);
+void gradient(tkernel<V<T, P>> &, const GradientNoiseType = GradientNoiseType::Perlin, const OctaveType = OctaveType::Standard, const unsigned int = 3, const unsigned int = 5);
 
 
 

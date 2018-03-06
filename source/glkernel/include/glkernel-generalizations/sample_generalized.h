@@ -6,6 +6,15 @@
 #include <glkernel/sample.h>
 
 
+/*
+*  This file contains further overloaded methods of the namespace glkernel::sample
+*  that exist in parallel to the ones in sample.h.
+*  These methods feature generalized signatures that are intented to match all the
+*  prohibited calls. This way, calling a method with wrong arguments does not result
+*  in a template deduction failure, but instead gives specific and verbose error messages.
+*/
+
+
 namespace glkernel
 {
 
