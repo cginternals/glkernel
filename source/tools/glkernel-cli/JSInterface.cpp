@@ -22,6 +22,8 @@
 #include <cppexpose/variant/Variant.h>
 #include <cppexpose/scripting/ScriptContext.h>
 
+#include <cppassist/logging/logging.h>
+
 
 JSInterface::JSInterface()
 : Object("_glkernel")
@@ -86,7 +88,7 @@ void JSInterface::noise_uniform(cppexpose::Object* obj, const cppexpose::Variant
             return;
         }
 
-        std::cerr << "Invalid parameters for noise_uniform" << std::endl;
+        cppassist::error("glkernel-JSInterface") << "Invalid parameters for noise_uniform";
         return;
     }
 
@@ -110,7 +112,7 @@ void JSInterface::noise_uniform(cppexpose::Object* obj, const cppexpose::Variant
             return;
         }
 
-        std::cerr << "Invalid parameters for noise_uniform" << std::endl;
+        cppassist::error("glkernel-JSInterface") << "Invalid parameters for noise_uniform";
         return;
     }
 
@@ -134,7 +136,7 @@ void JSInterface::noise_uniform(cppexpose::Object* obj, const cppexpose::Variant
             return;
         }
 
-        std::cerr << "Invalid parameters for noise_uniform" << std::endl;
+        cppassist::error("glkernel-JSInterface") << "Invalid parameters for noise_uniform";
         return;
     }
 
@@ -158,11 +160,11 @@ void JSInterface::noise_uniform(cppexpose::Object* obj, const cppexpose::Variant
             return;
         }
 
-        std::cerr << "Invalid parameters for noise_uniform" << std::endl;
+        cppassist::error("glkernel-JSInterface") << "Invalid parameters for noise_uniform";
         return;
     }
 
-    std::cerr << "Invalid kernel object for noise_uniform" << std::endl;
+    cppassist::error("glkernel-JSInterface") << "Invalid kernel object for noise_uniform";
 }
 
 
@@ -179,7 +181,7 @@ void JSInterface::noise_normal(cppexpose::Object* obj, const cppexpose::Variant&
             return;
         }
 
-        std::cerr << "Invalid parameters for noise_normal" << std::endl;
+        cppassist::error("glkernel-JSInterface") << "Invalid parameters for noise_normal";
         return;
     }
 
@@ -203,7 +205,7 @@ void JSInterface::noise_normal(cppexpose::Object* obj, const cppexpose::Variant&
             return;
         }
 
-        std::cerr << "Invalid parameters for noise_normal" << std::endl;
+        cppassist::error("glkernel-JSInterface") << "Invalid parameters for noise_normal";
         return;
     }
 
@@ -227,7 +229,7 @@ void JSInterface::noise_normal(cppexpose::Object* obj, const cppexpose::Variant&
             return;
         }
 
-        std::cerr << "Invalid parameters for noise_normal" << std::endl;
+        cppassist::error("glkernel-JSInterface") << "Invalid parameters for noise_normal";
         return;
     }
 
@@ -251,11 +253,11 @@ void JSInterface::noise_normal(cppexpose::Object* obj, const cppexpose::Variant&
             return;
         }
 
-        std::cerr << "Invalid parameters for noise_normal" << std::endl;
+        cppassist::error("glkernel-JSInterface") << "Invalid parameters for noise_normal";
         return;
     }
 
-    std::cerr << "Invalid kernel object for noise_normal" << std::endl;
+    cppassist::error("glkernel-JSInterface") << "Invalid kernel object for noise_normal";
 }
 
 
@@ -270,7 +272,7 @@ void JSInterface::noise_gradient(cppexpose::Object* obj, int noise_type, int oct
         return;
     }
 
-    std::cerr << "Invalid kernel object for noise_gradient" << std::endl;
+    cppassist::error("glkernel-JSInterface") << "Invalid kernel object for noise_gradient";
 }
 
 
@@ -282,7 +284,7 @@ void JSInterface::sample_poisson_square(cppexpose::Object* obj, unsigned int num
         return;
     }
 
-    std::cerr << "Invalid kernel object for sample_poisson_square" << std::endl;
+    cppassist::error("glkernel-JSInterface") << "Invalid kernel object for sample_poisson_square";
 }
 
 
@@ -294,7 +296,7 @@ void JSInterface::sample_poisson_square1(cppexpose::Object* obj, float min_dist,
         return;
     }
 
-    std::cerr << "Invalid kernel object for sample_poisson_square1" << std::endl;
+    cppassist::error("glkernel-JSInterface") << "Invalid kernel object for sample_poisson_square1";
 }
 
 
@@ -318,7 +320,7 @@ void JSInterface::sample_stratified(cppexpose::Object* obj)
         return;
     }
 
-    std::cerr << "Invalid kernel object for sample_stratified" << std::endl;
+    cppassist::error("glkernel-JSInterface") << "Invalid kernel object for sample_stratified";
 }
 
 
@@ -330,7 +332,7 @@ void JSInterface::sample_hammersley(cppexpose::Object* obj)
         return;
     }
 
-    std::cerr << "Invalid kernel object for sample_hammersley" << std::endl;
+    cppassist::error("glkernel-JSInterface") << "Invalid kernel object for sample_hammersley";
 }
 
 
@@ -342,7 +344,7 @@ void JSInterface::sample_halton(cppexpose::Object* obj, unsigned int base1, unsi
         return;
     }
 
-    std::cerr << "Invalid kernel object for sample_halton" << std::endl;
+    cppassist::error("glkernel-JSInterface") << "Invalid kernel object for sample_halton";
 }
 
 
@@ -356,7 +358,7 @@ void JSInterface::sample_hammersley_sphere(cppexpose::Object* obj, int type)
         return;
     }
 
-    std::cerr << "Invalid kernel object for sample_hammersley_sphere" << std::endl;
+    cppassist::error("glkernel-JSInterface") << "Invalid kernel object for sample_hammersley_sphere";
 }
 
 
@@ -370,7 +372,7 @@ void JSInterface::sample_halton_sphere(cppexpose::Object* obj, unsigned int base
         return;
     }
 
-    std::cerr << "Invalid kernel object for sample_halton_sphere" << std::endl;
+    cppassist::error("glkernel-JSInterface") << "Invalid kernel object for sample_halton_sphere";
 }
 
 
@@ -388,7 +390,7 @@ void JSInterface::sample_best_candidate(cppexpose::Object* obj, unsigned int num
         return;
     }
 
-    std::cerr << "Invalid kernel object for sample_best_candidate" << std::endl;
+    cppassist::error("glkernel-JSInterface") << "Invalid kernel object for sample_best_candidate";
 }
 
 
@@ -400,7 +402,7 @@ void JSInterface::sample_n_rooks(cppexpose::Object* obj)
         return;
     }
 
-    std::cerr << "Invalid kernel object for sample_n_rooks" << std::endl;
+    cppassist::error("glkernel-JSInterface") << "Invalid kernel object for sample_n_rooks";
 }
 
 
@@ -412,7 +414,7 @@ void JSInterface::sample_multi_jittered(cppexpose::Object* obj, bool correlated)
         return;
     }
 
-    std::cerr << "Invalid kernel object for sample_multi_jittered" << std::endl;
+    cppassist::error("glkernel-JSInterface") << "Invalid kernel object for sample_multi_jittered";
 }
 
 
@@ -424,7 +426,7 @@ void JSInterface::sample_golden_point_set(cppexpose::Object* obj)
         return;
     }
 
-    std::cerr << "Invalid kernel object for sample_golden_point_set" << std::endl;
+    cppassist::error("glkernel-JSInterface") << "Invalid kernel object for sample_golden_point_set";
 }
 
 
@@ -454,7 +456,7 @@ void JSInterface::scale_range(cppexpose::Object* obj, float rangeToLower, float 
         return;
     }
 
-    std::cerr << "Invalid kernel object for scale_range" << std::endl;
+    cppassist::error("glkernel-JSInterface") << "Invalid kernel object for scale_range";
 }
 
 
@@ -471,7 +473,7 @@ void JSInterface::sequence_uniform(cppexpose::Object* obj, const cppexpose::Vari
             return;
         }
 
-        std::cerr << "Invalid parameters for sequence_uniform" << std::endl;
+        cppassist::error("glkernel-JSInterface") << "Invalid parameters for sequence_uniform";
         return;
     }
 
@@ -495,7 +497,7 @@ void JSInterface::sequence_uniform(cppexpose::Object* obj, const cppexpose::Vari
             return;
         }
 
-        std::cerr << "Invalid parameters for sequence_uniform" << std::endl;
+        cppassist::error("glkernel-JSInterface") << "Invalid parameters for sequence_uniform";
         return;
     }
 
@@ -519,7 +521,7 @@ void JSInterface::sequence_uniform(cppexpose::Object* obj, const cppexpose::Vari
             return;
         }
 
-        std::cerr << "Invalid parameters for sequence_uniform" << std::endl;
+        cppassist::error("glkernel-JSInterface") << "Invalid parameters for sequence_uniform";
         return;
     }
 
@@ -543,11 +545,11 @@ void JSInterface::sequence_uniform(cppexpose::Object* obj, const cppexpose::Vari
             return;
         }
 
-        std::cerr << "Invalid parameters for sequence_uniform" << std::endl;
+        cppassist::error("glkernel-JSInterface") << "Invalid parameters for sequence_uniform";
         return;
     }
 
-    std::cerr << "Invalid kernel object for sequence_uniform" << std::endl;
+    cppassist::error("glkernel-JSInterface") << "Invalid kernel object for sequence_uniform";
 }
 
 
@@ -577,7 +579,7 @@ void JSInterface::shuffle_bucket_permutate(cppexpose::Object* obj, glm::uint16 s
         return;
     }
 
-    std::cerr << "Invalid kernel object for shuffle_bucket_permutate" << std::endl;
+    cppassist::error("glkernel-JSInterface") << "Invalid kernel object for shuffle_bucket_permutate";
 }
 
 
@@ -607,7 +609,7 @@ void JSInterface::shuffle_bayer(cppexpose::Object* obj)
         return;
     }
 
-    std::cerr << "Invalid kernel object for shuffle_bayer" << std::endl;
+    cppassist::error("glkernel-JSInterface") << "Invalid kernel object for shuffle_bayer";
 }
 
 
@@ -637,7 +639,7 @@ void JSInterface::shuffle_random(cppexpose::Object* obj, size_t start)
         return;
     }
 
-    std::cerr << "Invalid kernel object for shuffle_random" << std::endl;
+    cppassist::error("glkernel-JSInterface") << "Invalid kernel object for shuffle_random";
 }
 
 
@@ -653,7 +655,7 @@ void JSInterface::sort_distance(cppexpose::Object* obj, const cppexpose::Variant
             return;
         }
 
-        std::cerr << "Invalid parameters for sort_distance" << std::endl;
+        cppassist::error("glkernel-JSInterface") << "Invalid parameters for sort_distance";
         return;
     }
 
@@ -667,7 +669,7 @@ void JSInterface::sort_distance(cppexpose::Object* obj, const cppexpose::Variant
             return;
         }
 
-        std::cerr << "Invalid parameters for sort_distance" << std::endl;
+        cppassist::error("glkernel-JSInterface") << "Invalid parameters for sort_distance";
         return;
     }
 
@@ -681,7 +683,7 @@ void JSInterface::sort_distance(cppexpose::Object* obj, const cppexpose::Variant
             return;
         }
 
-        std::cerr << "Invalid parameters for sort_distance" << std::endl;
+        cppassist::error("glkernel-JSInterface") << "Invalid parameters for sort_distance";
         return;
     }
 
@@ -695,9 +697,9 @@ void JSInterface::sort_distance(cppexpose::Object* obj, const cppexpose::Variant
             return;
         }
 
-        std::cerr << "Invalid parameters for sort_distance" << std::endl;
+        cppassist::error("glkernel-JSInterface") << "Invalid parameters for sort_distance";
         return;
     }
 
-    std::cerr << "Invalid kernel object for sort_distance" << std::endl;
+    cppassist::error("glkernel-JSInterface") << "Invalid kernel object for sort_distance";
 }

@@ -381,7 +381,7 @@ def buildCPPImplementation(func, enums):
             paramCases.append(caseCode)
 
         if neededVariantChecks:
-            paramCases.append("        std::cerr << \"Invalid parameters for " + funcName + "\" << std::endl;\n        return;")
+            paramCases.append("        cppassist::error(\"glkernel-JSInterface\") << \"Invalid parameters for " + funcName + "\";\n        return;")
 
         paramCasesCode = '\n\n'.join(paramCases)
 
@@ -394,7 +394,7 @@ def buildCPPImplementation(func, enums):
 {{
 {earlyConv}{cases}
 
-    std::cerr << "Invalid kernel object for {funcName}" << std::endl;
+    cppassist::error("glkernel-JSInterface") << "Invalid kernel object for {funcName}";
 }}""".format(funcName = funcName, paramList = paramList, earlyConv = earlyConversions, cases = kernelCasesCode)
 
     return fullCode
