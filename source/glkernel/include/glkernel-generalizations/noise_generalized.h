@@ -24,8 +24,7 @@ namespace noise
 
 
 
-template<typename T1, typename T2, typename T3,
-         glm::precision P, template<typename, glm::precision> class V>
+template<typename T1, typename T2, typename T3>
 void uniform(tkernel<T1> &, const T2, const T3);
 
 

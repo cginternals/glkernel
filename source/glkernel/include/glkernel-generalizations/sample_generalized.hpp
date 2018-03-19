@@ -52,7 +52,6 @@ void poisson_square(tkernel<T1> &, const V<T2, P> &, const unsigned int)
 {
     FAIL_ON_SCALAR_KERNEL_CELLTYPE_ASSUMING_VEC2(T1);
     FAIL_ON_PARAM_ASSUMING_COMPONENTTYPE(T1, V);
-    //FAIL_ON_PARAM_ASSUMING_COMPONENTTYPE(T1, V)
 }
 
 template <typename T1, typename T2,
@@ -61,7 +60,6 @@ template <typename T1, typename T2,
 void poisson_square(tkernel<V1<T1, P>> &, const V2<T2, P> &, const unsigned int)
 {
     FAIL_ON_PARAM_ASSUMING_COMPONENTTYPE(T1, V2);
-    //FAIL_ON_PARAM_ASSUMING_COMPONENTTYPE(T1, V2)
 }
 
 

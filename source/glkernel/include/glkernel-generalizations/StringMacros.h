@@ -2,7 +2,7 @@
 
 
 
-#define IDF "Kernel Template Error: "
+#define IDF "<Kernel Template Error>: "
 
 
 #define STRINGIFY(x) #x

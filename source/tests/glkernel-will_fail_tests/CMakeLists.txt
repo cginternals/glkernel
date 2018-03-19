@@ -118,6 +118,7 @@ function(add_own_test scope name idx)
         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:$<$<BOOL:"${OPENMP_FOUND}">:${OpenMP_CXX_FLAGS}>>
     )
 
+
     if(BUILD_TESTING)
         message("CTest ready for registering ${target}")
         # Add the tests.  These invoke "cmake --build ..." which is a
