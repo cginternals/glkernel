@@ -11,6 +11,7 @@ set(META_PROJECT_NAME "glkernel")
 
 # Declare project
 project("${META_PROJECT_NAME}-tests" C CXX)
+include(CTest)
 
 # Set policies
 set_policy(CMP0028 NEW) # ENABLE  CMP0028: Double colon in target name means ALIAS or IMPORTED target.
@@ -31,18 +32,30 @@ else()
     list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 endif()
 
-# Function: Build test and add command to execute it via target 'test'
+
+# Function: Build failuretest and register it under target 'test' via CTest automatically
+#function(add_test_with_ctest target)
+
+    #add_subdirectory(${target})
+
+
+
+#endfunction()
+
+
+# Function: Build test and add command to execute it via target 'tests'
 function(add_test_without_ctest target)
     add_subdirectory(${target})
-    
+
     if(NOT TARGET ${target})
         return()
     endif()
-    
-    add_dependencies(test ${target})
-    add_custom_command(TARGET test POST_BUILD 
+
+    add_dependencies(tests ${target})
+    add_custom_command(TARGET tests POST_BUILD
         COMMAND $<TARGET_FILE:${target}> --gtest_output=xml:gtests-${target}.xml)
 endfunction()
+
 
 # Build gmock
 set(gmock_build_tests           OFF CACHE BOOL "")
@@ -69,16 +82,19 @@ target_link_libraries(gmock-dev
 )
 
 
-# 
-# Target 'test'
-# 
+#
+# Target 'tests'
+# Target 'test' is reserved (hard-coded) for CTest!
+#
 
-add_custom_target(test)
-set_target_properties(test PROPERTIES EXCLUDE_FROM_DEFAULT_BUILD 1)
+add_custom_target(tests)
+set_target_properties(tests PROPERTIES EXCLUDE_FROM_DEFAULT_BUILD 1)
 
 
-# 
+#
 # Tests
-# 
+#
 
+add_subdirectory(glkernel-will_fail_tests)
+#add_test_with_ctest(glkernel-will_fail_tests)
 add_test_without_ctest(glkernel-test)

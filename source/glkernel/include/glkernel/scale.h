@@ -27,3 +27,5 @@ void range(tkernel<V<T, P>> & kernel, T rangeToLower, T rangeToUpper, T rangeFro
 
 
 #include <glkernel/scale.hpp>
+
+#include <glkernel-generalizations/scale_generalized.h>

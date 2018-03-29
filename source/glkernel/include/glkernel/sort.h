@@ -25,3 +25,5 @@ void distance(tkernel<T> & kernel, const T & origin);
 
 
 #include <glkernel/sort.hpp>
+
+#include <glkernel-generalizations/sort_generalized.h>

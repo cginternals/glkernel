@@ -99,3 +99,5 @@ void gradient(tkernel<T> & kernel
 
 
 #include <glkernel/noise.hpp>
+
+#include <glkernel-generalizations/noise_generalized.h>

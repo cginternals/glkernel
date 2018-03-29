@@ -31,3 +31,5 @@ void uniform(tkernel<V<T, P>> & kernel, const V<T, P> & range_min, const V<T, P>
 
 
 #include <glkernel/sequence.hpp>
+
+#include <glkernel-generalizations/sequence_generalized.h>

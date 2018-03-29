@@ -38,3 +38,5 @@ void random(tkernel<T> & kernel, size_t start = 1);
 
 
 #include <glkernel/shuffle.hpp>
+
+#include <glkernel-generalizations/shuffle_generalized.h>
