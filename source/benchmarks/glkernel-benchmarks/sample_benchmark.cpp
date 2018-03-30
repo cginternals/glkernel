@@ -53,7 +53,7 @@ static void BM_hammersley_quad(benchmark::State& state) {
     state.SetComplexityN(state.range(0));
 }
 
-static void BM_hammersley_sphere_quad(benchmark::State& state) {
+static void BM_hammersleySphere_quad(benchmark::State& state) {
     auto dkernel = glkernel::dkernel3{state.range(0), state.range(0)};
 
 
@@ -73,7 +73,7 @@ static void BM_halton_quad(benchmark::State& state) {
     state.SetComplexityN(state.range(0));
 }
 
-static void BM_halton_sphere_quad(benchmark::State& state) {
+static void BM_haltonSphere_quad(benchmark::State& state) {
     auto dkernel = glkernel::dkernel3{state.range(0), state.range(0)};
 
 
@@ -93,7 +93,7 @@ static void BM_best_candidate_quad(benchmark::State& state) {
     state.SetComplexityN(state.range(0));
 }
 
-static void BM_golden_point_set_quad(benchmark::State& state) {
+static void BM_goldenPointSet_quad(benchmark::State& state) {
     auto dkernel = glkernel::dkernel2{state.range(0), state.range(0)};
 
 
@@ -103,13 +103,13 @@ static void BM_golden_point_set_quad(benchmark::State& state) {
     state.SetComplexityN(state.range(0));
 }
 
-BENCHMARK(BM_poisson_quad)->RangeMultiplier(2)->Range(8, 256)->Iterations(1)->Complexity();
+BENCHMARK(BM_poisson_quad)->RangeMultiplier(2)->Range(8, 128)->Iterations(1)->Complexity();
 BENCHMARK(BM_jittered_quad)->RangeMultiplier(2)->Range(8, 256)->Iterations(1)->Complexity();
 BENCHMARK(BM_rooks_quad)->RangeMultiplier(2)->Range(8, 256)->Iterations(1)->Complexity();
 BENCHMARK(BM_stratified_quad)->RangeMultiplier(2)->Range(8, 256)->Iterations(1)->Complexity();
 BENCHMARK(BM_hammersley_quad)->RangeMultiplier(2)->Range(8, 256)->Iterations(1)->Complexity();
-BENCHMARK(BM_hammersley_sphere_quad)->RangeMultiplier(2)->Range(8, 256)->Iterations(1)->Complexity();
+BENCHMARK(BM_hammersleySphere_quad)->RangeMultiplier(2)->Range(8, 256)->Iterations(1)->Complexity();
 BENCHMARK(BM_halton_quad)->RangeMultiplier(2)->Range(8, 256)->Iterations(1)->Complexity();
-BENCHMARK(BM_halton_sphere_quad)->RangeMultiplier(2)->Range(8, 256)->Iterations(1)->Complexity();
-BENCHMARK(BM_best_candidate_quad)->RangeMultiplier(2)->Range(8, 256)->Iterations(1)->Complexity();
-BENCHMARK(BM_golden_point_set_quad)->RangeMultiplier(2)->Range(8, 256)->Iterations(1)->Complexity();
+BENCHMARK(BM_haltonSphere_quad)->RangeMultiplier(2)->Range(8, 256)->Iterations(1)->Complexity();
+BENCHMARK(BM_best_candidate_quad)->RangeMultiplier(2)->Range(8, 32)->Iterations(1)->Complexity();
+BENCHMARK(BM_goldenPointSet_quad)->RangeMultiplier(2)->Range(8, 32)->Iterations(1)->Complexity();

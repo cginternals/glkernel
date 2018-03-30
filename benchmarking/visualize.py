@@ -14,6 +14,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import itertools
 import seaborn as sns
 import pandas as pd
+from numpy import median
 
 #%%
 
@@ -59,15 +60,18 @@ def load_processed(filepath):
     processed = load_data(filepath)
     
     
-    labels = []
-    values = []
+    times = []
+    sizes = []
+    time_per_element = []
+    functions = []
     for k, g in itertools.groupby(processed, lambda el: (el[0],el[1])):
-        if k[0] == 'stratified':
-            for el in g:    
-                values.append(float(el[2]))
-                labels.append(k[1])
+        for el in g:    
+            times.append(float(el[2]))
+            sizes.append(k[1])
+            time_per_element.append(float(el[2]) / float(k[1][:-1]) ** 2)
+            functions.append(k[0])
             
-    return values, labels
+    return times, sizes, functions, time_per_element
 
 #%%
 
@@ -75,21 +79,22 @@ def draw_boxplots(fig, df):
         
     ax = fig.axes[0]
         
-    ax = sns.boxplot(x="size", y="values", hue="omp", data=df, ax=ax, linewidth=1.0, fliersize=2.0)
+    ax = sns.barplot(x="kernel size", y="time_per_element", hue="omp", data=df, ax=ax)
 
     ax.get_yaxis().set_label_text("Time (ns)")    
 
     # ax.set_ylim(0, 3000000)
-    ax.set_yscale('log')
+    
+    # ax.set_yscale('log')
     
     
-def create_fig():
+def create_fig(function):
     fig = matplotlib.figure.Figure()
     FigureCanvas(fig)
     
     ax = fig.add_subplot(111)
-    #ax.set_yscale('log')
-    ax.set_title('Benchmarking times (stratified sampling)') 
+   # ax.set_yscale('log')
+    ax.set_title('Time per element ({})'.format(function)) 
     sns.despine(ax=ax)
     
 
@@ -113,26 +118,20 @@ omp_proc = load_processed("./omp_result.csv")
 
 sns.set(context="talk", style="white")
 
-fig = create_fig()
-
-data = {"size": no_omp_proc[1] + omp_proc[1], 
-        "values": no_omp_proc[0] + omp_proc[0],
+data = {"kernel size": no_omp_proc[1] + omp_proc[1], 
+        "times": no_omp_proc[0] + omp_proc[0],
+        "functions": no_omp_proc[2] + omp_proc[2],
+        "time_per_element": no_omp_proc[3] + omp_proc[3],
         "omp": ["No"]*len(no_omp_proc[0]) + ["Yes"] * len(omp_proc[0])}
-
-data2 = {"size": flatten(zip(no_omp_proc[1], omp_proc[1])), 
-        "values": flatten(zip(no_omp_proc[0], omp_proc[0])),
-        "omp": ["No"]*len(no_omp_proc[0])*2}
 
 df = pd.DataFrame(data=data)     
 
 #%%
 
-values = flatten(zip(no_omp_proc[0], omp_proc[0]))
-labels = flatten(zip(no_omp_proc[1], omp_proc[1]))
+for function, group in df.groupby(['functions']):
+    fig = create_fig(function)
+    draw_boxplots(fig, group)
+    save_fig(fig, "bench_{}.png".format(function))
 
-        
-draw_boxplots(fig, df)
-
-save_fig(fig, "bench.png")
 
     
