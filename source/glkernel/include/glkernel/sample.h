@@ -184,7 +184,6 @@ void n_rooks(tkernel<glm::tvec2<T, P>> & kernel);
 template <typename T, glm::precision P>
 void multi_jittered(tkernel<glm::tvec2<T, P>> & kernel, const bool correlated = false);
 
-//@}
 /**
 *  @brief
 *  Generates a golden point set as described in "Golden Ratio Sequences For Low-Discrepancy Sampling"

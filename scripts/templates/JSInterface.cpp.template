@@ -1,0 +1,52 @@
+
+// THIS IS A GENERATED FILE!
+// DO NOT EDIT
+
+#include "JSInterface.h"
+
+#include "KernelObject.h"
+
+#include "helper.h"
+
+#include <iostream>
+
+{includes}
+
+#include <cppexpose/variant/Variant.h>
+#include <cppexpose/scripting/ScriptContext.h>
+
+#include <cppassist/logging/logging.h>
+
+
+JSInterface::JSInterface()
+: Object("_glkernel")
+{{
+    addFunction("createKernel1", this, &JSInterface::createKernel1);
+    addFunction("createKernel2", this, &JSInterface::createKernel2);
+    addFunction("createKernel3", this, &JSInterface::createKernel3);
+    addFunction("createKernel4", this, &JSInterface::createKernel4);
+
+{addFunctionCalls}
+}}
+
+cppexpose::Object* JSInterface::createKernel1(int width, int height, int depth)
+{{
+    return new Kernel1Object(width, height, depth);
+}}
+
+cppexpose::Object* JSInterface::createKernel2(int width, int height, int depth)
+{{
+    return new Kernel2Object(width, height, depth);
+}}
+
+cppexpose::Object* JSInterface::createKernel3(int width, int height, int depth)
+{{
+    return new Kernel3Object(width, height, depth);
+}}
+
+cppexpose::Object* JSInterface::createKernel4(int width, int height, int depth)
+{{
+    return new Kernel4Object(width, height, depth);
+}}
+
+{generatedFunctions}

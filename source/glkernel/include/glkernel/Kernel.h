@@ -56,6 +56,9 @@ public:
     auto end() -> decltype(s_type_workaround.end());
     auto cend() const -> decltype(s_type_workaround.cend());
 
+    auto begin() const -> decltype(s_type_workaround.cbegin());
+    auto end() const -> decltype(s_type_workaround.cend());
+
     tkernel trimmed(glm::uint16 width, glm::uint16 height, glm::uint16 depth) const;
 
     // index passed to operator (size and coefficient to operator constructor)

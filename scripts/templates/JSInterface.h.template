@@ -1,0 +1,20 @@
+
+// THIS IS A GENERATED FILE!
+// DO NOT EDIT
+
+#include <cppexpose/reflection/Object.h>
+
+#include <glkernel/Kernel.h>
+
+class JSInterface : public cppexpose::Object
+{{
+public:
+    JSInterface();
+
+    cppexpose::Object* createKernel1(int width, int height, int depth);
+    cppexpose::Object* createKernel2(int width, int height, int depth);
+    cppexpose::Object* createKernel3(int width, int height, int depth);
+    cppexpose::Object* createKernel4(int width, int height, int depth);
+
+{functionForwardDecls}
+}};
