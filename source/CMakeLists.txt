@@ -27,6 +27,12 @@ if(OPTION_BUILD_TESTS)
     add_subdirectory(tests)
 endif()
 
+# Benchmarks
+if(OPTION_BUILD_BENCHMARKS)
+    set(IDE_FOLDER "Benchmarks")
+    add_subdirectory(benchmarks)
+endif()
+
 # Tools
 set(IDE_FOLDER "Tools")
 add_subdirectory(tools)

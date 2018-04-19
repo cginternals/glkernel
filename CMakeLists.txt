@@ -61,11 +61,12 @@ set(META_CMAKE_INIT_SHA      "6a6f30b38a1cee31ccac3f091816f28e0f6bce4b")
 # 
 
 # Project options
-option(OPTION_SELF_CONTAINED "Create a self-contained install with all dependencies." OFF)
-option(OPTION_BUILD_TESTS    "Build tests."                                           ON)
-option(OPTION_BUILD_DOCS     "Build documentation."                                   OFF)
-option(OPTION_BUILD_EXAMPLES "Build examples."                                        OFF)
-option(OPTION_BUILD_TOOLS    "Build tools."                                           ON)
+option(OPTION_SELF_CONTAINED   "Create a self-contained install with all dependencies." OFF)
+option(OPTION_BUILD_TESTS      "Build tests."                                           ON)
+option(OPTION_BUILD_DOCS       "Build documentation."                                   OFF)
+option(OPTION_BUILD_EXAMPLES   "Build examples."                                        OFF)
+option(OPTION_BUILD_TOOLS      "Build tools."                                           OFF)
+option(OPTION_BUILD_BENCHMARKS "Benchmarks for various parallel optimizations"          OFF)
 
 
 # 
