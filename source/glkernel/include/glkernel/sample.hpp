@@ -28,7 +28,7 @@ namespace sample
 
 // optimization grid for identifying adjacent points
 
-template <typename T, glm::precision P>
+template <typename T, glm::qualifier P>
 struct poisson_square_map
 {
     poisson_square_map(const T min_dist)
@@ -103,7 +103,7 @@ protected:
 };
 
 
-template <typename T, glm::precision P>
+template <typename T, glm::qualifier P>
 size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, const unsigned int num_probes)
 {
     assert(kernel.depth() == 1);
@@ -113,7 +113,7 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, const unsigned int num
 }
 
 
-template <typename T, glm::precision P>
+template <typename T, glm::qualifier P>
 size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, const T min_dist, const unsigned int num_probes)
 {
     assert(kernel.depth() == 1);
@@ -214,7 +214,7 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, const T min_dist, cons
     return k + 1;
 }
 
-template <typename T, glm::precision P>
+template <typename T, glm::qualifier P>
 void multi_jittered(tkernel<glm::tvec2<T, P>> & kernel, const bool correlated)
 {
     assert(kernel.depth() == 1);
@@ -283,7 +283,7 @@ void multi_jittered(tkernel<glm::tvec2<T, P>> & kernel, const bool correlated)
 }
 
 
-template <typename T, glm::precision P>
+template <typename T, glm::qualifier P>
 void n_rooks(tkernel<glm::tvec2<T, P>> & kernel)
 {
     assert(kernel.depth() == 1);
@@ -316,7 +316,7 @@ class stratified_operator
 public:
     stratified_operator(const glm::u16vec3 & extent, glm::length_t);
 
-    template <typename F, glm::precision P, template<typename, glm::precision> class V>
+    template <typename F, glm::qualifier P, template<typename, glm::qualifier> class V>
     stratified_operator(const glm::u16vec3 & extent, glm::length_t coefficient);
 
     T operator()(const glm::u16vec3 & position);
@@ -340,7 +340,7 @@ stratified_operator<T>::stratified_operator(const glm::u16vec3 & extent, const g
 }
 
 template <typename T>
-template <typename F, glm::precision P, template<typename, glm::precision> class V>
+template <typename F, glm::qualifier P, template<typename, glm::qualifier> class V>
 stratified_operator<T>::stratified_operator(const glm::u16vec3 & extent, const glm::length_t coefficient)
 : stratified_operator{ extent, coefficient }
 {
@@ -361,7 +361,7 @@ void stratified(tkernel<T> & kernel)
     kernel.template for_each_position<stratified_operator<T>>();
 }
 
-template <typename T, glm::precision P>
+template <typename T, glm::qualifier P>
 void stratified(tkernel<glm::tvec2<T, P>> & kernel)
 {
     // the kernels dimensionality should match its value type,
@@ -370,7 +370,7 @@ void stratified(tkernel<glm::tvec2<T, P>> & kernel)
     kernel.template for_each_position<stratified_operator<T>>();
 }
 
-template <typename T, glm::precision P>
+template <typename T, glm::qualifier P>
 void stratified(tkernel<glm::tvec3<T, P>> & kernel)
 {
     // the kernels dimensionality should match its value type,
@@ -413,7 +413,7 @@ T van_der_corput(unsigned int n, const unsigned int base)
     return result;
 }
 
-template <typename T, glm::precision P>
+template <typename T, glm::qualifier P>
 glm::tvec3<T, P> hemisphere_sample_uniform(const T u, const T v)
 {
     const T phi = v * 2 * glm::pi<T>();
@@ -422,7 +422,7 @@ glm::tvec3<T, P> hemisphere_sample_uniform(const T u, const T v)
     return { cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta };
 }
 
-template <typename T, glm::precision P>
+template <typename T, glm::qualifier P>
 glm::tvec3<T, P> hemisphere_sample_cos(const T u, const T v)
 {
     const T phi = v * 2 * glm::pi<T>();
@@ -433,7 +433,7 @@ glm::tvec3<T, P> hemisphere_sample_cos(const T u, const T v)
 
 } // anonymous namespace
 
-template <typename T, glm::precision P>
+template <typename T, glm::qualifier P>
 void hammersley(tkernel<glm::tvec2<T, P>> & kernel)
 {
     #pragma omp parallel for
@@ -445,7 +445,7 @@ void hammersley(tkernel<glm::tvec2<T, P>> & kernel)
     }
 }
 
-template <typename T, glm::precision P>
+template <typename T, glm::qualifier P>
 void hammersley_sphere(tkernel<glm::tvec3<T, P>> & kernel, const HemisphereMapping type)
 {
     #pragma omp parallel for
@@ -467,7 +467,7 @@ void hammersley_sphere(tkernel<glm::tvec3<T, P>> & kernel, const HemisphereMappi
     }
 }
 
-template <typename T, glm::precision P>
+template <typename T, glm::qualifier P>
 void halton(tkernel<glm::tvec2<T, P>> & kernel, const unsigned int base1, const unsigned int base2)
 {
     #pragma omp parallel for
@@ -479,7 +479,7 @@ void halton(tkernel<glm::tvec2<T, P>> & kernel, const unsigned int base1, const 
     }
 }
 
-template <typename T, glm::precision P>
+template <typename T, glm::qualifier P>
 void halton_sphere(
     tkernel<glm::tvec3<T, P>> & kernel,
     const unsigned int base1,
@@ -505,7 +505,7 @@ void halton_sphere(
     }
 }
 
-template <typename T, glm::precision P>
+template <typename T, glm::qualifier P>
 void best_candidate(tkernel<glm::tvec2<T, P>> & kernel, const unsigned int num_candidates)
 {
     assert(num_candidates >= 1);
@@ -550,7 +550,7 @@ void best_candidate(tkernel<glm::tvec2<T, P>> & kernel, const unsigned int num_c
     }
 }
 
-template <typename T, glm::precision P>
+template <typename T, glm::qualifier P>
 void best_candidate(tkernel<glm::tvec3<T, P>> & kernel, const unsigned int num_candidates)
 {
     assert(num_candidates >= 1);
@@ -595,7 +595,7 @@ void best_candidate(tkernel<glm::tvec3<T, P>> & kernel, const unsigned int num_c
     }
 }
 
-template <typename T, glm::precision P>
+template <typename T, glm::qualifier P>
 void golden_point_set(tkernel<glm::tvec2<T, P>> & kernel)
 {
     std::random_device RD;

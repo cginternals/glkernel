@@ -13,6 +13,8 @@
 #include <glm/gtc/type_precision.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <glkernel/glm_compatability.h>
+
 
 namespace glkernel
 {
@@ -36,8 +38,8 @@ glm::length_t kernel_length(const T &)
     return 1;
 }
 
-template <typename T, glm::precision P, template<typename, glm::precision> class V>
-glm::length_t kernel_length(const V<T, P> & type)
+template <typename V, typename T = typename V::value_type>
+glm::length_t kernel_length(const V & type)
 {
     return type.length();
 }

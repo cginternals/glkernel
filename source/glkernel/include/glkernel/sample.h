@@ -27,12 +27,12 @@ namespace sample
 
 // Guess a good number that targets the actual generated number of
 // points generated to match kernel's size.
-template <typename T, glm::precision P>
+template <typename T, glm::qualifier P>
 size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, unsigned int num_probes = 32);
 
 // In contrast to the typical default impl. this impl uses the best
 // of num_probes, randomizes the actives, ...
-template <typename T, glm::precision P>
+template <typename T, glm::qualifier P>
 size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, T min_dist, unsigned int num_probes = 32);
 //@}
 
@@ -59,10 +59,10 @@ size_t poisson_square(tkernel<glm::tvec2<T, P>> & kernel, T min_dist, unsigned i
 template <typename T, typename std::enable_if<std::is_floating_point<T>::value>::type * = nullptr>
 void stratified(tkernel<T> & kernel);
 
-template <typename T, glm::precision P>
+template <typename T, glm::qualifier P>
 void stratified(tkernel<glm::tvec2<T, P>> & kernel);
 
-template <typename T, glm::precision P>
+template <typename T, glm::qualifier P>
 void stratified(tkernel<glm::tvec3<T, P>> & kernel);
 
 /**
@@ -72,7 +72,7 @@ void stratified(tkernel<glm::tvec3<T, P>> & kernel);
 *  @param[in,out] kernel
 *  The kernel to be modified
 */
-template <typename T, glm::precision P>
+template <typename T, glm::qualifier P>
 void hammersley(tkernel<glm::tvec2<T, P>> & kernel);
 
 /**
@@ -88,7 +88,7 @@ void hammersley(tkernel<glm::tvec2<T, P>> & kernel);
 *  @param[in] base2
 *  Base for the "van der Corput" sequence used for the y coordinates
 */
-template <typename T, glm::precision P>
+template <typename T, glm::qualifier P>
 void halton(tkernel<glm::tvec2<T, P>> & kernel, const unsigned int base1, const unsigned int base2);
 
 /**
@@ -111,7 +111,7 @@ enum class HemisphereMapping : unsigned char
 *  @param[in] type
 *  Mapping used for generating points on a sphere
 */
-template <typename T, glm::precision P>
+template <typename T, glm::qualifier P>
 void hammersley_sphere(
     tkernel<glm::tvec3<T, P>> & kernel,
     const HemisphereMapping type = HemisphereMapping::Uniform);
@@ -132,7 +132,7 @@ void hammersley_sphere(
 *  @param[in] base2
 *  Base for the "van der Corput" sequence used for the y coordinates
 */
-template <typename T, glm::precision P>
+template <typename T, glm::qualifier P>
 void halton_sphere(
     tkernel<glm::tvec3<T, P>> & kernel,
     const unsigned int base1,
@@ -149,9 +149,9 @@ void halton_sphere(
 *  @param[in] num_candidates
 *  Number of candidates generated for each sample
 */
-template <typename T, glm::precision P>
+template <typename T, glm::qualifier P>
 void best_candidate(tkernel<glm::tvec2<T, P>> & kernel, unsigned int num_candidates = 32);
-template <typename T, glm::precision P>
+template <typename T, glm::qualifier P>
 void best_candidate(tkernel<glm::tvec3<T, P>> & kernel, unsigned int num_candidates = 32);
 
 /**
@@ -163,7 +163,7 @@ void best_candidate(tkernel<glm::tvec3<T, P>> & kernel, unsigned int num_candida
 *  @param[in,out] kernel
 *  The kernel to be modified, size is used for number of samples
 */
-template <typename T, glm::precision P>
+template <typename T, glm::qualifier P>
 void n_rooks(tkernel<glm::tvec2<T, P>> & kernel);
 
 //@}
@@ -181,7 +181,7 @@ void n_rooks(tkernel<glm::tvec2<T, P>> & kernel);
 *  @param[in,out] kernel
 *  The kernel to be modified, dimensions are used for number of strata
 */
-template <typename T, glm::precision P>
+template <typename T, glm::qualifier P>
 void multi_jittered(tkernel<glm::tvec2<T, P>> & kernel, const bool correlated = false);
 
 /**
@@ -192,7 +192,7 @@ void multi_jittered(tkernel<glm::tvec2<T, P>> & kernel, const bool correlated = 
 *  @param[in,out] kernel
 *  The kernel to be modified
 */
-template <typename T, glm::precision P>
+template <typename T, glm::qualifier P>
 void golden_point_set(tkernel<glm::tvec2<T, P>> & kernel);
 
 

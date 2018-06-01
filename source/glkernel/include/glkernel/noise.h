@@ -21,21 +21,21 @@ namespace noise
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type * = nullptr>
 void uniform(tkernel<T> & kernel, T range_min, T range_max);
 
-template <typename T, glm::precision P, template<typename, glm::precision> class V>
-void uniform(tkernel<V<T, P>> & kernel, T range_min, T range_max);
+template <typename V, typename T = typename V::value_type>
+void uniform(tkernel<V> & kernel, T range_min, T range_max);
 
-template <typename T, glm::precision P, template<typename, glm::precision> class V>
-void uniform(tkernel<V<T, P>> & kernel, const V<T, P> & range_min, const V<T, P> & range_max);
+template <typename V, typename T = typename V::value_type>
+void uniform(tkernel<V> & kernel, const V & range_min, const V & range_max);
 
 
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type * = nullptr>
 void normal(tkernel<T> & kernel, T mean, T stddev);
 
-template <typename T, glm::precision P, template<typename, glm::precision> class V>
-void normal(tkernel<V<T, P>> & kernel, T mean, T stddev);
+template <typename V, typename T = typename V::value_type>
+void normal(tkernel<V> & kernel, T mean, T stddev);
 
-template <typename T, glm::precision P, template<typename, glm::precision> class V>
-void normal(tkernel<V<T, P>> & kernel, const V<T, P> & mean, const V<T, P> & stddev);
+template <typename V, typename T = typename V::value_type>
+void normal(tkernel<V> & kernel, const V & mean, const V & stddev);
 
 /**
 *  @brief

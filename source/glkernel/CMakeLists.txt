@@ -122,6 +122,7 @@ target_link_libraries(${target}
 target_compile_definitions(${target}
     INTERFACE
     GLM_FORCE_RADIANS
+    GLM_ENABLE_EXPERIMENTAL
 )
 
 # 

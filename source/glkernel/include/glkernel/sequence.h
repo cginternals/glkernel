@@ -17,11 +17,11 @@ namespace sequence
 template<typename T, typename std::enable_if<std::is_floating_point<T>::value>::type * = nullptr>
 void uniform(tkernel<T> & kernel, T range_min, T range_max);
 
-template <typename T, glm::precision P, template<typename, glm::precision> class V>
-void uniform(tkernel<V<T, P>> & kernel, T range_min, T range_max);
+template <typename V, typename T = typename V::value_type>
+void uniform(tkernel<V> & kernel, T range_min, T range_max);
 
-template <typename T, glm::precision P, template<typename, glm::precision> class V>
-void uniform(tkernel<V<T, P>> & kernel, const V<T, P> & range_min, const V<T, P> & range_max);
+template <typename V, typename T = typename V::value_type>
+void uniform(tkernel<V> & kernel, const V & range_min, const V & range_max);
 
 
 } // namespace sequence
