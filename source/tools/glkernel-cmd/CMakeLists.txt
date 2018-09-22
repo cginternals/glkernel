@@ -5,6 +5,7 @@
 
 find_package(cppassist REQUIRED)
 find_package(cppexpose REQUIRED)
+find_package(cppfs     REQUIRED)
 
 #
 # Executable name and options
