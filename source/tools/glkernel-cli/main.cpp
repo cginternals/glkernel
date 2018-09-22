@@ -13,7 +13,7 @@
 #include <cppassist/cmdline/CommandLineParameter.h>
 #include <cppassist/cmdline/CommandLineSwitch.h>
 
-#include <cppassist/fs/FilePath.h>
+#include <cppfs/FilePath.h>
 
 #include "KernelGenerator.h"
 #include "AbstractKernelExporter.h"
@@ -25,9 +25,9 @@
 
 std::string extractInputFormat(const std::string & inFileName)
 {
-    const auto inFileExtension = cppassist::FilePath{inFileName}.extension();
+    const auto inFileExtension = cppfs::FilePath{inFileName}.extension();
 
-    if (inFileExtension != "js" && inFileExtension != "json")
+    if (inFileExtension != ".js" && inFileExtension != ".json")
     {
         return "";
     }
@@ -36,17 +36,17 @@ std::string extractInputFormat(const std::string & inFileName)
 
 std::string extractOutputFormat(const std::string & outFileName, const bool shouldConvert)
 {
-    const auto outFileExtension = cppassist::FilePath{outFileName}.extension();
+    const auto outFileExtension = cppfs::FilePath{outFileName}.extension();
 
     if (outFileExtension.empty())
     {
         if (shouldConvert)
         {
-            return "png";
+            return ".png";
         }
         else
         {
-            return "json";
+            return ".json";
         }
     }
     else
@@ -57,7 +57,7 @@ std::string extractOutputFormat(const std::string & outFileName, const bool shou
 
 std::string extractOutputFile(const std::string & inputFile, const std::string & outputFileFormat) {
     const auto &inputFileName = inputFile.substr(0, inputFile.find_last_of('.'));
-    return inputFileName + "." + outputFileFormat;
+    return inputFileName + outputFileFormat;
 }
 
 int main(int argc, char* argv[])
@@ -128,7 +128,7 @@ int main(int argc, char* argv[])
             cppassist::error() << "Input file must have .js or .json file format";
             return 1;
         }
-        const auto shouldConvert = inputFormat == "json";
+        const auto shouldConvert = inputFormat == ".json";
 
         auto outputFormat = optOutputFormat.value();
         auto outputFile = optOutputFile.value();
@@ -175,12 +175,12 @@ int main(int argc, char* argv[])
             auto kernelGenerator = KernelGenerator{inputFile};
             auto kernelVariant = kernelGenerator.generateKernelFromJavascript();
 
-            if (outputFormat == "png")
+            if (outputFormat == ".png")
             {
                 auto kernelExporter = PngExporter{kernelVariant, outputFile};
                 kernelExporter.exportKernel();
             }
-            else if (outputFormat == "json")
+            else if (outputFormat == ".json")
             {
                 auto kernelExporter = JsonExporter{kernelVariant, outputFile, swBeautify.activated()};
                 kernelExporter.exportKernel();
