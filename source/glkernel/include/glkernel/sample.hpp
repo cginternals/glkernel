@@ -11,6 +11,7 @@
 #include <iterator>
 #include <tuple>
 #include <algorithm>
+#include <numeric>
 
 #include <glkernel/glm_compatability.h>
 
