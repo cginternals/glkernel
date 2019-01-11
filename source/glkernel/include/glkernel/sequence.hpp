@@ -18,12 +18,13 @@ template <typename T>
 class uniform_operator
 {
 public:
+    template <typename std::enable_if<std::is_floating_point<T>::value>::type * = nullptr>
     uniform_operator(size_t size, glm::length_t
         , T range_min, T range_max);
 
-    template <typename F, glm::precision P, template<typename, glm::precision> class V>
+    template <typename V, typename std::enable_if<std::is_floating_point<typename V::value_type>::value>::type * = nullptr>
     uniform_operator(size_t size, glm::length_t coefficient
-        , const V<F, P> & range_min, const V<F, P> range_max);
+        , const V & range_min, const V & range_max);
 
     T operator()(const size_t index);
 
@@ -36,6 +37,7 @@ protected:
 
 
 template <typename T>
+template <typename std::enable_if<std::is_floating_point<T>::value>::type *>
 uniform_operator<T>::uniform_operator(const size_t size, const glm::length_t
     , const T range_min, const T range_max)
 : m_range_min{ range_min }
@@ -45,9 +47,9 @@ uniform_operator<T>::uniform_operator(const size_t size, const glm::length_t
 }
 
 template <typename T>
-template <typename F, glm::precision P, template<typename, glm::precision> class V>
+template <typename V, typename std::enable_if<std::is_floating_point<typename V::value_type>::value>::type *>
 uniform_operator<T>::uniform_operator(const size_t size, const glm::length_t coefficient
-    , const V<F, P> & range_min, const V<F, P> range_max)
+    , const V & range_min, const V & range_max)
 : uniform_operator{ size, coefficient, range_min[coefficient], range_max[coefficient] }
 {
 }
@@ -64,16 +66,16 @@ void uniform(tkernel<T> & kernel, const T range_min, const T range_max)
     kernel.template for_each<uniform_operator<T>>(range_min, range_max);
 }
 
-template <typename T, glm::precision P, template<typename, glm::precision> class V>
-void uniform(tkernel<V<T, P>> & kernel, const T range_min, const T range_max)
+template<typename V, typename std::enable_if<std::is_floating_point<typename V::value_type>::value>::type * = nullptr>
+void uniform(tkernel<V> & kernel, const typename V::value_type range_min, const typename V::value_type range_max)
 {
-    kernel.template for_each<uniform_operator<T>>(range_min, range_max);
+    kernel.template for_each<uniform_operator<typename V::value_type>>(range_min, range_max);
 }
 
-template <typename T, glm::precision P, template<typename, glm::precision> class V>
-void uniform(tkernel<V<T, P>> & kernel, const V<T, P> & range_min, const V<T, P> & range_max)
+template<typename V, typename std::enable_if<std::is_floating_point<typename V::value_type>::value>::type * = nullptr>
+void uniform(tkernel<V> & kernel, const V & range_min, const V & range_max)
 {
-    kernel.template for_each<uniform_operator<T>>(range_min, range_max);
+    kernel.template for_each<uniform_operator<typename V::value_type>>(range_min, range_max);
 }
 
 

@@ -61,10 +61,10 @@ void range(tkernel<T> & kernel, T rangeToLower, T rangeToUpper, T rangeFromLower
     kernel.template for_each_element<range_operator<T>>(rangeToLower, rangeToUpper, rangeFromLower, rangeFromUpper);
 }
 
-template <typename T, glm::precision P, template<typename, glm::precision> class V>
-void range(tkernel<V<T, P>> & kernel, T rangeToLower, T rangeToUpper, T rangeFromLower, T rangeFromUpper)
+template <typename V, typename std::enable_if<std::is_floating_point<typename V::value_type>::value>::type * = nullptr>
+void range(tkernel<V> & kernel, typename V::value_type rangeToLower, typename V::value_type rangeToUpper, typename V::value_type rangeFromLower, typename V::value_type rangeFromUpper)
 {
-    kernel.template for_each_element<range_operator<T>>(rangeToLower, rangeToUpper, rangeFromLower, rangeFromUpper);
+    kernel.template for_each_element<range_operator<typename V::value_type>>(rangeToLower, rangeToUpper, rangeFromLower, rangeFromUpper);
 }
 
 

@@ -4,6 +4,8 @@
 #include <vector>
 
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/type_precision.hpp>
+#include <glm/ext/scalar_uint_sized.hpp>
 
 
 namespace glkernel

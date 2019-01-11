@@ -36,8 +36,8 @@ glm::length_t kernel_length(const T &)
     return 1;
 }
 
-template <typename T, glm::precision P, template<typename, glm::precision> class V>
-glm::length_t kernel_length(const V<T, P> & type)
+template<typename V, typename std::enable_if<std::is_floating_point<typename V::value_type>::value>::type * = nullptr>
+glm::length_t kernel_length(const V & type)
 {
     return type.length();
 }
