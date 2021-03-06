@@ -112,7 +112,7 @@ target_include_directories(${target}
 
 target_link_libraries(${target}
     INTERFACE
-    glm
+    glm::glm
 )
 
 # 
