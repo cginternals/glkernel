@@ -4,7 +4,7 @@
 # 
 
 find_package(${META_PROJECT_NAME} REQUIRED HINTS "${CMAKE_CURRENT_SOURCE_DIR}/../../../")
-find_package(GLM 0.9.6 REQUIRED)
+find_package(glm REQUIRED)
 find_package(OpenMP)
 
 # 
@@ -66,7 +66,6 @@ set_target_properties(${target}
 target_include_directories(${target}
     PRIVATE
     ${DEFAULT_INCLUDE_DIRECTORIES}
-    ${GLM_INCLUDE_DIR}
     ${PROJECT_BINARY_DIR}/source/include
 )
 
@@ -78,6 +77,7 @@ target_include_directories(${target}
 target_link_libraries(${target}
     PRIVATE
     ${DEFAULT_LIBRARIES}
+    glm::glm
     ${META_PROJECT_NAME}::glkernel
     benchmark-dev
 )
