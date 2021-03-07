@@ -162,9 +162,22 @@ int main(int argc, char* argv[])
             auto importer = JsonImporter{inputFile};
             auto kernelVariant = importer.getKernel();
 
-            // TODO: add support for png
-            auto kernelExporter = JsonExporter{kernelVariant, outputFile, swBeautify.activated()};
-            kernelExporter.exportKernel();
+            if (outputFormat == ".png")
+            {
+                auto kernelExporter = PngExporter{kernelVariant, outputFile};
+                kernelExporter.exportKernel();
+            }
+            else if (outputFormat == ".json")
+            {
+                auto kernelExporter = JsonExporter{kernelVariant, outputFile, swBeautify.activated()};
+                kernelExporter.exportKernel();
+            }
+            else
+            {
+                cppassist::error() << "Invalid output format '" << outputFormat
+                                   << "'. Output format must be png or json.";
+                return 1;
+            }
         }
         else
         {
