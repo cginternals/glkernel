@@ -310,7 +310,7 @@ void uniform(tkernel<V> & kernel, const typename V::value_type range_min, const 
     kernel.template for_each<uniform_operator<typename V::value_type>>(range_min, range_max);
 }
 
-template <typename V, typename std::enable_if<std::is_floating_point<typename V::value_type>::value>::type * = nullptr>
+template <typename V, typename std::enable_if<std::is_floating_point<typename V::value_type>::value>::type *>
 void uniform(tkernel<V> & kernel, const V & range_min, const V & range_max)
 {
     kernel.template for_each<uniform_operator<typename V::value_type>>(range_min, range_max);
@@ -366,13 +366,13 @@ void normal(tkernel<T> & kernel, const T mean, const T stddev)
     kernel.template for_each<normal_operator<T>>(mean, stddev);
 }
 
-template <typename V, typename std::enable_if<std::is_floating_point<typename V::value_type>::value>::type * = nullptr>
+template <typename V, typename std::enable_if<std::is_floating_point<typename V::value_type>::value>::type *>
 void normal(tkernel<V> & kernel, const typename V::value_type mean, const typename V::value_type stddev)
 {
     kernel.template for_each<normal_operator<typename V::value_type>>(mean, stddev);
 }
 
-template <typename V, typename std::enable_if<std::is_floating_point<typename V::value_type>::value>::type * = nullptr>
+template <typename V, typename std::enable_if<std::is_floating_point<typename V::value_type>::value>::type *>
 void normal(tkernel<V> & kernel, const V & mean, const V & stddev)
 {
     kernel.template for_each<normal_operator<typename V::value_type>>(mean, stddev);

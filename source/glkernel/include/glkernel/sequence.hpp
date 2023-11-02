@@ -66,13 +66,13 @@ void uniform(tkernel<T> & kernel, const T range_min, const T range_max)
     kernel.template for_each<uniform_operator<T>>(range_min, range_max);
 }
 
-template<typename V, typename std::enable_if<std::is_floating_point<typename V::value_type>::value>::type * = nullptr>
+template<typename V, typename std::enable_if<std::is_floating_point<typename V::value_type>::value>::type *>
 void uniform(tkernel<V> & kernel, const typename V::value_type range_min, const typename V::value_type range_max)
 {
     kernel.template for_each<uniform_operator<typename V::value_type>>(range_min, range_max);
 }
 
-template<typename V, typename std::enable_if<std::is_floating_point<typename V::value_type>::value>::type * = nullptr>
+template<typename V, typename std::enable_if<std::is_floating_point<typename V::value_type>::value>::type *>
 void uniform(tkernel<V> & kernel, const V & range_min, const V & range_max)
 {
     kernel.template for_each<uniform_operator<typename V::value_type>>(range_min, range_max);
