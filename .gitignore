@@ -39,4 +39,5 @@ build/
 
 # build directories
 build
+*-build*
 build-*
