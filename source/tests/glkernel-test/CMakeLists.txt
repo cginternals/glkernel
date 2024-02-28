@@ -5,7 +5,7 @@
 
 find_package(${META_PROJECT_NAME} REQUIRED HINTS "${CMAKE_CURRENT_SOURCE_DIR}/../../../")
 
-find_package(glm REQUIRED)
+find_package(glm CONFIG REQUIRED)
 find_package(OpenMP QUIET)
 
 # 
@@ -71,7 +71,6 @@ set_target_properties(${target}
 target_include_directories(${target}
     PRIVATE
     ${DEFAULT_INCLUDE_DIRECTORIES}
-    glm::glm
     ${PROJECT_BINARY_DIR}/source/include
 )
 
