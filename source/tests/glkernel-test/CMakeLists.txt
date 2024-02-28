@@ -71,7 +71,7 @@ set_target_properties(${target}
 target_include_directories(${target}
     PRIVATE
     ${DEFAULT_INCLUDE_DIRECTORIES}
-    ${GLM_INCLUDE_DIR}
+    glm::glm
     ${PROJECT_BINARY_DIR}/source/include
 )
 
@@ -84,7 +84,7 @@ target_link_libraries(${target}
     PRIVATE
     ${DEFAULT_LIBRARIES}
     ${META_PROJECT_NAME}::glkernel
-    gmock-dev
+    googletest::googletest
 )
 
 
